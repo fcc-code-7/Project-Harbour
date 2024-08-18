@@ -1,0 +1,124 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/fonts/simple-line-icons/style.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/card-statistics.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/vertical-timeline.css">
+    <!-- END: Page CSS-->
+    <!-- Add Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body">
+            <!-- Section 1 -->
+                <div class="mb-2 ">
+                    <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                        <!-- Column 1: -->
+
+                        <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                            <div class="p-8 ml-7 text-2xl font-bold ">
+                                <h1>Projects</h1>
+                            </div>
+
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-1  bg-gray-100 text-lg ">
+                            <table class="w-full">
+                                <tr class="sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <td class="flex justify-center items-center p-2 font-bold">
+                                        <p>Semester:</p>
+                                    </td>
+                                    <td class="flex justify-center items-center p-2">
+                                        <select class="p-2 text-center border border-black rounded-lg w-full">
+                                            <option value="" disabled selected>Select Semester</option>
+                                            <option value="option1">Option 1</option>
+                                            <option value="option2">Option 2</option>
+                                            <option value="option3">Option 3</option>
+                                            <option value="option4">Option 4</option>
+                                        </select>
+                                    </td>
+                                    <td class="flex justify-center items-center p-2 font-bold">
+                                        <p>Course:</p>
+                                    </td>
+                                    <td class="flex justify-center items-center p-2">
+                                        <select class="p-2 text-center border border-black rounded-lg w-full">
+                                            <option value="" disabled selected>Select Course</option>
+                                            <option value="option1">Option 1</option>
+                                            <option value="option2">Option 2</option>
+                                            <option value="option3">Option 3</option>
+                                            <option value="option4">Option 4</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                 
+                        <div class="table-responsive">
+                            <table class="table mb-0 border border-2 rounded ">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Comments</th>
+                                        <th>Uploads</th>
+                                        <th>Submissions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="customviewport">
+                                    <tr >
+                                        <td >John</td>
+                                        <td>Doe</td>
+                                        <td>john@example.com</td>
+                                        <th>Submissions</th>
+
+                                    </tr>
+                             
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+           
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts {
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="~/app-assets/vendors/js/charts/apexcharts/apexcharts.min.js"></script>
+    <!-- END: Page Vendor JS-->
+    <!-- BEGIN: Page JS-->
+    <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
+    <!-- END: Page JS-->
+}
+<script>
+
+    $(document).ready(function () {
+        $("#Profile").addClass("active");
+    });
+</script>
+<style>
+    
+
+    .customheightcard {
+        height: 78vh !important
+    }
+    .tailwindcolors{
+        background-color: #67e8f9 !important;
+    }
+
+   
+</style>

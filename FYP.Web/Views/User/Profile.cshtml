@@ -1,0 +1,284 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/fonts/simple-line-icons/style.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/card-statistics.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/vertical-timeline.css">
+    <!-- END: Page CSS-->
+    <!-- Add Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body">
+            <!-- Section 1 -->
+    <div class="mb-2">
+        <div class="p-6 bg-white text-black rounded-lg">
+            <!-- Column 1: -->
+
+            <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                <div class="p-8 ml-7 text-2xl font-bold ">
+                    <h1>Detail Employee</h1>
+                </div>
+           
+            </div>
+
+            <!-- Column 2 -->
+            <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                <div class="flex justify-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBQcRtWVDjSpn8k9DDCETUsh-LL3HVJGDMaQ&s"
+                        alt="image" class="rounded-full p-2 w-32 h-32 object-cover" />
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-bold">Natasha</p>
+                    <p class="mt-1">Role</p>
+                    <p class="text-lg font-bold">Head Of UX Design</p>
+                </div>
+                <div class="text-center">
+                    <p class="mt-1">Phone Number:</p>
+                    <p class="text-lg font-bold">0321-3456783</p>
+                </div>
+                <div class="text-center">
+                    <p class="mt-1">Email Address:</p>
+                    <p class="text-lg font-bold">abc@gmail.com</p>
+                </div>
+            </div>
+
+
+            <!-- Column 3 -->
+            <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-8 gap-6">
+                <div
+                    class="flex gap-4 p-4 justify-center bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg bg-white">
+                    <div>
+                        <i class="fa-solid fa-arrow-right-long text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold">309</p>
+                        <p>Total Attendance</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 p-4 justify-center bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <div>
+                        <i class="fa-solid fa-arrow-right-long text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold">8:46</p>
+                        <p>Average Check-in Time</p>
+                    </div>
+                </div>
+                <div
+                    class="flex gap-4 p-4 justify-center bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg ">
+                    <div>
+                        <i class="fa-solid fa-arrow-right-long text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold">17:04</p>
+                        <p>Avg Check-out Time</p>
+                    </div>
+                </div>
+                <div
+                    class="flex gap-4 p-4 justify-center bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg ">
+                    <div>
+                        <i class="fa-solid fa-arrow-right-long text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold">Role Model</p>
+                        <p>Employee Predicate</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Section 2 -->
+    <div class="">
+        <div class="bg-white p-6 text-black rounded-lg">
+            <!-- Column 1 -->
+            <div class="grid sm:grid-cols-1 lg:grid-cols-2">
+                <div>
+                    <p class="p-8 ml-7 text-2xl font-bold ">Attendance History</p>
+                </div>
+                <div class="grid grid-cols-4 pt-8">
+                    <div>
+                        <i class="fa-solid fa-braille border border-1 border-white pt-1 pb-1 pr-2 pl-2 "></i>
+                    </div>
+                    <div>
+                        <i class="fa-solid fa-bars border border-1 border-white pt-1 pb-1 pr-2 pl-2"></i>
+                    </div>
+                    <div>
+                        <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
+                            <i class="fa-solid fa-sort"></i> Sort
+                        </label>
+                    </div>
+                    <div>
+                        <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
+                            <i class="fa-solid fa-filter"></i> Filter
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- Column 2 -->
+            <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
+                <!-- Cards -->
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
+                                On time</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
+                                Late</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-red-700 border border-2 border-white pl-1 pr-1 bg-red-100 rounded-lg">
+                                On time</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
+                                On time</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg ">
+                                On time</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                    <!-- card 1 -->
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <label for="" class="font-bold">
+                                <i class="fa-regular fa-clock"></i> March 08 2023
+                            </label>
+                            <p class="pt-3">check in time</p>
+                            <p>08:53</p>
+                        </div>
+                        <div>
+                            <p
+                                class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
+                                On time</p>
+                            <p class="pt-3">check out time</p>
+                            <p>17:15</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts {
+ 
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="~/app-assets/vendors/js/charts/apexcharts/apexcharts.min.js"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
+    <!-- END: Page JS-->
+
+}
+<script>
+
+    $(document).ready(function () {
+        $("#Profile").addClass("active");
+    });
+</script>
