@@ -1,0 +1,499 @@
+﻿@model FYP.Web.ViewModels.AppUserViewModel
+@{
+    string regNo;
+    if (Model.regNo == 0)
+    {
+        regNo = "Enter Registration Number";
+    }
+    else
+    {
+        regNo = Model.regNo.ToString();
+    }
+
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class="mb-2 ">
+                        <div class="p-3 bg-white text-black rounded-lg  ">
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" ml-7 text-2xl font-bold">
+                                        <h1>Edit Profile</h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row justify-content-center align-items-center">
+                                                <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+                                                <div class="col-12 col-lg-6 col-md-8 col-sm-10 d-flex justify-content-center">
+                                                    <div class="form-group">
+                                                        <div id="imageContainer">
+                                                            <img id="previewImg" src="" alt="Click to upload">
+                                                            <span id="uploadText">Click to upload</span>
+                                                        </div>
+                                                        <input type="file" id="imageUpload" accept="image/*" />
+                                                        <input type="hidden" id="Docs" name="Docs" value="@Model.Docs" /> <!-- Hidden input to store the uploaded image URL -->
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon1"><i class="feather icon-user"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Name" placeholder="Enter Name" value='@(Model.Name ?? "")' asp-for="Name" aria-describedby="basic-addon1" name="Name" required>
+
+
+                                                            </div>
+                                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3"><i class="feather icon-at-sign"></i></span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control" id="Enrollment" placeholder="Enter Enrollment" value="@(Model.Enrollment ?? "")" asp-for="Enrollment" aria-describedby="basic-addon1" name="Enrollment" required>
+
+                                                                </div>
+                                                                <span asp-validation-for="Enrollment" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3"><i class="feather icon-paperclip"></i></span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control" id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
+
+                                                                </div>
+                                                                <span asp-validation-for="semester" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+
+                                                    }
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2"><i class="feather icon-credit-card"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Cnic" placeholder="Enter Cnic" value="@(Model.Cnic ?? "")" asp-for="Cnic" aria-describedby="basic-addon1" name="Cnic" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Cnic" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="fa fa-home"></i></span>
+                                                                </div>
+                                                                @{
+                                                                    var department = new List<SelectListItem>
+                                                                {
+                                                                new SelectListItem { Value = "", Text = "Select Department", Selected = string.IsNullOrEmpty(Model.Designation) },
+                                                                new SelectListItem { Value = "CS", Text = "CS", Selected = Model.Designation == "CS" },
+                                                                new SelectListItem { Value = "IT", Text = "IT", Selected = Model.Designation == "IT" },
+                                                                };
+                                                                }
+
+
+                                                                @Html.DropDownList("Department", department, new { @class = "form-control" })
+
+                                                            </div>
+                                                            <span asp-validation-for="Department" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="email" placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
+
+
+                                                            </div>
+                                                            <span asp-validation-for="email" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon2">
+                                                                            <i class="feather icon-hash"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control" id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo"  aria-describedby="basic-addon1" name="regNo" required>
+
+                                                                </div>
+                                                                <span asp-validation-for="regNo" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+
+                                                    }
+
+                                                    @if (User.IsInRole("Supervisor"))
+                                                    {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon2">
+                                                                            <i class="feather icon-list"></i>
+                                                                        </span>
+                                                                    </div>
+
+
+
+                                                                    @{
+                                                                        var designations = new List<SelectListItem>
+                                                                {
+                                                                new SelectListItem { Value = "", Text = "Select Designation", Selected = string.IsNullOrEmpty(Model.Designation) },
+                                                                new SelectListItem { Value = "Professor", Text = "Professor", Selected = Model.Designation == "Professor" },
+                                                                new SelectListItem { Value = "Associate Professor", Text = "Associate Professor", Selected = Model.Designation == "Associate Professor" },
+                                                                new SelectListItem { Value = "Assistant Professor", Text = "Assistant Professor", Selected = Model.Designation == "Assistant Professor" },
+                                                                new SelectListItem { Value = "Lecturer", Text = "Lecturer", Selected = Model.Designation == "Lecturer" },
+                                                                new SelectListItem { Value = "Research Assistant", Text = "Research Assistant", Selected = Model.Designation == "Research Assistant" },
+                                                                new SelectListItem { Value = "Teaching Assistant", Text = "Teaching Assistant", Selected = Model.Designation == "Teaching Assistant" },
+                                                                new SelectListItem { Value = "Head of Department", Text = "Head of Department", Selected = Model.Designation == "Head of Department" },
+                                                                new SelectListItem { Value = "Dean", Text = "Dean", Selected = Model.Designation == "Dean" },
+                                                                new SelectListItem { Value = "Chancellor", Text = "Chancellor", Selected = Model.Designation == "Chancellor" },
+                                                                new SelectListItem { Value = "Vice Chancellor", Text = "Vice Chancellor", Selected = Model.Designation == "Vice Chancellor" },
+                                                                new SelectListItem { Value = "Administrative Officer", Text = "Administrative Officer", Selected = Model.Designation == "Administrative Officer" }
+                                                                };
+                                                                    }
+
+                                                                    @Html.DropDownList("Designation", designations, new { @class = "form-control" })
+
+                                                                </div>
+                                                                <span asp-validation-for="Designation" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                    }
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-phone"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Telephone" placeholder="Enter Telephone" value="@(Model.Telephone ?? "")" asp-for="Telephone" aria-describedby="basic-addon1" name="Telephone" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Telephone" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="feather icon-map-pin"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Address" placeholder="Enter Address" value="@(Model.Address ?? "")" asp-for="Address" aria-describedby="basic-addon1" name="Address" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Address" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-settings"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Role" placeholder="Enter Role" value="@Model.Role" asp-for="Role" readonly aria-describedby="basic-addon1" name="Role" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Role" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-primary " id="formsubmit">Save</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style>
+
+    #imageContainer {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        #imageContainer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* Initially hidden */
+        }
+
+    #imageUpload {
+        display: none; /* Hide the actual file input */
+    }
+
+    #uploadText {
+        position: absolute;
+        color: #999;
+        text-align: center;
+    }
+
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+    #previousbtn {
+        position: absolute;
+        top: -30px; /* Adjust to move the button higher */
+        left: -20px; /* Adjust as needed to center or align horizontally */
+        font-size: 50px; /* Icon size */
+        cursor: pointer; /* Indicate it's clickable */
+        z-index: 10; /* Ensure it stays on top */
+    }
+
+    .noborder {
+        border-color: white !important;
+    }
+
+    .customheightcard {
+        height: 78vh !important
+    }
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e6e4e9 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+        $("#previousbtn").click(function () {
+            $.ajax({
+                url: '/user/profile',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+
+        // if (@Model.Docs != "") {
+        //     $("#previewImg").attr("src", "@Model.Docs");
+        // };
+
+        $("#formsubmit").click(function (e) {
+            e.preventDefault();  // Prevent the default form submission
+            var formData = {
+
+                Id: $("#Id").val(),
+                Name: $("#Name").val(),
+                Cnic: $("#Cnic").val(),
+                Department: $("#Department").val(),
+                Address: $("#Address").val(),
+                Telephone: $("#Telephone").val(),
+                Role: $("#Role").val(),
+                email: $("#email").val(),
+                Designation: $("#Designation").val(),
+                Docs: $("#Docs").val(),  // Use the uploaded image URL, not the local file path
+                Enrollment: $("#Enrollment").val(),  
+                regNo: $("#regNo").val(),  
+                semester: $("#semester").val(),
+            };
+            $.ajax({
+                type: "POST",
+                url: "/user/Edit",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",  // Sending JSON
+                success: function (response) {
+                    $("#MainContainer").html(response);
+
+                  
+                },
+                error: function (xhr) {
+                    // Handle the error
+                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                }
+            });
+        });
+        $('#imageContainer').click(function () {
+            $('#imageUpload').click();
+        });
+
+        // When a file is selected, upload the image
+        $('#imageUpload').change(function () {
+            var fileData = this.files[0];
+            var formData = new FormData();
+            formData.append('imageFile', fileData);
+
+            $.ajax({
+                url: '/shared/Upload',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        // Set the image preview
+                        $('#previewImg').attr('src', response.imageUrl).show();
+                        $('#uploadText').hide();
+
+
+                        // Store the uploaded image URL in the hidden field
+                        $('#Docs').val(response.imageUrl);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Error uploading image.');
+                }
+            });
+        });
+
+
+        $('#Cnic').on('input', function () {
+            let value = $(this).val().replace(/\D/g, ''); // Remove non-digit characters
+
+            // Format the value with dashes
+            if (value.length > 5 && value.length <= 12) {
+                value = value.substring(0, 5) + '-' + value.substring(5);
+            } else if (value.length > 12) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 12) + '-' + value.substring(12);
+            }
+
+            $(this).val(value); // Set the formatted value back to the input
+        });
+
+        $('#Enrollment').on('input', function () {
+            let value = $(this).val().replace(/\D/g, ''); // Remove all non-digit characters
+
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '-' + value.substring(2);
+            }
+            if (value.length > 8) {
+                value = value.substring(0, 8) + '-' + value.substring(8);
+            }
+
+            // Trim the value if it exceeds the expected format length (12 characters, including dashes)
+            if (value.length > 12) {
+                value = value.substring(0, 12);
+            }
+
+            $(this).val(value);
+        });
+
+
+    });
+</script>
+

@@ -1,19 +1,10 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model FYP.Web.ViewModels.AppUserViewModel
+
+@{
+   
+
 }
 @section Styles {
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/fonts/simple-line-icons/style.min.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/card-statistics.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/vertical-timeline.css">
-    <!-- END: Page CSS-->
-    <!-- Add Tailwind CSS via CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 }
 <!-- BEGIN: Content-->
@@ -25,7 +16,7 @@
         <div class="content-body">
             <!-- Section 1 -->
             <div class="mb-2">
-                <div class="p-6 bg-white text-black rounded-lg">
+                <div class="p-6 bg-white text-black rounded-lg" style="height:80vh;">
                     <!-- Column 1: -->
 
                     <div class="w-full flex sm:flex-col lg:flex-row gap-4">
@@ -33,33 +24,33 @@
                             <h1>Detail Employee</h1>
                         </div>
                         <div class="ml-auto">
-                            <button class="btn btn-sm btn-primary">Edit</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="editBTN">Edit</button>
                         </div>
                     </div>
-    
-                   
-                  
+
+
+
                     <!-- Column 2 -->
                     <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
 
                         <div class="flex justify-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBQcRtWVDjSpn8k9DDCETUsh-LL3HVJGDMaQ&s"
+                            <img src="@Model.Docs"
                                  alt="image" class="rounded-full p-2 w-32 h-32 object-cover" />
                         </div>
                         <div class="text-center">
-                            <p class="text-3xl font-bold">Natasha</p>
+                            <p class="text-3xl font-bold">@(Model.Name ?? "User")</p>
                             <p class="mt-1">Role</p>
-                            <p class="text-lg font-bold">Head Of UX Design</p>
+                            <p class="text-lg font-bold">@(Model.Designation ?? "N/A")</p>
                         </div>
                         <div class="text-center">
                             <p class="mt-1">Phone Number:</p>
-                            <p class="text-lg font-bold">0321-3456783</p>
+                            <p class="text-lg font-bold">@(Model.Telephone ?? "N/A")</p>
                         </div>
                         <div class="text-center">
                             <p class="mt-1">Email Address:</p>
-                            <p class="text-lg font-bold">abc@gmail.com</p>
+                            <p class="text-lg font-bold">@(Model.email ?? "N/A")</p>
                         </div>
-                       
+
                     </div>
 
 
@@ -75,52 +66,78 @@
                                 </p>
                                 <p class="text-lg font-bold">
                                     Department
-                                    <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
+                                    <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@(Model.Department ?? "N/A")</span>
                                 </p>
                                 <p class="text-lg font-bold">
                                     CNIC
-                                    <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">38302-5166314-7</span>
+                                    <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@(Model.Cnic ?? "N/A")</span>
                                 </p>
                                 <p class="text-lg font-bold">
                                     Address
-                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">HANIF SRE KARSAZ KARACHI</span>
+                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@(Model.Address ?? "N/A")</span>
                                 </p>
                             </div>
-                            <div class="flex items-start ">
-                                <button class="btn btn-sm btn-primary">Edit</button>
-                            </div>
+                            
                         </div>
-                        <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <div class="flex-grow ">
-                            <h6>Supervisor info</h6>
-                                <p class="text-lg font-bold">
-                                    Name
-                                    <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
-                                </p>
-                                <p class="text-lg font-bold">
-                                    Department
-                                    <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
-                                </p>
-                                <p class="text-lg font-bold">
-                                    Phone
-                                    <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">38302-5166314-7</span>
-                                </p>
-                                <p class="text-lg font-bold">
-                                    Email
-                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">HANIF SRE KARSAZ KARACHI</span>
-                                </p>
+                        @if (User.IsInRole("Student"))
+                        {
+                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                                <div class="flex-grow ">
+                                    <h6>Group info</h6>
+                                    <p class="text-lg font-bold">
+                                         Group Name
+                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@Model.groupname</span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Supervisor Name
+                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@Model.supervisorStudent</span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Supervisor Email
+                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@Model.supervisorEmail </span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Leader Name
+                                        <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@(Model.LeaderName ?? "User")</span>
+                                    </p>
+                                </div>
+                               
                             </div>
-                            <div class="flex items-start ">
-                                <button class="btn btn-sm btn-primary">Edit</button>
+
+                        }
+                        else if (User.IsInRole("Supervisor"))
+                        {
+                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                                <div class="flex-grow ">
+                                    <h6>Supervisor info</h6>
+                                    <p class="text-lg font-bold">
+                                        Name
+                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Department
+                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Phone
+                                        <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">38302-5166314-7</span>
+                                    </p>
+                                    <p class="text-lg font-bold">
+                                        Email
+                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">HANIF SRE KARSAZ KARACHI</span>
+                                    </p>
+                                </div>
+                                
                             </div>
-                        </div>                      
+
+                        }
                     </div>
 
 
                 </div>
             </div>
             <!-- Section 2 -->
-            <div class="">
+@*             <div class="">
                 <div class="bg-white p-6 text-black rounded-lg">
                     <!-- Column 1 -->
                     <div class="grid sm:grid-cols-1 lg:grid-cols-2">
@@ -272,10 +289,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+ *@        </div>
     </div>
 </div>
 <!-- END: Content-->
+
 @section Scripts {
 
     <!-- BEGIN: Page Vendor JS-->
@@ -286,11 +304,24 @@
     <!-- END: Page JS-->
 }
 <script>
-
     $(document).ready(function () {
-        $("#Profile").addClass("active");
+        $("#editBTN").click(function () {
+            $.ajax({
+                url: '/user/create',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+      
     });
 </script>
+
 <style>
     .badge-pill {
         font-size: 12px;
@@ -307,4 +338,35 @@
         color: #155724;
         background-color: #d4edda;
     }
+
+    #imageContainer {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        #imageContainer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* Initially hidden */
+        }
+
+    #imageUpload {
+        display: none; /* Hide the actual file input */
+    }
+
+    #uploadText {
+        position: absolute;
+        color: #999;
+        text-align: center;
+    }
+
 </style>
