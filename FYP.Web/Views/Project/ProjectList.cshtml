@@ -1,0 +1,188 @@
+﻿@model FYP.Web.ViewModels.EvaluationViewModel
+
+@{
+    ViewData["Title"] = "Projects";
+
+}
+@section Styles {
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/fonts/simple-line-icons/style.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/card-statistics.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/vertical-timeline.css">
+    <!-- END: Page CSS-->
+    <!-- Add Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body">
+            <!-- Section 1 -->
+
+            <div class="mb-2 ">
+                <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                    <div class="p-8 ml-7 text-2xl font-bold ">
+                        <h1>Project Details</h1>
+                    </div>
+                </div>
+
+                @if (Model.EvaluationName != "" && Model.Marks > 0)
+                {
+                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                        <div class="container my-5">
+                            <table class="table align-middle mb-0 bg-white">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Marks</th>
+                                        <th>Submission</th>
+                                        <th>Last Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">@Model.EvaluationName</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@Model.Marks</td>
+                                        <td>
+                                            <p class="fw-normal mb-1 btn btn-sm btn-primary">Upload</p>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success rounded-pill d-inline">@Model.LastDate</span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="container" style="min-height: 80vh; display: flex; justify-content: center; align-items: center;">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-6 col-sm-12 col-lg-6">
+                                <div class="card text-center">
+                                    <div class="card-header">
+                                        <h5 class="card-title">No Submissions Added</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>It looks like there are currently no submissions available. Come back later!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts {
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="~/app-assets/vendors/js/charts/apexcharts/apexcharts.min.js"></script>
+    <!-- END: Page Vendor JS-->
+    <!-- BEGIN: Page JS-->
+    <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
+    <!-- END: Page JS-->
+}
+<script>
+
+    $(document).ready(function () {
+        $("#btnClick").click(function () {
+            $.ajax({
+                url: '/project/create',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+    });
+</script>
+<style>
+
+
+    .customheightcard {
+        height: 78vh !important
+    }
+
+    .tailwindcolors {
+        background-color: #67e8f9 !important;
+    }
+
+</style>
+<style>
+
+
+    .customheightcard {
+        height: 78vh !important
+    }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e6e4e9 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
+</style>

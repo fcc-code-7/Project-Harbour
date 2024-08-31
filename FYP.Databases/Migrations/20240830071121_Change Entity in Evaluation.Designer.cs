@@ -3,6 +3,7 @@ using System;
 using FYP.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FYP.Databases.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240830071121_Change Entity in Evaluation")]
+    partial class ChangeEntityinEvaluation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -125,7 +128,7 @@ namespace FYP.Databases.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("ChangeTitleForm");
+                    b.ToTable("ChangeTitleForms");
                 });
 
             modelBuilder.Entity("FYP.Entities.Company", b =>
@@ -157,6 +160,9 @@ namespace FYP.Databases.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CommiteeID")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("EvaluationName")
                         .HasColumnType("TEXT");
 
@@ -169,6 +175,9 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("PId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Remarks")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ID");
 
                     b.ToTable("Evaluations");
@@ -178,9 +187,6 @@ namespace FYP.Databases.Migrations
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CommiteeID")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EvalName")
@@ -230,9 +236,6 @@ namespace FYP.Databases.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Q5Marks")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Remarks")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TotalMarks")
@@ -445,9 +448,6 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("Year")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("changeSupervisorForm")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("companyID")
                         .HasColumnType("TEXT");
 
@@ -512,35 +512,6 @@ namespace FYP.Databases.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("WeeklyLogs");
-                });
-
-            modelBuilder.Entity("FYP.Models.ChangeSupervisorForm", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CurrentDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("GroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NewSupervsiorId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OtherReason")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("oldsupervisorId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("changeSupervisorForms");
                 });
 
             modelBuilder.Entity("FYP.Models.Designation", b =>

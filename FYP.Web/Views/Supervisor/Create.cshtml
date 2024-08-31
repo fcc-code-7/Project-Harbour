@@ -2,8 +2,18 @@
 
 @{
     ViewData["Title"] = "Create";
+    var month = DateTime.Now.Month;
+    var year = DateTime.Now.Year;
+    var batch = "";
+    if (month > 2 && month < 6)
+    {
+        batch = "Fall " + (year + 1);
+    }
+    else
+    {
+        batch = "Spring " + year;
 
-
+    }
 }
 
 <!-- BEGIN: Content-->
@@ -34,6 +44,11 @@
                                         <div class="form-body">
                                             <div class="row d-flex justify-content-center">
                                                 <div class="col-md-6 ">
+                                                    <div class="form-group">
+                                                        <input type="text" id="Batch" class="form-control name" placeholder="Batch" value="@batch" asp-for="Batch" name="Name" readonly>
+                                                        <span asp-validation-for="Batch" class="text-danger"></span>
+                                                    </div>
+                                                    <input type="hidden" name="Year" id="Year" value="@year"/>
                                                     <div class="form-group">
                                                         <input type="text" id="groupName" class="form-control name" placeholder="Group Name" asp-for="Name" name="Name" required>
                                                         <span asp-validation-for="Name" class="text-danger"></span>
@@ -221,7 +236,9 @@
                 Name: $("#groupName").val(),
                 student1LEmail: $("#stu1").val(),
                 student2Email: $("#stu2").val(),
-                student3Email: $("#stu3").val()
+                student3Email: $("#stu3").val(),
+                Batch: $("#Batch").val(),
+                Year: $("#Year").val(),
             };
             $.ajax({
                 type: "POST",

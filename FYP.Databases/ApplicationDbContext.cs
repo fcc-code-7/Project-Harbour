@@ -27,5 +27,7 @@ namespace FYP.Db
         public DbSet<Designation> Designations { get; set; }
         public DbSet<WeeklyLogs> WeeklyLogs { get; set; }
         public DbSet<SemesterManagement> SemesterManagements { get; set; }
+        public DbSet<ChangeTitleForm> changeTitleForms { get; set; }
+        public DbSet<ChangeSupervisorForm> changeSupervisorForms { get; set; }
     }
 }

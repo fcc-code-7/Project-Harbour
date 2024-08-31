@@ -22,7 +22,9 @@ namespace FYP.Entities
         public string? objectives { get; set; }
         public string? ExpectedResults { get; set; }
         public string? commiteeId { get; set; }
+        public bool changeTitleFormStatus { get; set; }
         public bool Status { get; set; }
+        public int TotalMarks { get; set; }
 
     }
 

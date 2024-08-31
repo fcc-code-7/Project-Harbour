@@ -257,7 +257,15 @@
                                     </a>
                                 </li>
                             }
-
+                            else if (User.IsInRole("Cordinator"))
+                            {
+                                <li class="nav-item" id="cordgroups">
+                                    <a>
+                                        <i class="feather icon-home"></i>
+                                        <span class="menu-item" data-i18n="Groups">Groups</span>
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item" id="messages">
                                 <a >
                                     <i class="feather icon-home"></i>
@@ -372,6 +380,12 @@
         $("#messages").click(function () {
             loadAdminIndex(function () {
                 loadSection("/user/message", "#MainContainer");
+            });
+        });
+        
+        $("#cordgroups").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/cordinator/Studentgroup", "#MainContainer");
             });
         });
 

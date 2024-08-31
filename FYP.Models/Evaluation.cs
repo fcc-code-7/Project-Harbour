@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace FYP.Entities
 {
-    public class Evaluation
+    public class Evaluation : BaseEntity
     {
-        public string PDefId { get; set; }
+        public string? PId { get; set; }
         public int Marks { get; set; }
-        public string Remarks { get; set; }
 
+        public DateTime LastDate { get; set; }
 
-        public string CommiteeID { get; set; }
+        public string? EvaluationName { get; set; }
 
-        public string EvaluationID { get; set; }
     }
 }

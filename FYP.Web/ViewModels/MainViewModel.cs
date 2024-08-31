@@ -35,14 +35,46 @@ namespace FYP.Web.ViewModels
         public string student3Email { get; set; }
         public string Batch { get; set; }
         public string Year { get; set; }
+        public string groupId { get; set; }
         public string SupervisorID { get; set; }
         public string CoSupervisorID { get; set; }
         public string companyID { get; set; }
         public string CordinatorID { get; set; }
         public string projectname { get; set; }
+        public string LeaderName { get; set; }
+        public string member1 { get; set; }
+        public string Member2 { get; set; }
+        public string supervisorname { get; set; }
+
+        public List<string> Batches { get; set; }
+        public List<string> Years { get; set; }
+        public List<string> Supervisors { get; set; }
+        public bool changeSupervisorForm { get; set; }
         public IEnumerable<StudentGroupViewModel> StudentGroups { get; set; }
 
 
+    }
+    public class ChangeSupervisorFormViewModel
+    {
+        public  Guid Id { get; set; }
+        public string? NewSupervsiorId { get; set; }
+        public string? oldsupervisorId { get; set; }
+        public string? oldsupervsiorname { get; set; }
+        public string? newsupervsiorname { get; set; }
+        public string? OtherReason { get; set; }
+
+
+        public string? Reason { get; set; }
+        public string? GroupId { get; set; }
+        public string? groupName { get; set; }
+        public DateTime CurrentDate { get; set; } 
+
+        public List<string> Supervisors { get; set; }
+
+    }
+    public class BatchViewModel
+    {
+        public string Batch { get; set; }
     }
     public class LoginViewModel
     {
@@ -123,12 +155,27 @@ namespace FYP.Web.ViewModels
         public string mentoremail { get; set; }
         public string batch { get; set; }
         public string Summary { get; set; }
+        public int TotalMarks { get; set; }
         public string objectives { get; set; }
         public string ExpectedResults { get; set; }
         public string commiteeId { get; set; }
+        public bool changeTitleFormStatus { get; set; }
+
         public bool Status { get; set; }
         public List<ProjectViewModel> projects { get; set; }
         public CompanyViewModel company { get; set; }
+
+
+    }
+    public class EvaluationViewModel
+    {
+        public Guid EvaluationID { get; set; }
+        public string? PId { get; set; }
+        public int Marks { get; set; }
+
+        public DateTime LastDate { get; set; }
+
+        public string? EvaluationName { get; set; }
 
 
     }

@@ -4,6 +4,7 @@ using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace FYP.Web.Controllers
 {
@@ -16,9 +17,10 @@ namespace FYP.Web.Controllers
         private readonly IStudentGroupService _studentGroupService;
         private readonly IProjectService _projectService;
         private readonly ICompanyService _companyService;
+        private readonly IEvaluationService _evaluationService;
         private readonly UserManager<AppUser> _userManager;
 
-        public ProjectController(ICompanyService companyService,IProjectService projectService,IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IDesignationService designationService, IStudentGroupService studentGroupService)
+        public ProjectController(IEvaluationService evaluationService,ICompanyService companyService,IProjectService projectService,IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IDesignationService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -28,6 +30,7 @@ namespace FYP.Web.Controllers
             _designationService = designationService;
             _projectService = projectService;
             _companyService = companyService;
+            _evaluationService = evaluationService;
         }
         public IActionResult Index()
         {
@@ -200,8 +203,8 @@ namespace FYP.Web.Controllers
                 Title = model.Title,
                 groupId = group.ToString(),
                 batch = model.batch.ToString(),
-                
-                
+                TotalMarks = 0,
+                changeTitleFormStatus = model.changeTitleFormStatus,
             };
             if (model.Others == "")
             {
@@ -212,6 +215,14 @@ namespace FYP.Web.Controllers
                 project.Others = model.Others;
             }
             var result = _projectService.AddAsync(project);
+            var evaluation = new Evaluation()
+            {
+                PId = project.ID.ToString(),
+                EvaluationName = "",
+                LastDate = DateTime.Now,
+                Marks = 0
+            };
+            await _evaluationService.AddAsync(evaluation);
             if (result != null)
             {
 
@@ -220,6 +231,44 @@ namespace FYP.Web.Controllers
             return Json(new { success = false, message = "Invalid data!" });
             
 
+        }
+
+        public IActionResult ProjectList()
+        {
+            var LoggedInUser = _userManager.GetUserId(User);
+            var group = _studentGroupService.GetAllAsync().Result;
+            var getGroup = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().ID;
+            var fetchProjectfromgroup = _projectService.GetAllAsync().Result.Where(x=>x.groupId == getGroup.ToString()).FirstOrDefault().ID;
+            var evaluation = _evaluationService.GetAllAsync().Result.Where(x=>x.PId ==  fetchProjectfromgroup.ToString()).FirstOrDefault();
+            var model = new EvaluationViewModel()
+            {
+                EvaluationName = evaluation.EvaluationName,
+                LastDate = evaluation.LastDate,
+                Marks = evaluation.Marks,
+                PId = evaluation.PId,
+            };
+            return PartialView(model);
+        }
+        public IActionResult ChangeTitleForm(string code)
+        {
+            var projectDeatils = _projectService.GetAllAsync().Result.Where(x=>x.code == code).FirstOrDefault();
+            var group = _studentGroupService.GetAllAsync().Result;
+            var LoggedInUser = _userManager.GetUserId(User);
+
+            var project = new ProjectViewModel()
+            {
+                code = projectDeatils.code,
+                batch = projectDeatils.batch,
+                Title = projectDeatils.Title,
+                groupId = group.ToString(),
+                changeTitleFormStatus = projectDeatils.changeTitleFormStatus,
+            };
+            var getSupervisor = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().SupervisorID;
+            var getGroup = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().ID;
+            var getLeader = _studentGroupService.GetAllAsync().Result.Where(x => x.ID == getGroup).Select(x => x.student1LID).FirstOrDefault();
+            project.supervisorname = _userManager.FindByIdAsync(getSupervisor).Result.Name;
+            project.groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
+            return PartialView(project);
         }
     }
 }

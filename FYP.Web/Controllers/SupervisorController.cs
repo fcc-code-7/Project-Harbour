@@ -1,5 +1,6 @@
 ﻿using FYP.Databases;
 using FYP.Entities;
+using FYP.Models;
 using FYP.Repositories;
 using FYP.Repositories.Implementation;
 using FYP.Services;
@@ -7,6 +8,7 @@ using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace FYP.Web.Controllers
 {
@@ -16,15 +18,21 @@ namespace FYP.Web.Controllers
         private readonly IProjectService _projectService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly ISupervisorService _supervisorService;
+        private readonly IUserService _userService;
+        private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
 
-        public SupervisorController(IStudentService studentService,IStudentGroupService studentGroupService,UserManager<AppUser> userManager,IProjectService projectService, IProposalDefenseService proposalDefense)
+        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService,IUserService userService,ISupervisorService supervisorService,IStudentService studentService,IStudentGroupService studentGroupService,UserManager<AppUser> userManager,IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
             _projectService = projectService;
             _proposalDefenseService = proposalDefense;
             _studentService = studentService;
+            _supervisorService = supervisorService;
+            _changeSupervisorFormService = changeSupervisorFormService;
+            _userService = userService;
         }
         public IActionResult Index()
         {
@@ -34,10 +42,12 @@ namespace FYP.Web.Controllers
         {
             var studentGroups = await _studentGroupService.GetAllAsync();
             var user = _userManager.GetUserId(User);
+
             var model = new StudentGroupViewModel()
             {
                 StudentGroups = studentGroups.Where(x=>x.SupervisorID == user).Select(x=> new StudentGroupViewModel
                 {
+                    groupId = x.ID.ToString(),
                     companyID=x.companyID,
                     Batch=x.Batch,
                     CordinatorID=x.CordinatorID,
@@ -49,7 +59,10 @@ namespace FYP.Web.Controllers
                     student3ID = x.student3ID,
                     SupervisorID = x.SupervisorID,
                     Year = x.Year,
-                    projectname = _projectService.GetAllAsync().Result.Where(y=>y.projectGroup==x.Name).Select(y=>y.Title).FirstOrDefault()
+                    projectname = _projectService.GetAllAsync().Result.Where(y=>y.projectGroup==x.Name).Select(y=>y.Title).FirstOrDefault(),
+                    LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Name,
+                    member1 = _userService.GetByIdAsync(x.student2ID).Result.Name,
+                    Member2 = _userService.GetByIdAsync(x.student3ID).Result.Name,
                 }
                 ).ToList()};
 
@@ -72,7 +85,7 @@ namespace FYP.Web.Controllers
                     UserName = model.student1LEmail,
                     Designation = "Student",
                     Role = "Student"
-
+                    
                 };
                 var student2 = new AppUser()
                 {
@@ -143,8 +156,8 @@ namespace FYP.Web.Controllers
                              CordinatorID = null,
                              CoSupervisorID = null,
                              
-                             Batch ="spring",
-                            Year = "2019" ,
+                             Batch = model.Batch,
+                            Year = model.Year,
                            
                         };
                         await _studentService.AddAsync(studentData1);
@@ -204,6 +217,58 @@ namespace FYP.Web.Controllers
 
             return PartialView(model);
         }
+        public async Task<IActionResult> ChangeSupervisor(string groupId)
+        {
+            var group = _studentGroupService.GetAllAsync().Result.Where(x=>x.ID.ToString() == groupId).FirstOrDefault();
+            var user = _userManager.GetUserId(User);
+            var user_NaME = _userService.GetByIdAsync(user).Result.Name;
+            // Fetch all student groups asynchronously
+            var studentGroups = await _studentGroupService.GetAllAsync();
 
+            // Count the number of groups each supervisor is assigned to
+            var supervisorGroupCount = studentGroups
+                .GroupBy(x => x.SupervisorID)
+                .Select(g => new { SupervisorID = g.Key, GroupCount = g.Count() })
+                .ToList();
+
+            // Filter supervisors assigned to one or zero groups
+            var filteredSupervisors = supervisorGroupCount
+                .Where(x => x.GroupCount <= 1)
+                .Select(x => x.SupervisorID)
+                .ToList();
+
+            var model = new ChangeSupervisorFormViewModel()
+            {
+                GroupId = groupId,
+                groupName = group.Name,
+                oldsupervsiorname = user_NaME,
+                oldsupervisorId = user,
+                Supervisors = filteredSupervisors
+
+            };
+            return PartialView(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangeSupervisor(ChangeSupervisorFormViewModel model)
+        {
+            var findGroup = _studentGroupService.GetAllAsync().Result.Where(x=>x.ID.ToString() == model.GroupId).FirstOrDefault();
+            findGroup.changeSupervisorForm = true;
+            await _studentGroupService.UpdateAsync(findGroup);
+            var changeSupervisor = new ChangeSupervisorForm()
+            { 
+                CurrentDate = DateTime.Now,
+                GroupId = model.GroupId,
+                oldsupervisorId = model.oldsupervisorId,
+                NewSupervsiorId = model.NewSupervsiorId,
+                OtherReason = model.OtherReason,
+                Reason = model.Reason,
+            }; ;
+            var result = _changeSupervisorFormService.AddAsync(changeSupervisor);
+            if (result != null)
+            {
+                RedirectToAction("StudentGroups", "Supervsior");
+            }
+            return View(model);
+        }
     }
 }

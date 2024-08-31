@@ -3,6 +3,7 @@ using System;
 using FYP.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FYP.Databases.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240830202210_New entity in stugroup")]
+    partial class Newentityinstugroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -125,7 +128,7 @@ namespace FYP.Databases.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("ChangeTitleForm");
+                    b.ToTable("ChangeTitleForms");
                 });
 
             modelBuilder.Entity("FYP.Entities.Company", b =>
@@ -512,35 +515,6 @@ namespace FYP.Databases.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("WeeklyLogs");
-                });
-
-            modelBuilder.Entity("FYP.Models.ChangeSupervisorForm", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CurrentDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("GroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NewSupervsiorId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OtherReason")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("oldsupervisorId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("changeSupervisorForms");
                 });
 
             modelBuilder.Entity("FYP.Models.Designation", b =>

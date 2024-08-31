@@ -1,0 +1,295 @@
+﻿@model FYP.Web.ViewModels.ChangeSupervisorFormViewModel
+@{
+   
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class="mb-2 ">
+                        <div class="p-3 bg-white text-black rounded-lg  ">
+                            <div class="arrow-container">
+                                <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn"></i>
+                            </div>
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class="p-8 ml-7 text-2xl font-bold">
+                                        <h1>Change Supervisor Form</h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform" >
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2"><i class="fa fa-user-o"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="groupName" placeholder="Enter group Name" value="@(Model.groupName ?? "")" asp-for="groupName" aria-describedby="basic-addon1" name="groupName" readonly required>
+                                                                <input type="hidden" value="@Model.GroupId" name="GroupId" />
+
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="fa fa-home"></i></span>
+                                                                </div>
+                                                                <select asp-for="newsupervsiorname" name="newsupervsiorname" id="newsupervsiorname" class="form-control">
+                                                                    @if (Model.Supervisors != null)
+                                                                    {
+                                                                        <option value="">Select Supervisor</option>
+                                                                        @foreach (var item in Model.Supervisors)
+                                                                        {
+                                                                            <option value="@item">@item</option>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="No Supervisor/ All are having their groups" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+
+                                                                </select>
+                                                            </div>
+                                                            <span asp-validation-for="newsupervsiorname" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon1"><i class="feather icon-edit-2"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="oldsupervsiorname" placeholder="Enter oldsupervsiorname" asp-for="oldsupervsiorname" aria-describedby="basic-addon1" name="oldsupervsiorname"readonly required>
+                                                                <input type="hidden" value="@Model.oldsupervisorId" name="oldsupervisorId" />
+
+                                                            </div>
+                                                            <span asp-validation-for="oldsupervsiorname" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-list"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <select asp-for="Reason" name="Reason" id="Reason" class="form-control">
+                                                                    <option value="">Select Reason</option>
+                                                                    <option value=" I will be resigning/retiring.">
+                                                                        I will be resigning/retiring.
+                                                                    </option>
+                                                                    <option value=" I will be taking a study/sabbatical leave, thus am not able to fulfill my duty as supervisor.">
+                                                                        I will be taking a study/sabbatical leave, thus am not able to fulfill my duty as supervisor.
+                                                                    </option>
+                                                                    <option value=" Due to conflict of interest, the student and I have come to a decision that the project should be supervised by the proposed new supervisor.">
+                                                                        Due to conflict of interest, the student and I have come to a decision that the project should be supervised by the proposed new supervisor.
+                                                                    </option>
+                                                                    <option value=" The student has opted to change his/her field of research, which unfortunately is not in my area of expertise.">
+                                                                        The student has opted to change his/her field of research, which unfortunately is not in my area of expertise.
+                                                                    </option>
+                                                                    <option value="others">Other</option>
+                                                                </select>
+                                                            </div>
+                                                            <span asp-validation-for="Reason" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 " id="otherDisplay" style="display: none">
+                                                    <div class="form-group">
+                                                        <label for="OtherReason">Other Reason</label>
+                                                        <textarea class="form-control" id="OtherReason" placeholder="Enter Other Reason" asp-for="OtherReason" aria-describedby="basic-addon1" name="OtherReason" required style="height:100px; resize:none"></textarea>
+
+                                                        <span asp-validation-for="OtherReason" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-primary " id="formsubmit">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style>
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+    #previousbtn {
+        position: absolute;
+        top: -30px; /* Adjust to move the button higher */
+        left: -20px; /* Adjust as needed to center or align horizontally */
+        font-size: 50px; /* Icon size */
+        cursor: pointer; /* Indicate it's clickable */
+        z-index: 10; /* Ensure it stays on top */
+    }
+
+    .noborder {
+        border-color: white !important;
+    }
+
+    .customheightcard {
+        height: 78vh !important
+    }
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e6e4e9 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+    .widget-49 .widget-49-title-wrapper {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+       
+</style>
+<script>
+    $(document).ready(function () {
+        $("#previousbtn").click(function () {
+            $.ajax({
+                url: '/project/projects',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        var supervisors = $('#submitform').data('supervisors');
+        var $saveButton = $('#formsubmit');
+
+        // Check if supervisors is null or empty
+        if (!supervisors || supervisors.trim() === "null") {
+            $saveButton.prop('disabled', true);
+        } else {
+            $saveButton.prop('disabled', false);
+        }
+
+        $("#Reason").change(function () {
+            var reasonval = $(this).val();
+            if (reasonval === "others") {
+                $("#otherDisplay").css("display", "block");
+            } else {
+                $("#otherDisplay").css("display", "none");
+
+            }
+
+        });
+
+        $("#formsubmit").click(function (e) {
+            e.preventDefault();  // Prevent the default form submission
+            var formData = {
+                NewSupervsiorId: $("#NewSupervsiorId").val(),
+                oldsupervisorId: $("#oldsupervisorId").val(),
+                OtherReason: $("#OtherReason").val(),
+                Reason: $("#Reason").val(),
+                GroupId: $("#GroupId").val(),
+                
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/supervisor/ChangeSupervisor",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",  // Sending JSON
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function (xhr) {
+                    // Handle the error
+                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                }
+            });
+        });
+
+    });
+</script>
+

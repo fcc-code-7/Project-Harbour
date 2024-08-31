@@ -28,6 +28,9 @@ namespace FYP.Entities
         public string? Q5Desc { get; set; }
 
         public string? Q5Marks { get; set; }
+        public string? Remarks { get; set; }
+        public string? CommiteeID { get; set; }
+
         public int TotalMarks { get; set; }
 
 

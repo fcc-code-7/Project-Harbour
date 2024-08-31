@@ -50,6 +50,8 @@ builder.Services.AddScoped<IChangeTitleFormRepository, ChangeTitleFormRepository
 builder.Services.AddScoped<IChangeTitleFormService, ChangeTitleFormService>();
 builder.Services.AddScoped<IDesignationRepository, DesignationRepository>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
+builder.Services.AddScoped<IChangeSupervisorFormRepository, ChangeSupervisorFormRepository>();
+builder.Services.AddScoped<IChangeSupervisorFormService, ChangeSupervisorFormService>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(
     options =>

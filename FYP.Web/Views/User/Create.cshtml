@@ -481,13 +481,13 @@
             if (value.length > 2) {
                 value = value.substring(0, 2) + '-' + value.substring(2);
             }
-            if (value.length > 8) {
-                value = value.substring(0, 8) + '-' + value.substring(8);
+            if (value.length > 9) {
+                value = value.substring(0, 9) + '-' + value.substring(9);
             }
 
-            // Trim the value if it exceeds the expected format length (12 characters, including dashes)
-            if (value.length > 12) {
-                value = value.substring(0, 12);
+            // Trim the value if it exceeds the expected format length (13 characters, including dashes)
+            if (value.length > 13) {
+                value = value.substring(0, 13);
             }
 
             $(this).val(value);
