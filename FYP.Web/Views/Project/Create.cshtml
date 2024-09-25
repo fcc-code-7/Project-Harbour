@@ -6,13 +6,14 @@
     var batch = "";
     if (month > 2 && month < 6)
     {
-         batch = "Fall " + (year+1);
+         batch = "Spring " + (year+1);
     }
     else
     {
-         batch = "Spring " + year ;
+         batch = "Fall " + year ;
 
     }
+
 
 
 }
@@ -29,14 +30,14 @@
                     <!-- Section 1 -->
                     <div class="mb-2 ">
                         <div class="p-3 bg-white text-black rounded-lg  ">
-                            <div class="arrow-container">
-                                <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn"></i>
-                            </div>
                             <!-- Column 1: -->
                             <div class="" style="min-height:100px">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                    <div class="p-8 ml-7 text-2xl font-bold">
-                                        <h1>Create Project</h1>
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
+                                            Project Details
+                                        </h1>
                                     </div>
 
                                 </div>
@@ -288,8 +289,7 @@
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn grey btn-outline-secondary " data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-outline-primary " id="formsubmit">Save</button>
+                                        <button type="submit" class="btn btn-outline-primary " id="formsubmitS">Save</button>
                                     </div>
                                 </form>
                             </div>
@@ -308,19 +308,7 @@
 
 
 <style>
-    .arrow-container {
-        position: relative;
-        margin-bottom: 20px; /* Adjust as needed */
-    }
-
-    #previousbtn {
-        position: absolute;
-        top: -30px; /* Adjust to move the button higher */
-        left: -20px; /* Adjust as needed to center or align horizontally */
-        font-size: 50px; /* Icon size */
-        cursor: pointer; /* Indicate it's clickable */
-        z-index: 10; /* Ensure it stays on top */
-    }
+    
     .noborder {
         border-color: white !important;
     }
@@ -404,7 +392,7 @@
 
         });
 
-        $("#formsubmit").click(function (e) {
+        $("#formsubmitS").click(function (e) {
             e.preventDefault();  // Prevent the default form submission
             var formData = {
                 code: $("#code").val(),

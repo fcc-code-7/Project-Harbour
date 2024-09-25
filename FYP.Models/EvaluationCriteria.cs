@@ -8,6 +8,7 @@ namespace FYP.Entities
 {
     public class EvaluationCriteria : BaseEntity
     {
+        public string? PId { get; set; }
         public string? EvalName { get; set; }
         public string? Q1 { get; set; }
         public string? Q1Desc { get; set; }

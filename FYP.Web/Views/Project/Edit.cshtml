@@ -1,5 +1,459 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model FYP.Web.ViewModels.ProjectViewModel
 @{
+    ViewData["Title"] = "Projects";
+    var month = DateTime.Now.Month;
+    var year = DateTime.Now.Year;
+    var batch = "";
+    if (month > 2 && month < 6)
+    {
+        batch = "Fall " + (year + 1);
+    }
+    else
+    {
+        batch = "Spring " + year;
+
+    }
+
+
 }
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class="mb-2 ">
+                        <div class="p-3 bg-white text-black rounded-lg  ">
+                            <div class="arrow-container">
+                                <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn"></i>
+                            </div>
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class="p-8 ml-7 text-2xl font-bold">
+                                        <h1>Create Project</h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon1"><i class="feather icon-user"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="code" placeholder="Enter code" value="@Model.code" asp-for="code" aria-describedby="basic-addon1" name="code" readonly required>
+
+
+                                                            </div>
+                                                            <span asp-validation-for="code" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2"><i class="fa fa-user-o"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="supervisorname" placeholder="Enter Supervisor Name" value="@(Model.supervisorname ?? "")" asp-for="supervisorname" aria-describedby="basic-addon1" name="supervisorname" readonly required>
+
+                                                            </div>
+                                                            <span asp-validation-for="supervisorname" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="fa fa-home"></i></span>
+                                                                </div>
+                                                                @{
+                                                                    var projectGroup = new List<SelectListItem>
+                                                                {
+                                                                new SelectListItem { Value = "", Text = "Select Department", Selected = string.IsNullOrEmpty(Model.projectGroup) },
+                                                                new SelectListItem { Value = "CS", Text = "CS", Selected = Model.projectGroup == "CS" },
+                                                                new SelectListItem { Value = "IT", Text = "IT", Selected = Model.projectGroup == "IT" },
+                                                                };
+                                                                }
+
+
+                                                                @Html.DropDownList("projectGroup", projectGroup, new { @class = "form-control" })
+
+                                                            </div>
+                                                            <span asp-validation-for="projectGroup" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group" style="display:none" id="otherDisplay">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="feather icon-list"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Others" placeholder="Enter Other Category" asp-for="Others" aria-describedby="basic-addon1" name="Others" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Others" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="feather icon-settings"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Tools" placeholder="Enter Tools" asp-for="Tools" aria-describedby="basic-addon1" name="Tools" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Tools" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="fa fa-university"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="companyName" placeholder="Enter companyName" asp-for="companyName" aria-describedby="basic-addon1" name="companyName" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="companyName" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="feather icon-phone"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="mentorcontact" placeholder="Enter mentorcontact" asp-for="mentorcontact" aria-describedby="basic-addon1" name="mentorcontact" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="mentorcontact" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="feather icon-phone"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="batch" placeholder="Enter batch" value="@batch" asp-for="batch" aria-describedby="basic-addon1" name="batch" readonly required>
+
+                                                            </div>
+                                                            <span asp-validation-for="batch" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon1"><i class="feather icon-edit-2"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Title" placeholder="Enter Title" asp-for="Title" aria-describedby="basic-addon1" name="Title" required>
+
+
+                                                            </div>
+                                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-users"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="groupname" placeholder="Enter groupname" value="@(Model.groupname ?? "")" asp-for="groupname" aria-describedby="basic-addon1" name="groupname" readonly required>
+
+                                                            </div>
+                                                            <span asp-validation-for="groupname" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon3"><i class="fa fa-home"></i></span>
+                                                                </div>
+                                                                @{
+                                                                    var ProjectCategory = new List<SelectListItem>
+                                                                {
+                                                                new SelectListItem { Value = "", Text = "Select Department", Selected = string.IsNullOrEmpty(Model.ProjectCategory) },
+                                                                new SelectListItem { Value = "Industrial", Text = "Industrial", Selected = Model.ProjectCategory == "Industrial" },
+                                                                new SelectListItem { Value = "AI(Mining/Computer Vision/Image processing/Machine Learning)", Text = "AI(Mining/Computer Vision/Image processing/Machine Learning)", Selected = Model.ProjectCategory == "AI(Mining/Computer Vision/Image processing/Machine Learning)" },
+                                                                new SelectListItem { Value = "Mobile App", Text = "Mobile App", Selected = Model.ProjectCategory == "Mobile App" },
+                                                                new SelectListItem { Value = "Wireless Communication", Text = "Wireless Communication", Selected = Model.ProjectCategory == "Wireless Communication" },
+                                                                new SelectListItem { Value = "Network & Security", Text = "Network & Security", Selected = Model.ProjectCategory == "Network & Security" },
+                                                                new SelectListItem { Value = "Web App", Text = "Web App", Selected = Model.ProjectCategory == "Web App" },
+                                                                new SelectListItem { Value = "Software Application/ERP", Text = "Software Application/ERP", Selected = Model.ProjectCategory == "Software Application/ERP" },
+                                                                new SelectListItem { Value = "IOT/(H/W+S/W Application)", Text = "IOT/(H/W+S/W Application)", Selected = Model.ProjectCategory == "IOT/(H/W+S/W Application)" },
+                                                                new SelectListItem { Value = "others", Text = "Others", Selected = Model.ProjectCategory == "others" },
+                                                                };
+                                                                }
+
+
+                                                                @Html.DropDownList("ProjectCategory", ProjectCategory, new { @class = "form-control" })
+
+                                                            </div>
+                                                            <span asp-validation-for="ProjectCategory" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="fa fa-pencil-square-o"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Specialization" placeholder="Enter Area/Specialization" asp-for="Specialization" aria-describedby="basic-addon1" name="Specialization" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Specialization" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-user-plus"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="companyMentor" placeholder="Enter Mentor Name(Company)" asp-for="companyMentor" aria-describedby="basic-addon1" name="companyMentor" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="companyMentor" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-mail"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="mentoremail" placeholder="Enter Mentor Email" asp-for="mentoremail" aria-describedby="basic-addon1" name="mentoremail" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="mentoremail" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <label for="Summary">Summary</label>
+                                                        <textarea class="form-control" id="Summary" placeholder="Enter SUMMARY OF PROPOSED PROJECT (MAXIMUM 300 WORDS)" maxlength="300" asp-for="Summary" aria-describedby="basic-addon1" name="Summary" required style="height:100px; resize:none"></textarea>
+
+                                                        <span asp-validation-for="Summary" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                    <div class="form-group">
+
+                                                        <label for="objectives">Objectives</label>
+                                                        <textarea class="form-control" id="objectives" placeholder="Enter Project Objective" maxlength="300" asp-for="objectives" aria-describedby="basic-addon1" name="objectives" required style="height:100px; resize:none"></textarea>
+
+                                                        <span asp-validation-for="objectives" class="text-danger"></span>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                    <div class="form-group">
+                                                        <label for="ExpectedResults">ExpectedResults</label>
+
+                                                        <textarea class="form-control" id="ExpectedResults" placeholder="Enter EXPECTED RESULT(S)/OUTCOME(S)" maxlength="300" asp-for="ExpectedResults" aria-describedby="basic-addon1" name="ExpectedResults" required style="height:100px; resize:none"></textarea>
+                                                        <span asp-validation-for="ExpectedResults" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn grey btn-outline-secondary " data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-outline-primary " id="formsubmit">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style>
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+    #previousbtn {
+        position: absolute;
+        top: -30px; /* Adjust to move the button higher */
+        left: -20px; /* Adjust as needed to center or align horizontally */
+        font-size: 50px; /* Icon size */
+        cursor: pointer; /* Indicate it's clickable */
+        z-index: 10; /* Ensure it stays on top */
+    }
+
+    .noborder {
+        border-color: white !important;
+    }
+
+    .customheightcard {
+        height: 78vh !important
+    }
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e6e4e9 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+        $("#previousbtn").click(function () {
+            $.ajax({
+                url: '/project/projects',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        $("#ProjectCategory").change(function () {
+            var categoryval = $(this).val();
+            if (categoryval === "others") {
+                $("#otherDisplay").css("display", "block");
+            } else {
+                $("#otherDisplay").css("display", "none");
+
+            }
+
+        });
+
+        $("#formsubmit").click(function (e) {
+            e.preventDefault();  // Prevent the default form submission
+            var formData = {
+                code: $("#code").val(),
+                supervisorname: $("#supervisorname").val(),
+                projectGroup: $("#projectGroup").val(),
+                Others: $("#Others").val(),
+                Tools: $("#Tools").val(),
+                companyName: $("#companyName").val(),
+                mentorcontact: $("#mentorcontact").val(),
+                Title: $("#Title").val(),
+                groupname: $("#groupname").val(),
+                ProjectCategory: $("#ProjectCategory").val(),
+                Specialization: $("#Specialization").val(),
+                companyMentor: $("#companyMentor").val(),
+                mentoremail: $("#mentoremail").val(),
+                Summary: $("#Summary").val(),
+                objectives: $("#objectives").val(),
+                ExpectedResults: $("#ExpectedResults").val(),
+                batch: $("#batch").val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/project/create",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",  // Sending JSON
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function (xhr) {
+                    // Handle the error
+                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                }
+            });
+        });
+
+    });
+</script>
+

@@ -12,6 +12,8 @@ namespace FYP.Web.Controllers
             _environment = environment;
         }
 
+        [RequestSizeLimit(104857600)] // 50MB
+
         [HttpPost]
         public IActionResult Upload(IFormFile imageFile)
         {

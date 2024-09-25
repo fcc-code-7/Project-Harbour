@@ -58,7 +58,7 @@ namespace FYP.Web.Controllers
                     student3ID = x.student3ID,
                     CoSupervisorID = x.CoSupervisorID,
                     SupervisorID = x.SupervisorID,
-                    supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name,
+                    supervisorname = _userService.GetAllAsync().Result.Where(x=>x.Id == supervisorId).FirstOrDefault().Name,
                     LeaderName = _userManager.FindByIdAsync(x.student1LID).Result?.Name,
                     member1 = _userManager.FindByIdAsync(x.student2ID).Result?.Name,
                     Member2 = _userManager.FindByIdAsync(x.student3ID).Result?.Name,
@@ -81,11 +81,14 @@ namespace FYP.Web.Controllers
                 .FirstOrDefault();
             var supervisorId = userGroup.SupervisorID;
 
-            var projects = _projectService.GetAllAsync().Result;
+            var projects = _projectService.GetAllAsync().Result.Where(x=>x.SupervsiorApproved == "Approved");
+            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
+
             var model = new ProjectViewModel
             {
                 projects = projects.Select(x => new ProjectViewModel
                 {
+                    ProId = x.ID.ToString(),
                     code = x.code,
                     Specialization = x.Specialization,
                     Status = x.Status,
@@ -103,11 +106,45 @@ namespace FYP.Web.Controllers
                     projectGroup = x.projectGroup,
                     batch = x.batch,
                     groupname = userGroup.Name,
-                    supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name
-                }).ToList()
+                    supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name,
+                    changeTitleFormStatus = x.changeTitleFormStatus,
+                   
+                }).ToList(),
+                  batches = distinctBatches,
+                
+
             };
-            return View(model);
+            return PartialView(model);
         }
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(string Id, string status)
+        {
+            // Fetch the project by ID
+            var project = (await _projectService.GetAllAsync()).FirstOrDefault(x => x.ID.ToString() == Id);
+
+            if (project == null)
+            {
+                // Handle the case where the project is not found
+                return NotFound();
+            }
+
+            // Change the status of the project
+            project.Status = status;
+
+            // Update the project asynchronously
+            var result = _projectService.UpdateAsync(project);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                // Redirect to the desired page or action after a successful update
+                return RedirectToAction("Projects","Cordinator");
+            }
+
+            // In case the update fails, handle it accordingly (e.g., show an error message)
+            return BadRequest("Failed to update the project status.");
+        }
+
+
         public async Task<IActionResult> StudentGroupbyBatch(string batch)
         {
             var studentGroups = (await _studentGroupService.GetAllAsync())
@@ -140,6 +177,7 @@ namespace FYP.Web.Controllers
             {
                 StudentGroups = studentGroups.Select(x => new StudentGroupViewModel
                 {
+                    Name = x.Name,
                     Batch = x.Batch,
                     student1LID = x.student1LID,
                     student2ID = x.student2ID,
@@ -168,10 +206,11 @@ namespace FYP.Web.Controllers
                 .FirstOrDefault();
             var supervisorId = userGroup.SupervisorID;
 
-            var projects = _projectService.GetAllAsync().Result;
+            var projects = _projectService.GetAllAsync().Result.Where(x=>x.batch == batch);
+            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
             var model = new ProjectViewModel
             {
-                projects = projects.Where(x=>x.batch == batch).Select(x => new ProjectViewModel
+                projects = projects.Select(x => new ProjectViewModel
                 {
                     code = x.code,
                     Specialization = x.Specialization,
@@ -191,9 +230,96 @@ namespace FYP.Web.Controllers
                     batch = x.batch,
                     groupname = userGroup.Name,
                     supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name
-                }).ToList()
+                }).ToList(),
+                batches = distinctBatches
             };
-            return View(model);
+            return PartialView("projects",model);
         }
+
+        public IActionResult Evaluation(string Etype,int marks,string batch)
+        {
+            var projects = _projectService.GetAllAsync().Result.Where(x => x.SupervsiorApproved == "Approved");
+            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
+            
+                var model = new EvaluationViewModel()
+                {
+                    EvaluationName = Etype,
+                    batches = distinctBatches,
+                    LastDate = DateTime.Now,
+                    Marks = marks,
+                    
+                };
+                return PartialView(model);
+            
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetEvaluationData(string batch, string evaluationName)
+        {
+            // Fetch evaluation data for the selected batch and EvaluationName from the database
+            var evaluation = (await _evaluationService.GetAllAsync())
+                            .FirstOrDefault(e => e.PBatch == batch && e.EvaluationName == evaluationName);
+
+            if (evaluation != null)
+            {
+                return Json(new
+                {
+                    success = true,
+                    marks = evaluation.Marks,
+                    lastDate = evaluation.LastDate.ToString("dd/MM/yyyy")  // Formatting date
+                });
+            }
+            else
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Evaluation([FromBody] EvaluationViewModel model)
+        {
+            
+                // Check if the evaluation exists in the database by ID
+                var existingEvaluation = _evaluationService.GetAllAsync().Result
+                                            .FirstOrDefault(e => e.PBatch == model.PBatch);
+
+                if (existingEvaluation != null)
+                {
+                    // Update existing evaluation
+                    existingEvaluation.EvaluationName = model.EvaluationName;
+                    existingEvaluation.Marks = model.Marks;
+                    existingEvaluation.PBatch = model.PBatch;
+                    existingEvaluation.LastDate = model.LastDate;
+
+                    _evaluationService.UpdateAsync(existingEvaluation);
+                return RedirectToAction("Projects", "Cordinator");
+
+            }
+            else
+                {
+                    // Create new evaluation
+                    var evaluation = new EvaluationViewModel
+                    {
+                        EvaluationName = model.EvaluationName,
+                        Marks = model.Marks,
+                        PBatch = model.PBatch,
+                        LastDate = model.LastDate
+                    };
+                  var evaluate = new Evaluation
+                    {
+                        EvaluationName = evaluation.EvaluationName,
+                        Marks = evaluation.Marks,
+                        PBatch = evaluation.PBatch,
+                        LastDate = evaluation.LastDate
+                    };
+                    _evaluationService.AddAsync(evaluate);
+                    return RedirectToAction("Projects", "Cordinator");
+
+            }
+
+
+
+
+        }
+
     }
 }

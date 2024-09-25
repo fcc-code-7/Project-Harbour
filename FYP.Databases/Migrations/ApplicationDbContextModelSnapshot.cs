@@ -166,7 +166,7 @@ namespace FYP.Databases.Migrations
                     b.Property<int>("Marks")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PId")
+                    b.Property<string>("PBatch")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
@@ -184,6 +184,9 @@ namespace FYP.Databases.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EvalName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Q1")
@@ -272,19 +275,37 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("ExpectedResults")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FinalDocs")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MidPPT")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MidReport")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Others")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProjectCategory")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PropPPT")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PropReport")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Specialization")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Status")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Summary")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SupervsiorApproved")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -299,8 +320,8 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("batch")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("changeTitleFormStatus")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("changeTitleFormStatus")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("code")
                         .HasColumnType("TEXT");
@@ -491,10 +512,10 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("Activities")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("AssignDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GroupName")
+                    b.Property<string>("GroupId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Result")
@@ -503,10 +524,22 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("RoomNo")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SubmitDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Summary")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Tasks")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UserSubmissionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WeekNo")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");

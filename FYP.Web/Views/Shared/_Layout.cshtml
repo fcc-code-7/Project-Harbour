@@ -4,9 +4,10 @@
 @{
         var userId = UserManager.GetUserId(User);
         var userName = UserManager.GetUserName(User);
-    }
-
+        
 }
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,12 @@
     <link rel="shortcut icon" type="image/x-icon" href="~/app-assets/images/ico/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
     @await RenderSectionAsync("Styles", required: false)
-
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/sweetalert2.min.css">
+    <!-- END: Vendor CSS-->
+   
     <!-- BEGIN: Vendor CSS-->
     <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/vendors.min.css">
     <!-- END: Vendor CSS-->
@@ -57,10 +63,11 @@
                     <ul class="nav navbar-nav flex-row">
                         <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="feather icon-menu font-large-1"></i></a></li>
                         <li class="nav-item">
-                            <a class="navbar-brand" href="~/html/ltr/vertical-menu-template-light/index.html">
-                                <img class="brand-logo" alt="stack admin logo" src="~/app-assets/images/logo/stack-logo.png">
-                                
+                            <a class="navbar-brand d-flex align-items-center" href="">
+                                <img class="brand-logo me-2" alt="stack admin logo" src="~/app-assets/images/logo/stack-logo.png">
+                                <span class="brand-text">FYP</span>
                             </a>
+
                         </li>
                         <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
                     </ul>
@@ -69,15 +76,7 @@
                     <div class="collapse navbar-collapse" id="navbar-mobile">
                         <ul class="nav navbar-nav mr-auto float-left">
                             <li class="nav-item d-none d-md-block"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="feather icon-menu"></i></a></li>
-                            
-                            <li class="nav-item nav-search">
-                                <a class="nav-link nav-link-search" href="#"><i class="ficon feather icon-search"></i></a>
-                                <div class="search-input">
-                                    <input class="input" type="text" placeholder="Explore Stack..." tabindex="0" data-search="template-search">
-                                    <div class="search-input-close"><i class="feather icon-x"></i></div>
-                                    <ul class="search-list"></ul>
-                                </div>
-                            </li>
+                           
                         </ul>
                         <ul class="nav navbar-nav float-right">
                            
@@ -203,7 +202,7 @@
 
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="user-profile.html"><i class="feather icon-user"></i> Edit Profile</a><a class="dropdown-item" href="app-email.html"><i class="feather icon-mail"></i> My Inbox</a><a class="dropdown-item" href="user-cards.html"><i class="feather icon-check-square"></i> Task</a><a class="dropdown-item" href="app-chat.html"><i class="feather icon-message-square"></i> Chats</a>
+                                    <a class="dropdown-item" href="user-profile.html"><i class="feather icon-user"></i> Edit Profile</a><a class="dropdown-item" href="app-chat.html"><i class="feather icon-message-square"></i> Chats</a>
                                     <div class="dropdown-divider"></div><a class="dropdown-item" href="@Url.Action("Logout", "Account")"<i class="feather icon-power"></i> Logout</a>
                                 </div>
                             </li>
@@ -228,7 +227,7 @@
                             </li>
                             <li class="nav-item" id="profile">
                                 <a >
-                                    <i class="feather icon-home"></i>
+                                    <i class="fa fa-user-circle-o"></i>
                                     <span class="menu-item" data-i18n="Profile">Profile</span>
                                 </a>
                             </li>
@@ -237,13 +236,13 @@
                             {
                                 <li class="nav-item" id="ProjectsSup">
                                     <a >
-                                        <i class="feather icon-home"></i>
+                                        <i class="fa fa-calendar-check-o"></i>
                                         <span class="menu-item" data-i18n="Projects">Projects</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="groups">
                                     <a>
-                                        <i class="feather icon-home"></i>
+                                        <i class="fa fa-users"></i>
                                         <span class="menu-item" data-i18n="Groups">Groups</span>
                                     </a>
                                 </li>
@@ -252,8 +251,20 @@
                             {
                                 <li class="nav-item" id="Projects">
                                     <a>
-                                        <i class="feather icon-home"></i>
+                                        <i class="fa fa-calendar-check-o"></i>
                                         <span class="menu-item" data-i18n="Projects">Projects</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Submissions">
+                                    <a>
+                                        <i class="fa fa-cloud-upload"></i>
+                                        <span class="menu-item" data-i18n="Submissions">Submissions</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="WeeklyLogs">
+                                    <a>
+                                        <i class="fa fa-cloud-upload"></i>
+                                        <span class="menu-item" data-i18n="WeeklyLogs">Weekly Logs</span>
                                     </a>
                                 </li>
                             }
@@ -261,14 +272,20 @@
                             {
                                 <li class="nav-item" id="cordgroups">
                                     <a>
-                                        <i class="feather icon-home"></i>
+                                        <i class="fa fa-users"></i>
                                         <span class="menu-item" data-i18n="Groups">Groups</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="cordProject">
+                                    <a>
+                                        <i class="fa fa-calendar-check-o"></i>
+                                        <span class="menu-item" data-i18n="Projects">Projects</span>
                                     </a>
                                 </li>
                             }
                             <li class="nav-item" id="messages">
                                 <a >
-                                    <i class="feather icon-home"></i>
+                                    <i class="fa fa-envelope-o"></i>
                                     <span class="menu-item" data-i18n="Messages">Messages</span>
                                 </a>
                             </li>
@@ -290,11 +307,6 @@
         <div class="drag-target"></div>
     
 
-    <!-- BEGIN: Footer-->
-    <footer class="footer footer-static footer-light navbar-border">
-        <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2"><span class="float-md-left d-block d-md-inline-block">Copyright &copy; 2020 <a class="text-bold-800 grey darken-2" href="https://1.envato.market/pixinvent_portfolio" target="_blank">PIXINVENT </a></span><span class="float-md-right d-none d-lg-block">Hand-crafted & Made with <i class="feather icon-heart pink"></i></span></p>
-    </footer>
-    <!-- END: Footer-->
     <!-- BEGIN: Vendor JS-->
     <script src="~/app-assets/vendors/js/vendors.min.js"></script>
     <!-- BEGIN Vendor JS-->
@@ -304,8 +316,15 @@
     <!-- END: Theme JS-->
     <script src="~/app-assets/js/scripts/modal/components-modal.js"></script>
     <script src="~/app-assets/js/scripts/ui/scrollable.js"></script>
+    <!-- BEGIN: Page JS-->
+    <script src=".~/app-assets/js/scripts/extensions/sweet-alerts.js"></script>
+    <!-- END: Page JS-->
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="~/app-assets/vendors/js/extensions/sweetalert2.all.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
+    <!-- END: Page Vendor JS-->
  @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
@@ -350,15 +369,13 @@
         function loadLastSection() {
             var lastSection = localStorage.getItem('lastSection');
             if (lastSection) {
-                loadAdminIndex(function () {
-                    loadSection(lastSection, "#MainContainer");
-                });
+                loadSection(lastSection, "#MainContainer");
             }
         }
 
         $("#groups").click(function () {
             loadAdminIndex(function () {
-                loadSection("/supervisor/studentgroups", "#MainContainer");
+                loadSection("/studentgroups/StudentGroups", "#MainContainer");
             });
         });
         $("#ProjectsSup").click(function () {
@@ -376,18 +393,33 @@
                 loadSection("/project/projects", "#MainContainer");
             });
         });
-        
         $("#messages").click(function () {
             loadAdminIndex(function () {
                 loadSection("/user/message", "#MainContainer");
             });
         });
-        
         $("#cordgroups").click(function () {
             loadAdminIndex(function () {
                 loadSection("/cordinator/Studentgroup", "#MainContainer");
             });
         });
+        $("#cordProject").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/cordinator/Projects", "#MainContainer");
+            });
+        });
+        $("#Submissions").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/Project/ProjectList", "#MainContainer");
+            });
+        });
+        $("#WeeklyLogs").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/Project/weeklylog", "#MainContainer");
+            });
+        });
 
+        // Call loadLastSection to load the last opened section on page load
+        loadLastSection();
     });
 </script>

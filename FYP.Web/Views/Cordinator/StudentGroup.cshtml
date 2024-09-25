@@ -16,32 +16,31 @@
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
                     <div class="mb-2 ">
-                        <div class=" bg-white text-black rounded-lg customheightcard">
-                            <!-- Column 1: -->
+                             <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                                <!-- Column 1: -->
 
-                            <div class=" grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                <div class="p-8 ml-7 text-2xl font-bold ">
-                                    <h1>Student Groups</h1>
-                                </div>
+                                <div class="w-full flex justify-between items-center" id="container">
+                                    <!-- Left content (div1) -->
+                                    <div class="p-8 ml-7 text-2xl font-bold" id="div1">
+                                        <h1>Student Groups</h1>
+                                    </div>
 
-                            </div>
-                            <div class="search-container d-flex justify-content-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle"  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Select Batch
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                       @foreach (var item in Model.Batches)
-                                        {
-                                            <a class="dropdown-item batchChange"  data-id="@item">@item</a>
-
-                                        }
+                                    <!-- Right content (div2) -->
+                                    <div class="search-container mr-7" id="div2">
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Select Batch
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                @foreach (var item in Model.Batches)
+                                                {
+                                                    <a class="dropdown-item batchChange" data-id="@item">@item</a>
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-                            </div>
-
-                            @if (Model.StudentGroups == null )
+                                @if (Model.StudentGroups == null)
                             {
                                 <div class="container mt-0 md:mt-5 lg:mt-5">
                                     <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
@@ -69,31 +68,53 @@
                                         @foreach (var item in Model.StudentGroups)
                                         {
 
-                                            <div class="col-12 col-md-6 col-sm-12 col-lg-4">
+                                            <div class="col-12 col-md-6 col-sm-12 col-lg-5">
                                                 <div class="card p-0">
                                                     <div class="card-header no-border">
-                                                        <h5 class="card-title">@(item.Name  ?? "")</h5>
+                                                        <h5 class="card-title">@item.Name</h5>
                                                     </div>
                                                     <div class="card-body pt-0 ">
                                                         <div class="widget-49">
                                                             <div class="widget-49-title-wrapper">
                                                                 <div class="widget-49-date-warning">
-                                                                    <span class="widget-49-date-day">@(counter=counter+1)</span>
+                                                                    <span class="widget-49-date-day">@(counter = counter + 1)</span>
                                                                 </div>
                                                                 <div class="widget-49-meeting-info">
-                                                                    <span class="widget-49-pro-title">Supervisor Name:@(item.supervisorname ?? "N/A")</span>
-                                                                    <span class="widget-49-meeting-time">@(item.Batch ?? "")</span>
+                                                                    <span class="widget-49-pro-title ">Supervisor Name: @(item.supervisorname ?? "N/A")</span>
+                                                                    <span class="widget-49-meeting-time">@item.Batch</span>
                                                                 </div>
                                                             </div>
-                                                            <ol class="widget-49-meeting-points  ">
-                                                                <li class="widget-49-meeting-item"><span>Leader:<span class="badge  badge-primary  ">@(item.LeaderName ?? "Name yet to Enter")</span></span></li>
-                                                                <li class="widget-49-meeting-item"><span>Member:<span class="badge  badge-primary  ">@(item.member1 ?? "Name yet to Enter")</span></span></li>
-                                                                <li class="widget-49-meeting-item"><span>Member:<span class="badge  badge-primary ">@(item.Member2 ?? "Name yet to enter")</span></span></li>
-                                                                <li class="widget-49-meeting-item"><span>Change Supervisor:<span class="badge  badge-primary ">@(item.Member2 ?? "Name yet to enter")</span></span></li>
+                                                            <ol class="widget-49-meeting-points">
+                                                                <li class="widget-49-meeting-item">
+                                                                    <span>
+                                                                        Leader:
+                                                                        <span class="@(string.IsNullOrEmpty(item.LeaderName) ? "text-danger" : "text-success")">
+                                                                            @(item.LeaderName ?? "Name yet to Enter")
+                                                                        </span>
+                                                                    </span>
+                                                                </li>
+                                                                <li class="widget-49-meeting-item">
+                                                                    <span>
+                                                                        Member:
+                                                                        <span class="@(string.IsNullOrEmpty(item.member1) ? "text-danger" : "text-success")">
+                                                                            @(item.member1 ?? "Name yet to Enter")
+                                                                        </span>
+                                                                    </span>
+                                                                </li>
+                                                                <li class="widget-49-meeting-item">
+                                                                    <span>
+                                                                        Member:
+                                                                        <span class="@(string.IsNullOrEmpty(item.Member2) ? "text-danger" : "text-success")">
+                                                                            @(item.Member2 ?? "Name yet to Enter")
+                                                                        </span>
+                                                                    </span>
+                                                                </li>
                                                             </ol>
                                                             <div class="widget-49-meeting-action">
-@*                                                                 <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a>
- *@                                                            </div>
+@*                                                                 <a class="btn btn-sm btn-flash-border-warning ChangeSupervisor" data-value="@item.GrouID">Change Supervisor</a>
+ *@                                                                @* <a class="btn btn-sm btn-flash-border-warning">Edit</a> *@
+                                                                @* <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a> *@
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -106,6 +127,7 @@
                                     </div>
                                 </div>
                             }
+                            </div>
 
                         </div>
                     </div>
@@ -123,54 +145,9 @@
 
 
 <style>
-    .search-container {
-        position: relative;
-        margin: 50px auto;
-        width: 300px;
-    }
 
-    #batch-search {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-    }
 
-    .batch-list {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background-color: #ffffff;
-        border: 1px solid #ddd;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1;
-    }
 
-    .batch-item {
-        padding: 10px;
-        cursor: pointer;
-        border-bottom: 1px solid #ddd;
-    }
-
-        .batch-item:hover {
-            background-color: #f1f1f1;
-        }
-
-    .customheightcard {
-        height: 78vh !important
-    }
-
-    .colorchange {
-        transition: color 0.3s ease;
-        cursor: default;
-    }
-
-        .colorchange:hover {
-            color: green;
-            cursor: pointer;
-        }
 
     .card-margin {
         margin-bottom: 1.875rem !important;

@@ -10,6 +10,7 @@ using FYP.Services;
 using FYP.Services.Implementation;
 using FYP.Databases;
 using FYP.Web.ChatHub;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -17,6 +18,10 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("default"));
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100MB
 });
 builder.Services.AddAuthorization();  // Add this line
 builder.Services.AddAuthentication();  // Ensure authentication is also configured if needed

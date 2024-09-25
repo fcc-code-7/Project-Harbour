@@ -16,12 +16,12 @@
         <div class="content-body">
             <!-- Section 1 -->
             <div class="mb-2">
-                <div class="p-6 bg-white text-black rounded-lg" style="height:78vh;">
+                <div class="p-6 bg-white text-black rounded-lg" >
                     <!-- Column 1: -->
 
                     <div class="w-full flex sm:flex-col lg:flex-row gap-4">
                         <div class="p-8 text-2xl font-bold">
-                            <h1>Detail Employee</h1>
+                            <h1>Profile</h1>
                         </div>
                         <div class="ml-auto">
                             <button type="button" class="btn btn-sm btn-primary" id="editBTN">Edit</button>
@@ -57,91 +57,150 @@
                     <!-- Column 3 -->
                     <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mt-8 gap-6">
                         <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <div class="flex-grow ">
-                                <h6>Personal info</h6>
-                                @if (User.IsInRole("Student"))
-                                {
-                                    <p class="text-lg font-bold">
-                                        Enroll No.
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">@(Model.Enrollment ?? "N/A")</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Reg No.
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300  ">@(Model.regNo)</span>
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p class="text-lg font-bold">
-                                        Batch
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 ">SPRING-2021</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Department
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 ">@(Model.Department ?? "N/A")</span>
-                                    </p>
-
-                                }
-                                <p class="text-lg font-bold">
-                                    CNIC
-                                    <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 ">@(Model.Cnic ?? "N/A")</span>
-                                </p>
-                                <p class="text-lg font-bold">
-                                    Address
-                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 ">@(Model.Address ?? "N/A")</span>
-                                </p>
+                            <div class="flex-grow">
+@*                                 <h6>Personal info</h6>
+ *@                                <table class="responsive">
+                                    @if (User.IsInRole("Student"))
+                                    {
+                                        <tr>
+                                            <td class="text-lg font-bold">Enroll No.</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.Enrollment ?? "N/A")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Reg No.</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.regNo)
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td class="text-lg font-bold">Role</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center ">
+                                                    @Model.Role
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Department</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    @(Model.Department ?? "N/A")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td class="text-lg font-bold">CNIC</td>
+                                        <td>
+                                            <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                @(Model.Cnic ?? "N/A")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-lg font-bold">Address</td>
+                                        <td>
+                                            <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                @(Model.Address ?? "N/A")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
-                            
                         </div>
+
                         @if (User.IsInRole("Student"))
                         {
                             <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                                <div class="flex-grow ">
+                                <div class="flex-grow">
                                     <h6>Group info</h6>
-                                    <p class="text-lg font-bold">
-                                         Group Name
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">@Model.groupname</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Supervisor Name
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">@Model.supervisorStudent</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Supervisor Email
-                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">@Model.supervisorEmail </span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Leader Name
-                                        <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">@(Model.LeaderName ?? "User")</span>
-                                    </p>
+                                    <table class="responsive">
+                                        <tr>
+                                            <td class="text-lg font-bold">Group Name:</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    @Model.groupname
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Supervisor Name:</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    @Model.supervisorStudent
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Supervisor Email:</td>
+                                            <td>
+                                                <span class="text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    @Model.supervisorEmail
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Leader Name:</td>
+                                            <td>
+                                                <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    @(Model.LeaderName ?? "User")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
-                               
                             </div>
 
                         }
                         else if (User.IsInRole("Supervisor"))
                         {
                             <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                                <div class="flex-grow ">
-                                    <h6>Supervisor info</h6>
-                                    <p class="text-lg font-bold">
-                                        Name
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Department
-                                        <span class="bg-green-100 text-green-800 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SPRING-2021</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Phone
-                                        <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">38302-5166314-7</span>
-                                    </p>
-                                    <p class="text-lg font-bold">
-                                        Email
-                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">HANIF SRE KARSAZ KARACHI</span>
-                                    </p>
+                                <div class="flex-grow">
+@*                                     <h6>Group info</h6>
+ *@                                    <table class="">
+                                        <tr>
+                                            <td class="text-lg font-bold">Group 1</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.group1name ?? "No Group 1 Exist")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Leader Email</td>
+                                            <td>
+                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.group1leader ?? "N/A")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Group 2</td>
+                                            <td>
+                                                <span class="mx-2 text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.group2name ?? "No Group 2 Exist")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-lg font-bold">Leader Email</td>
+                                            <td>
+                                                <span class="mx-2 text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    @(Model.group2leader ?? "N/A")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
-                                
                             </div>
 
                         }

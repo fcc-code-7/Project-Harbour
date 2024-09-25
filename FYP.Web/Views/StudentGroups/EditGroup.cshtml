@@ -1,0 +1,124 @@
+﻿@model FYP.Web.ViewModels.StudentGroupViewModel
+
+@{
+    ViewData["Title"] = "Edit Group";
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class=" ">
+                        <div class="p-3 bg-white text-black rounded-lg customheightcard">
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
+                                            Edit Group
+                                        </h1>
+                                    </div>
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-md-6 ">
+                                                    <div class="form-group">
+                                                        <input type="text" id="Batch" class="form-control name" placeholder="Batch" value="@Model.Batch" asp-for="Batch" name="Batch" readonly>
+                                                        <span asp-validation-for="Batch" class="text-danger"></span>
+                                                    </div>
+                                                    <input type="hidden" name="Year" id="Year" value="@Model.Year" />
+                                                    <input type="hidden" class="GroupId" name="Id" id="Id" value="@Model.groupId" />
+                                                    <div class="form-group">
+                                                        <input type="text" id="groupName" class="form-control name" placeholder="Group Name" asp-for="Name" name="Name" value="@Model.Name" required>
+                                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text email1" id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="stu1" placeholder="Leader's Email" asp-for="student1LEmail" value="@Model.student1LEmail" aria-describedby="basic-addon1" name="student1LEmail" required>
+                                                            </div>
+                                                            <span asp-validation-for="student1LEmail" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text email2" id="basic-addon2"><i class="feather icon-mail"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="stu2" placeholder="Member2 Email" asp-for="student2Email" value="@Model.student2Email" aria-describedby="basic-addon2" name="student2Email" required>
+                                                            </div>
+                                                            <span asp-validation-for="student2Email" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text email3" id="basic-addon3"><i class="feather icon-mail"></i></span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="stu3" placeholder="Member3 Email" asp-for="student3Email" value="@Model.student3Email" aria-describedby="basic-addon3" name="student3Email" required>
+                                                            </div>
+                                                            <span asp-validation-for="student3Email" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-primary " id="formsubmit">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+
+<script>
+    $(document).ready(function () {
+        $("#formsubmit").click(function (e) {
+            e.preventDefault();  // Prevent the default form submission
+
+            var formData = {
+                groupId: $(".GroupId").val(),
+                Name: $("#groupName").val(),
+                student1LEmail: $("#stu1").val(),
+                student2Email: $("#stu2").val(),
+                student3Email: $("#stu3").val(),
+                Batch: $("#Batch").val(),
+                Year: $("#Year").val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/studentgroups/EditGroup",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",  // Sending JSON
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                },
+                error: function (xhr) {
+                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                }
+            });
+        });
+    });
+</script>

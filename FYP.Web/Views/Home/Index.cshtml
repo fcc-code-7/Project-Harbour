@@ -1,4 +1,192 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
     Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page with Navbar</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+        }
+
+        .background-image {
+            background-image: url('../images/homePage_bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .backdrop {
+            display: none;
+        }
+
+        .backdrop.open {
+            display: block;
+        }
+
+        .cursor {
+            display: inline-block;
+            animation: blink 1s steps(2, start) infinite;
+        }
+
+        @@keyframes blink {
+            to {
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar Section -->
+    <main>
+        <div class="flex justify-between items-center px-8 py-6 bg-blue-800">
+            <!-- Logo Section -->
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-mono text-white">logo</a>
+            </div>
+
+            <!-- Navbar Links on Larger Screens -->
+            <nav class=" p-4">
+                <div class="container mx-auto flex items-center justify-between">
+                    <!-- Navbar Links on Larger Screens -->
+                    <div class="hidden lg:flex flex-1 justify-center items-center gap-11">
+                        <a href="/basicStartingPages/home.html" class="text-white hover:text-gray-300">Home</a>
+                        <a href="/basicStartingPages/objectives.html" class="text-white hover:text-gray-300">Objectives</a>
+                        <a href="/basicStartingPages/criteriaNPolicies.html" class="text-white hover:text-gray-300">Criteria & Policies</a>
+                        <a href="/basicStartingPages/fypCommittee.html" class="text-white hover:text-gray-300">FYP Committee</a>
+                        <a href="/basicStartingPages/timelineNschedule.html" class="text-white hover:text-gray-300">Timeline & Schedule</a>
+                        <a href="/basicStartingPages/recentProjects.html" class="text-white hover:text-gray-300">Recent Projects</a>
+                    </div>
+                </div>
+            </nav>
+            <!-- Hamburger Menu and Buttons Section -->
+            <div class="flex items-center">
+                <!-- Hamburger Menu on Small Screens -->
+                <div class="lg:hidden">
+                    <i id="menu-icon" class="text-3xl text-white cursor-pointer">&#9776;</i>
+                </div>
+
+                <!-- Login and Sign Up Buttons -->
+                <div class="flex gap-2 ms-9 justify-end">
+                    <button id="login-btn" class="bg-white text-green-600 px-3 py-2 rounded">Login</button>
+                    <button id="signup-btn" class="bg-white text-green-600 px-3 py-2 rounded">Sign up</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar -->
+        <div id="sidebar" class="backdrop fixed h-full w-screen lg:hidden bg-black/50 backdrop-blur-sm top-0 right-0">
+            <section class="text-black bg-white flex-col absolute left-0 top-0 h-screen p-8 gap-8 z-50 w-56 flex">
+                <i id="close-icon" class="mt-0 mb-8 text-3xl cursor-pointer">&#10005;</i>
+                <a href="/basicStartingPages/home.html" class="font-bold">Home</a>
+                <a href="/basicStartingPages/objectives.html" class="font-bold">Objectives</a>
+                <a href="/basicStartingPages/criteriaNPolicies.html" class="font-bold">Criteria & Policies</a>
+                <a href="/basicStartingPages/fypCommittee.html" class="font-bold">FYP Committee</a>
+                <a href="/timeline&schedule" class="font-bold">Timeline & Schedule</a>
+                <a href="/recentprojects" class="font-bold">Recent Projects</a>
+            </section>
+        </div>
+    </main>
+
+    <!-- Home Page Section -->
+    <section class="flex justify-center items-center h-screen background-image">
+        <div class="bg-white mx-6 my-4">
+            <h1 class="sm:text-2xl lg:text-5xl font-bold text-blue-700 mx-6 my-4" id="typewriter-text">
+                <!-- Typewriter text will be inserted here -->
+            </h1>
+        </div>
+
+        <!-- Optional: Outlet placeholder for nested components -->
+        <div id="outlet">
+            <!-- Nested content can be dynamically inserted here -->
+        </div>
+    </section>
+
+    <script>
+        // Typewriter effect script
+
+        const typewriterElement = document.getElementById('typewriter-text');
+        const words = ['Welcome To Bukc Official Fyp Site'];
+        let currentWordIndex = 0;
+        let currentCharIndex = 0;
+        let isDeleting = false;
+        const typeSpeed = 120;
+        const deleteSpeed = 80;
+
+        function typewriterEffect() {
+            const currentWord = words[currentWordIndex];
+
+            if (!isDeleting && currentCharIndex < currentWord.length) {
+                // Typing the current character
+                typewriterElement.innerHTML = currentWord.slice(0, currentCharIndex + 1) + '<span class="cursor">|</span>';
+                currentCharIndex++;
+                setTimeout(typewriterEffect, typeSpeed);
+            } else if (isDeleting && currentCharIndex > 0) {
+                // Deleting the current character
+                typewriterElement.innerHTML = currentWord.slice(0, currentCharIndex - 1) + '<span class="cursor">|</span>';
+                currentCharIndex--;
+                setTimeout(typewriterEffect, deleteSpeed);
+            } else if (!isDeleting && currentCharIndex === currentWord.length) {
+                // Pause before starting to delete
+                isDeleting = true;
+                setTimeout(typewriterEffect, 1000);
+            } else if (isDeleting && currentCharIndex === 0) {
+                // Move to the next word and start typing again
+                isDeleting = false;
+                currentWordIndex = (currentWordIndex + 1) % words.length;
+                setTimeout(typewriterEffect, typeSpeed);
+            }
+        }
+
+        // Start the typewriter effect
+        typewriterEffect();
+
+        // Navbar script for toggling sidebar
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            const sidebar = document.getElementById('sidebar');
+
+            // Toggle sidebar visibility
+            menuIcon.addEventListener('click', () => {
+                sidebar.classList.add('open');
+            });
+
+            closeIcon.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+            });
+
+            // Navigation links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) { // Only close sidebar on small screens
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+
+            // Navigate on button click
+            document.getElementById('login-btn').addEventListener('click', () => {
+                window.location.href = '/account/login';
+            });
+
+            document.getElementById('signup-btn').addEventListener('click', () => {
+                window.location.href = '/account/register';
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>

@@ -1,6 +1,8 @@
 ﻿@model FYP.Web.ViewModels.ProjectViewModel
 @{
     ViewData["Title"] = "Projects";
+    int counter = 0;
+
 }
 @section Styles {
     <!-- BEGIN: Page CSS-->
@@ -12,6 +14,7 @@
     <!-- END: Page CSS-->
 }
 <!-- BEGIN: Content-->
+<div id="ChangeDiv">
 <div class="app-content content">
     <div class="content-overlay"></div>
     <div class="content-wrapper">
@@ -23,12 +26,28 @@
                 <div class="p-6 bg-white text-black rounded-lg customheightcard">
                     <!-- Column 1: -->
 
-                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                        <div class="p-8 ml-7 text-2xl font-bold ">
+                    <div class="w-full flex justify-between items-center" id="container">
+                        <!-- Left content (div1) -->
+                        <div class="p-8 ml-7 text-2xl font-bold" id="div1">
                             <h1>Projects</h1>
                         </div>
 
+                        <!-- Right content (div2) -->
+                        <div class="search-container" id="div2">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Select Batch
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @foreach (var item in Model.batches)
+                                    {
+                                        <a class="dropdown-item batchChange" data-id="@item">@item</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="container mt-0 md:mt-5 lg:mt-5 ">
                         <div class="row d-flex justify-content-center">
                             @if (Model.projects == null || !Model.projects.Any())
@@ -50,10 +69,11 @@
                             }
                             else
                             {
+
                                 @foreach (var item in Model.projects)
                                 {
-                                    <div class="col-12 col-md-6 col-sm-12 col-lg-4">
-                                        <div class="card card-margin">
+                                    <div class="col-12 col-md-6 col-sm-12 col-lg-5">
+                                        <div class="card card-margin ProjectDetails" data-id="@item.code" >
                                             <div class="card-header no-border">
                                                 <h5 class="card-title">@item.code</h5>
                                             </div>
@@ -61,8 +81,7 @@
                                                 <div class="widget-49">
                                                     <div class="widget-49-title-wrapper">
                                                         <div class="widget-49-date-warning">
-                                                            <span class="widget-49-date-day">13</span>
-                                                            <span class="widget-49-date-month">apr</span>
+                                                            <span class="widget-49-date-day">@(counter = counter + 1)</span>
                                                         </div>
                                                         <div class="widget-49-meeting-info">
                                                             <span class="widget-49-pro-title">@item.Title</span>
@@ -71,12 +90,27 @@
                                                     </div>
                                                     <ol class="widget-49-meeting-points">
                                                         <li class="widget-49-meeting-item"><span>Group: @item.projectGroup</span></li>
-                                                        @*                                                 <li class="widget-49-meeting-item"><span>Tools:</span></li>
-                                                *@
-                                                        <li class="widget-49-meeting-item"><span>Status: @item.Status</span></li>
+                                                
+                                               
+                                                            @if (item.Status == "Approved")
+                                                            {
+                                                            <li class="widget-49-meeting-item text-success"><span>Status: <span class="text-success">Approved</span> </span></li>
+
+                                                            }
+                                                            else
+                                                            {
+                                                            <li class="widget-49-meeting-item text-danger"><span>Status: <span class="text-danger">Not Approved</span></span></li>
+
+                                                            }
+                                                        
                                                     </ol>
                                                     <div class="widget-49-meeting-action">
-                                                        <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a>
+                                                        <a class="btn btn-sm btn-flash-border-warning ProjectDetails" data-id="@item.code">DETAILS</a>
+                                                        @if (item.Status == "Approved")
+                                                        {
+                                                        <a href="#" class="btn btn-sm btn-flash-border-warning Weekly Logs">Weekly Logs</a>
+                                                            <a href="#" class="btn btn-sm btn-flash-border-warning Submissions">Submissions</a>
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
@@ -96,6 +130,7 @@
         </div>
     </div>
 </div>
+</div>
 <!-- END: Content-->
 @section Scripts {
 
@@ -107,12 +142,45 @@
     <!-- END: Page JS-->
 }
 <script>
+    $('.ProjectDetails').on('click', function () {
+        var Code = $(this).data('id');
+        $.ajax({
+            url: '/project/projectdetails',
+            type: "GET",
+            data: { code: Code },
+            success: function (response) {
+                $("#MainContainer").html(response);
+            },
+            error: function () {
+                // handle error
+            }
+        });
+    });
+    $(".batchChange").click(function () {
+        var batch = $(this).data("id");
+        $.ajax({
+            url: '/supervisor/ProjectGroupbyBatch',
+            type: "GET",
+            data: { batch: batch }, // Send batch as a query parameter
+            success: function (response) {
+                $("#ChangeDiv").html(response);
+                $("#dropdownMenuButton").text(batch);
+            },
+            error: function () {
+
+            }
+        });
+
+
+    });
 
 
 </script>
 <style>
 
-
+    body {
+        overflow: hidden;
+    }
     .customheightcard {
         height: 78vh !important
     }

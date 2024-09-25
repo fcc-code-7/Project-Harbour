@@ -23,7 +23,7 @@ namespace FYP.Web.Controllers
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
 
-        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService,IUserService userService,ISupervisorService supervisorService,IStudentService studentService,IStudentGroupService studentGroupService,UserManager<AppUser> userManager,IProjectService projectService, IProposalDefenseService proposalDefense)
+        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -38,141 +38,54 @@ namespace FYP.Web.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> StudentGroups()
+        public IActionResult ProjectGroupbyBatch(string batch)
         {
-            var studentGroups = await _studentGroupService.GetAllAsync();
-            var user = _userManager.GetUserId(User);
+            var userid = _userManager.GetUserId(User);
+            var studentGroup = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == userid);
+            var user = studentGroup.FirstOrDefault();
+            var allGroups = _studentGroupService.GetAllAsync().Result;
+            var userGroup = allGroups
+                .Where(x => x.student1LID == user.student1LID || x.student2ID == user.student2ID || x.student3ID == user.student3ID)
+                .FirstOrDefault();
+            var supervisorId = userGroup.SupervisorID;
 
-            var model = new StudentGroupViewModel()
+            var projects = _projectService.GetAllAsync().Result.Where(x => x.batch == batch);
+            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
+            var model = new ProjectViewModel
             {
-                StudentGroups = studentGroups.Where(x=>x.SupervisorID == user).Select(x=> new StudentGroupViewModel
+                projects = projects.Select(x => new ProjectViewModel
                 {
-                    groupId = x.ID.ToString(),
-                    companyID=x.companyID,
-                    Batch=x.Batch,
-                    CordinatorID=x.CordinatorID,
-                    CoSupervisorID=x.CoSupervisorID,
-                    Id=x.ID,
-                    Name=x.Name,
-                    student1LID = x.student1LID,
-                    student2ID = x.student2ID,
-                    student3ID = x.student3ID,
-                    SupervisorID = x.SupervisorID,
-                    Year = x.Year,
-                    projectname = _projectService.GetAllAsync().Result.Where(y=>y.projectGroup==x.Name).Select(y=>y.Title).FirstOrDefault(),
-                    LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Name,
-                    member1 = _userService.GetByIdAsync(x.student2ID).Result.Name,
-                    Member2 = _userService.GetByIdAsync(x.student3ID).Result.Name,
-                }
-                ).ToList()};
-
-            return PartialView(model);
+                    code = x.code,
+                    Specialization = x.Specialization,
+                    Status = x.Status,
+                    Summary = x.Summary,
+                    commiteeId = x.commiteeId,
+                    companyID = x.companyID,
+                    ExpectedResults = x.ExpectedResults,
+                    groupId = x.groupId,
+                    objectives = x.objectives,
+                    Others = x.Others,
+                    Id = x.ID,
+                    Title = x.Title,
+                    Tools = x.Tools,
+                    ProjectCategory = x.ProjectCategory,
+                    projectGroup = x.projectGroup,
+                    batch = x.batch,
+                    groupname = userGroup.Name,
+                    supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name
+                }).ToList(),
+                batches = distinctBatches
+            };
+            return PartialView("projects", model);
         }
+
         public IActionResult Create()
         {
             return PartialView();
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> StudentGroups([FromBody] StudentGroupViewModel model)
-        {
-            if (model != null)
-            {
-                var student = new AppUser()
-                {
-                    Email = model.student1LEmail,
-                    UserName = model.student1LEmail,
-                    Designation = "Student",
-                    Role = "Student"
-                    
-                };
-                var student2 = new AppUser()
-                {
-                    Email = model.student2Email,
-                    UserName = model.student2Email,
-                    Designation = "Student",
-                    Role = "Student"
-
-
-                };
-                var student3 = new AppUser()
-                {
-                    Email = model.student3Email,
-                    UserName = model.student3Email,
-                    Designation = "Student",
-                    Role = "Student"
-
-
-                };
-                var result = await _userManager.CreateAsync(student, "Bahria123@@");
-                var result2 = await _userManager.CreateAsync(student2, "Bahria123@@");
-                var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
-                
-                if (result.Succeeded && result2.Succeeded || result3.Succeeded)
-                {
-                    var roleResult = await _userManager.AddToRoleAsync(student, Roles.Student.ToString());
-                    var roleResult2 = await _userManager.AddToRoleAsync(student2, Roles.Student.ToString());
-                    var roleResult3 = await _userManager.AddToRoleAsync(student3, Roles.Student.ToString());
-
-
-                    if (roleResult.Succeeded && roleResult2.Succeeded || roleResult3.Succeeded)
-                    {
-                        var studenta = await _userManager.FindByEmailAsync(model.student1LEmail);
-                        var studentb = await _userManager.FindByEmailAsync(model.student2Email);
-                        var studentc = await _userManager.FindByEmailAsync(model.student3Email);
-                        var userId = _userManager.GetUserId(User);
-                        var studentData1 = new Student()
-                        {
-                            studentId = studenta.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
-
-                        };
-                        var studentData2 = new Student()
-                        {
-                            studentId = studentb.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
-
-                        };
-                        var studentData3 = new Student()
-                        {
-                            studentId = studentc.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
-                        };
-                        var usergroup = new StudentGroup
-                        {
-                             student1LID = studenta.Id,
-                             student2ID = studentb.Id,
-                             student3ID = studentc.Id,
-                             SupervisorID = userId,
-                             Name = model.Name,
-                             companyID= null,
-                             CordinatorID = null,
-                             CoSupervisorID = null,
-                             
-                             Batch = model.Batch,
-                            Year = model.Year,
-                           
-                        };
-                        await _studentService.AddAsync(studentData1);
-                        await _studentService.AddAsync(studentData2);
-                        await _studentService.AddAsync(studentData3);
-                         await _studentGroupService.AddAsync(usergroup);
-                        return Json(new { success = true, message = "Data saved successfully!" });
-                    }
-
-                }
-            }
-
-            // Return an error response
-            return Json(new { success = false, message = "Invalid data!" });
-        }
+       
         public async Task<IActionResult> Projects()
         {
             var userId = _userManager.GetUserId(User);
@@ -183,6 +96,7 @@ namespace FYP.Web.Controllers
                 .Where(x => x.SupervisorID == userId)
                 .Select(x => x.ID)
                 .ToList();
+            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
 
             // Initialize the project list
             var model = new ProjectViewModel
@@ -208,67 +122,18 @@ namespace FYP.Web.Controllers
                     objectives = x.objectives,
                     ExpectedResults = x.ExpectedResults,
                     commiteeId = x.commiteeId,
-                    Status = x.Status
+                    Status = x.Status,
+                    SupervsiorApproved = x.SupervsiorApproved
                 }).ToList();
 
                 // Add the group projects to the model's project list
                 model.projects.AddRange(groupProjects);
+                model.batches = distinctBatches;
             }
 
             return PartialView(model);
         }
-        public async Task<IActionResult> ChangeSupervisor(string groupId)
-        {
-            var group = _studentGroupService.GetAllAsync().Result.Where(x=>x.ID.ToString() == groupId).FirstOrDefault();
-            var user = _userManager.GetUserId(User);
-            var user_NaME = _userService.GetByIdAsync(user).Result.Name;
-            // Fetch all student groups asynchronously
-            var studentGroups = await _studentGroupService.GetAllAsync();
 
-            // Count the number of groups each supervisor is assigned to
-            var supervisorGroupCount = studentGroups
-                .GroupBy(x => x.SupervisorID)
-                .Select(g => new { SupervisorID = g.Key, GroupCount = g.Count() })
-                .ToList();
-
-            // Filter supervisors assigned to one or zero groups
-            var filteredSupervisors = supervisorGroupCount
-                .Where(x => x.GroupCount <= 1)
-                .Select(x => x.SupervisorID)
-                .ToList();
-
-            var model = new ChangeSupervisorFormViewModel()
-            {
-                GroupId = groupId,
-                groupName = group.Name,
-                oldsupervsiorname = user_NaME,
-                oldsupervisorId = user,
-                Supervisors = filteredSupervisors
-
-            };
-            return PartialView(model);
-        }
-        [HttpPost]
-        public async Task<IActionResult> ChangeSupervisor(ChangeSupervisorFormViewModel model)
-        {
-            var findGroup = _studentGroupService.GetAllAsync().Result.Where(x=>x.ID.ToString() == model.GroupId).FirstOrDefault();
-            findGroup.changeSupervisorForm = true;
-            await _studentGroupService.UpdateAsync(findGroup);
-            var changeSupervisor = new ChangeSupervisorForm()
-            { 
-                CurrentDate = DateTime.Now,
-                GroupId = model.GroupId,
-                oldsupervisorId = model.oldsupervisorId,
-                NewSupervsiorId = model.NewSupervsiorId,
-                OtherReason = model.OtherReason,
-                Reason = model.Reason,
-            }; ;
-            var result = _changeSupervisorFormService.AddAsync(changeSupervisor);
-            if (result != null)
-            {
-                RedirectToAction("StudentGroups", "Supervsior");
-            }
-            return View(model);
-        }
+     
     }
 }

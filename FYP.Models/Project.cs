@@ -22,8 +22,14 @@ namespace FYP.Entities
         public string? objectives { get; set; }
         public string? ExpectedResults { get; set; }
         public string? commiteeId { get; set; }
-        public bool changeTitleFormStatus { get; set; }
-        public bool Status { get; set; }
+        public string? changeTitleFormStatus { get; set; }
+        public string? SupervsiorApproved { get; set; }
+        public string? Status { get; set; }
+        public string? PropPPT { get; set; }
+        public string? PropReport { get; set; }
+        public string? MidPPT { get; set; }
+        public string? MidReport { get; set; }
+        public string? FinalDocs { get; set; }
         public int TotalMarks { get; set; }
 
     }

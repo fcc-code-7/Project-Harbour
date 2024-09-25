@@ -91,12 +91,12 @@ namespace FYP.Web.Controllers
                 UserName = model.Email,
                 Name = model.Name,
                 Department = model.Department,
-                Docs = "",
-                Designation = ""
+               
             };
             if (model.Role == "Supervisor")
             {
-                model.Designation = "Supervisor";
+                user.Role = "Supervisor";
+                user.Designation = "Supervisor";
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -115,7 +115,8 @@ namespace FYP.Web.Controllers
             }
             else if (model.Role == "Cordinator")
             {
-                model.Role = "Cordinator";
+                user.Role = "Cordinator";
+                user.Designation = "Cordinator";
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

@@ -10,6 +10,7 @@ namespace FYP.Web.ViewModels
     }
     public class StudentGroupViewModel 
     {
+        public string? GrouID { get; set; }
         public Guid Id;
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "Name is required")]
@@ -67,11 +68,18 @@ namespace FYP.Web.ViewModels
         public string? Reason { get; set; }
         public string? GroupId { get; set; }
         public string? groupName { get; set; }
-        public DateTime CurrentDate { get; set; } 
+        public DateTime CurrentDate { get; set; }
 
-        public List<string> Supervisors { get; set; }
+        public List<SupervisorsViewModel> Supervisors { get; set; }
 
     }
+
+    public class SupervisorsViewModel
+    {
+        public string UserId { get; set; }
+        public string name { get; set; }
+    }
+
     public class BatchViewModel
     {
         public string Batch { get; set; }
@@ -133,9 +141,37 @@ namespace FYP.Web.ViewModels
         public string Designation { get; set; }
 
     }
+    public class WeeklyLogsViewModel
+    {
+        public string? GroupId { get; set; }
+        public string? WeekNo { get; set; }
+        public string? GroupName { get; set; }
+        public string? RoomNo { get; set; }
+        public string? CurrentProject { get; set; }
+        public string? CurrentPropDate { get; set; }
+        public string? CurrentMidDate { get; set; }
+
+        public string? Summary { get; set; }
+
+        public string? Activities { get; set; }
+
+        public string? Result { get; set; }
+
+        public string? Tasks { get; set; }
+
+        public DateTime AssignDate { get; set; }
+        public DateTime SubmitDate { get; set; }
+        public DateTime currentDate { get; set; }
+        public string? Status { get; set; }
+        public DateTime UserSubmissionDate { get; set; }
+
+        public List<WeeklyLogsViewModel> weeklies { get; set; }
+    }
+
     public class ProjectViewModel
     {
         public Guid Id { get; set; }
+        public string ProId { get; set; }
         public string code { get; set; }
         public string Title { get; set; }
         public string ProjectCategory { get; set; }
@@ -154,14 +190,35 @@ namespace FYP.Web.ViewModels
         public string mentorcontact { get; set; }
         public string mentoremail { get; set; }
         public string batch { get; set; }
+        public List<string> batches { get; set; }
         public string Summary { get; set; }
         public int TotalMarks { get; set; }
         public string objectives { get; set; }
         public string ExpectedResults { get; set; }
         public string commiteeId { get; set; }
-        public bool changeTitleFormStatus { get; set; }
-
-        public bool Status { get; set; }
+        public string? changeTitleFormStatus { get; set; }
+        public string? SupervsiorApproved { get; set; }
+        public string? Status { get; set; }
+        public string? evaluationId { get; set; }
+        public string? Proposal { get; set; }
+        public DateTime Proposaldate { get; set; }
+        public int Proposalmarks { get; set; }
+        public string? Proposalbatch { get; set; }
+        public string? final { get; set; }
+        public DateTime finaldate { get; set; }
+        public int finalmarks { get; set; }
+        public string? finalbatch { get; set; }
+        public string? mid { get; set; }
+        public DateTime middate { get; set; }
+        public int midmarks { get; set; }
+        public string? midbatch { get; set; }
+        public string? PropPPT { get; set; }
+        public string? PropReport { get; set; }
+        public string? MidPPT { get; set; }
+        public string? MidReport { get; set; }
+        public string? FinalDocs { get; set; }
+        public string? Docs { get; set; }
+        public Project CurrentProject { get; set; }
         public List<ProjectViewModel> projects { get; set; }
         public CompanyViewModel company { get; set; }
 
@@ -170,12 +227,22 @@ namespace FYP.Web.ViewModels
     public class EvaluationViewModel
     {
         public Guid EvaluationID { get; set; }
-        public string? PId { get; set; }
+        public string? PBatch { get; set; }
+        public string? PID { get; set; }
         public int Marks { get; set; }
 
         public DateTime LastDate { get; set; }
 
         public string? EvaluationName { get; set; }
+        public List<string> batches { get; set; }
+        public List<string> EvalType { get; set; }
+        public List<EvaluationViewModel> evaluations { get; set; }
+        public string? PropDocs { get; set; }
+        public string? MidDocs { get; set; }
+        public string? FinalDocs { get; set; }
+        public int TotalMarks { get; set; }
+
+
 
 
     }
@@ -230,6 +297,10 @@ namespace FYP.Web.ViewModels
         public string? Enrollment { get; set; }
         public int regNo { get; set; }
         public string? semester { get; set; }
+        public string? group1name { get; set; }
+        public string? group2name { get; set; }
+        public string? group1leader { get; set; }
+        public string? group2leader { get; set; }
 
 
     }
@@ -252,4 +323,37 @@ namespace FYP.Web.ViewModels
         public string mentorcontact { get; set; }
         public string mentoremail { get; set; }
     }
+    public class EvaluationCriteriaViewModel
+    {
+        public string Id { get; set; }
+        public List<string> EvalType { get; set; }
+        public string? PId { get; set; }
+        public string? EvalName { get; set; }
+        public string? Q1 { get; set; }
+        public string? Q1Desc { get; set; }
+        public string? Q1Marks { get; set; }
+        public string? Q2 { get; set; }
+        public string? Q2Desc { get; set; }
+
+        public string? Q2Marks { get; set; }
+        public string? Q3 { get; set; }
+        public string? Q3Desc { get; set; }
+
+        public string? Q3Marks { get; set; }
+        public string Q4 { get; set; }
+        public string? Q4Desc { get; set; }
+
+        public string? Q4Marks { get; set; }
+        public string? Q5 { get; set; }
+        public string? Q5Desc { get; set; }
+
+        public string? Q5Marks { get; set; }
+        public string? Remarks { get; set; }
+        public string? CommiteeID { get; set; }
+
+        public int TotalMarks { get; set; }
+
+
+    }
+
 }

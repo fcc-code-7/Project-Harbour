@@ -8,10 +8,10 @@ namespace FYP.Entities
 {
     public class Evaluation : BaseEntity
     {
-        public string? PId { get; set; }
         public int Marks { get; set; }
+        public string? PBatch { get; set; }
 
-        public DateTime LastDate { get; set; }
+        public DateTime LastDate { get; set; } = DateTime.Now;
 
         public string? EvaluationName { get; set; }
 

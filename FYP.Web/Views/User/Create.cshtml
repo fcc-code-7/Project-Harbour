@@ -27,8 +27,11 @@
                             <!-- Column 1: -->
                             <div class="" style="min-height:100px">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                    <div class=" ml-7 text-2xl font-bold">
-                                        <h1>Edit Profile</h1>
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
+                                            Profile Details
+                                        </h1>
                                     </div>
 
                                 </div>
@@ -79,18 +82,6 @@
                                                                 <span asp-validation-for="Enrollment" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                        <span class="input-group-text " id="basic-addon3"><i class="feather icon-paperclip"></i></span>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
-
-                                                                </div>
-                                                                <span asp-validation-for="semester" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
 
                                                     }
 
@@ -128,6 +119,20 @@
                                                             <span asp-validation-for="Department" class="text-danger"></span>
                                                         </fieldset>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text " id="basic-addon2">
+                                                                        <i class="feather icon-settings"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="Role" placeholder="Enter Role" value="@Model.Role" asp-for="Role" readonly aria-describedby="basic-addon1" name="Role" required>
+
+                                                            </div>
+                                                            <span asp-validation-for="Role" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
                                                 <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
                                                     <div class="form-group">
@@ -154,7 +159,7 @@
                                                                             <i class="feather icon-hash"></i>
                                                                         </span>
                                                                     </div>
-                                                                    <input type="text" class="form-control" id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo"  aria-describedby="basic-addon1" name="regNo" required>
+                                                                    <input type="text" class="form-control" id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo" aria-describedby="basic-addon1" name="regNo" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="regNo" class="text-danger"></span>
@@ -227,22 +232,24 @@
                                                             <span asp-validation-for="Address" class="text-danger"></span>
                                                         </fieldset>
                                                     </div>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3"><i class="feather icon-paperclip"></i></span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control" id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
 
-                                                    <div class="form-group">
-                                                        <fieldset>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text " id="basic-addon2">
-                                                                        <i class="feather icon-settings"></i>
-                                                                    </span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="Role" placeholder="Enter Role" value="@Model.Role" asp-for="Role" readonly aria-describedby="basic-addon1" name="Role" required>
+                                                                <span asp-validation-for="semester" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
 
-                                                            </div>
-                                                            <span asp-validation-for="Role" class="text-danger"></span>
-                                                        </fieldset>
-                                                    </div>
-                                                   
+                                                    }
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -304,15 +311,6 @@
     .arrow-container {
         position: relative;
         margin-bottom: 20px; /* Adjust as needed */
-    }
-
-    #previousbtn {
-        position: absolute;
-        top: -30px; /* Adjust to move the button higher */
-        left: -20px; /* Adjust as needed to center or align horizontally */
-        font-size: 50px; /* Icon size */
-        cursor: pointer; /* Indicate it's clickable */
-        z-index: 10; /* Ensure it stays on top */
     }
 
     .noborder {
@@ -406,8 +404,8 @@
                 email: $("#email").val(),
                 Designation: $("#Designation").val(),
                 Docs: $("#Docs").val(),  // Use the uploaded image URL, not the local file path
-                Enrollment: $("#Enrollment").val(),  
-                regNo: $("#regNo").val(),  
+                Enrollment: $("#Enrollment").val(),
+                regNo: $("#regNo").val(),
                 semester: $("#semester").val(),
             };
             $.ajax({
@@ -418,7 +416,7 @@
                 success: function (response) {
                     $("#MainContainer").html(response);
 
-                  
+
                 },
                 error: function (xhr) {
                     // Handle the error
