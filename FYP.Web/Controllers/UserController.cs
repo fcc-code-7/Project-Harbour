@@ -51,14 +51,14 @@ namespace FYP.Web.Controllers
                 };
             if (User.IsInRole("Supervisor"))
             {
-                var getSupervisor1stleadername = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.student1LID).First();
-                var getSupervisor2ndleadername = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.student1LID).Last();
-                var getSupervisor1groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.Name).First();
-                var getSupervisor2groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.Name).Last();
-                model.group1name = getSupervisor1groupname;
-                model.group2name = getSupervisor2groupname;
-                model.group1leader = _userManager.FindByIdAsync(getSupervisor1stleadername).Result.Email;
-                model.group2leader = _userManager.FindByIdAsync(getSupervisor2ndleadername).Result.Email;
+                //var getSupervisor1stleadername = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.student1LID).First();
+                //var getSupervisor2ndleadername = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.student1LID).Last();
+                //var getSupervisor1groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.Name).First();
+                //var getSupervisor2groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.Name).Last();
+                //model.group1name = getSupervisor1groupname;
+                //model.group2name = getSupervisor2groupname;
+                //model.group1leader = _userManager.FindByIdAsync(getSupervisor1stleadername).Result.Email;
+                //model.group2leader = _userManager.FindByIdAsync(getSupervisor2ndleadername).Result.Email;
             }
             if (User.IsInRole("Student"))
             {

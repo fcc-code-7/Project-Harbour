@@ -313,16 +313,18 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProjectViewModel model)
         {
-            var company = new Company()
+            if (model.companyName != null)
             {
-                Name = model.companyName,
-                MentorEmail = model.mentoremail,
-                MentorName = model.companyMentor,
-                MentorTelephone = model.mentorcontact
-            };
+                var company = new Company()
+                {
+                    Name = model.companyName,
+                    MentorEmail = model.mentoremail,
+                    MentorName = model.companyMentor,
+                    MentorTelephone = model.mentorcontact
+                };
 
-            await _companyService.AddAsync(company);
-
+                await _companyService.AddAsync(company);
+            }
             var companyId = _companyService.GetAllAsync().Result.Where(x => x.Name == model.companyName).FirstOrDefault().ID;
             var group = _studentGroupService.GetAllAsync().Result.Where(x => x.Name == model.groupname).FirstOrDefault().ID;
 
@@ -570,6 +572,7 @@ namespace FYP.Web.Controllers
 
             }
             var getBatch = getProject.Where(x => x.groupId == groupId.ToString()).FirstOrDefault().batch;
+            var getStatus = getProject.Where(x => x.groupId == groupId.ToString()).FirstOrDefault().Status;
             var evaluation = await _evaluationService.GetAllAsync();
             var getProposalDate = evaluation.Where(x => x.PBatch == getBatch && x.EvaluationName == "Proposal").FirstOrDefault().LastDate;
             if (getProposalDate == null)
@@ -626,7 +629,7 @@ namespace FYP.Web.Controllers
             }
             var getWeeks = groupLogs.Select(x => x.WeekNo).LastOrDefault();
             if (getWeeks != "Week 32")
-            { 
+            {
                 if (midDate != null)
                 {
                     // Assign 12 weekly logs
@@ -667,11 +670,12 @@ namespace FYP.Web.Controllers
                 viewModel.UserSubmissionDate = getCurrentWeek.UserSubmissionDate;
                 viewModel.GroupId = getCurrentWeek.GroupId;
                 viewModel.currentDate = currentDate;
+                viewModel.ProjectStatus = getStatus;
             }
-            
+
             viewModel.weeklies = groupLogs.Select(x => new WeeklyLogsViewModel
             {
-
+                ProjectStatus = _projectService.GetAllAsync().Result.Where(x => x.groupId == groupId.ToString()).FirstOrDefault().Status,
                 WeekNo = x.WeekNo,
                 GroupName = groupName,
                 RoomNo = x.RoomNo,
@@ -683,18 +687,19 @@ namespace FYP.Web.Controllers
                 SubmitDate = x.SubmitDate,
                 currentDate = DateTime.Now
             }).ToList();
-            
+
             viewModel.CurrentPropDate = getProposalDate.ToString();
             viewModel.CurrentMidDate = midDate.ToString();
             viewModel.CurrentProject = getBatch;
             return PartialView(viewModel);
-            }
+        }
         public async Task<IActionResult> getWeekLog(string weekLog, string groupId)
         {
             var Week = await _weeklyLogsService.GetAllAsync();
             var getWeek = Week.Where(x => x.WeekNo == weekLog && x.GroupId == groupId).FirstOrDefault();
             var getProject = await _projectService.GetAllAsync();
             var getBatch = getProject.Where(x => x.groupId == groupId.ToString()).FirstOrDefault()?.batch;
+            var getStatus = getProject.Where(x => x.groupId == groupId.ToString()).FirstOrDefault().Status;
             var existingLogs = await _weeklyLogsService.GetAllAsync();
             var groupLogs = existingLogs.Where(x => x.GroupId == groupId.ToString());
             var group = await _studentGroupService.GetAllAsync();
@@ -706,6 +711,7 @@ namespace FYP.Web.Controllers
 
             var viewModel = new WeeklyLogsViewModel
             {
+                ProjectStatus = getStatus,
                 CurrentProject = getBatch,
                 WeekNo = getWeek.WeekNo,
                 RoomNo = getWeek.RoomNo,
@@ -733,7 +739,7 @@ namespace FYP.Web.Controllers
                 SubmitDate = x.SubmitDate,
                 currentDate = DateTime.Now
             }).ToList();
-            return PartialView("weeklylog",viewModel);
+            return PartialView("weeklylog", viewModel);
         }
         [HttpPost]
         public async Task<IActionResult> UpdateWeeklyLog([FromBody] WeeklyLogsViewModel model)

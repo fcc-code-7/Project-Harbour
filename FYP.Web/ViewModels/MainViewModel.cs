@@ -51,6 +51,8 @@ namespace FYP.Web.ViewModels
         public List<string> Years { get; set; }
         public List<string> Supervisors { get; set; }
         public bool changeSupervisorForm { get; set; }
+        public string? Member1Name { get; set; }
+        public string? Member2Name { get; set; }
         public IEnumerable<StudentGroupViewModel> StudentGroups { get; set; }
 
 
@@ -74,6 +76,35 @@ namespace FYP.Web.ViewModels
 
     }
 
+    public class FYPCommitteViewModel
+    {
+        public Guid Id { get; set; }
+        public string? groupID { get; set; }
+        public string? Member1ID { get; set; }
+        public string? Member2ID { get; set; }
+        public string? batch { get; set; }
+        public string? assignRequest { get; set; }
+
+        public List<FetchGroupListViewModel> studentGroups { get; set; }
+        public List<FetchSupervisorListViewModel> SupervisorList1 { get; set; }
+        public List<FetchSupervisorListViewModel> SupervisorList2 { get; set; }
+        public List<string> batches { get; set; }
+    }
+
+    public class FetchGroupListViewModel
+    {
+        public string? groupID { get; set; }
+        public string? groupName { get; set; }
+        public string? ProjectName { get; set; }
+        public string? Batch { get; set; }
+
+    }
+    public class FetchSupervisorListViewModel
+    {
+        public string? SupervisorID { get; set; }
+        public string? SupervisorName { get; set; }
+
+    }
     public class SupervisorsViewModel
     {
         public string UserId { get; set; }
@@ -158,6 +189,7 @@ namespace FYP.Web.ViewModels
         public string? Result { get; set; }
 
         public string? Tasks { get; set; }
+        public string? ProjectStatus { get; set; }
 
         public DateTime AssignDate { get; set; }
         public DateTime SubmitDate { get; set; }

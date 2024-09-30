@@ -33,7 +33,7 @@
         <div class="content-body">
             <!-- Section 1 -->
             <div class="mb-2 ">
-                <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                <div class="p-6 bg-white text-black rounded-lg" style="min-height:80vh">
                     <!-- Column 1: -->
 
                     <div class="w-full flex justify-between items-center" id="container">
@@ -49,9 +49,14 @@
                                     Select Batch
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @if (Model.batches.Any())
+                                    {
                                     @foreach (var item in Model.batches)
                                     {
                                         <a class="dropdown-item batchChange" data-id="@item">@item</a>
+                                    }
+                                    }else{
+                                        <a class="dropdown-item batchChange">No Batch</a>
                                     }
                                 </div>
                             </div>
@@ -192,15 +197,7 @@
     <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
     <!-- END: Page JS-->
 }
-@if (Model.projects == null || !Model.projects.Any())
-{
-<style>
-    body{
-        overflow:hidden;
-    }
 
-</style>
-}
 <script>
     
   $(document).ready(function () {
@@ -312,6 +309,24 @@
 
 <style>
 
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
 
     
 

@@ -368,6 +368,8 @@
 </style>
 <script>
     $(document).ready(function () {
+        
+
         $("#previousbtn").click(function () {
             $.ajax({
                 url: '/project/projects',
@@ -392,7 +394,7 @@
 
         });
 
-        $("#formsubmitS").click(function (e) {
+        $(document).off('click', '#formsubmitS').on('click', '#formsubmitS', function (e) {
             e.preventDefault();  // Prevent the default form submission
             var formData = {
                 code: $("#code").val(),

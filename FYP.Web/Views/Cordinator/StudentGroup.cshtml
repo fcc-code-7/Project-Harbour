@@ -16,7 +16,7 @@
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
                     <div class="mb-2 ">
-                             <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                            <div class="p-6 bg-white text-black rounded-lg " style="min-height:80vh">
                                 <!-- Column 1: -->
 
                                 <div class="w-full flex justify-between items-center" id="container">
@@ -71,8 +71,17 @@
                                             <div class="col-12 col-md-6 col-sm-12 col-lg-5">
                                                 <div class="card p-0">
                                                     <div class="card-header no-border">
-                                                        <h5 class="card-title">@item.Name</h5>
-                                                    </div>
+                                                        <h5 class="card-title mx-1">@item.Name</h5>
+
+                                                            @if (item.Member1Name == "Not Assigned" && item.Member2Name == "Not Assigned")
+                                                            {
+                                                                <span><i class="feather icon-check-circle text-danger"></i></span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span><i class="feather icon-check-circle text-success"></i></span>
+                                                            }
+                                                        </div>
                                                     <div class="card-body pt-0 ">
                                                         <div class="widget-49">
                                                             <div class="widget-49-title-wrapper">
@@ -87,30 +96,35 @@
                                                             <ol class="widget-49-meeting-points">
                                                                 <li class="widget-49-meeting-item">
                                                                     <span>
-                                                                        Leader:
-                                                                        <span class="@(string.IsNullOrEmpty(item.LeaderName) ? "text-danger" : "text-success")">
-                                                                            @(item.LeaderName ?? "Name yet to Enter")
+                                                                        Supervisor:
+                                                                        <span>
+                                                                            @(item.supervisorname ?? "Name yet to Enter")
                                                                         </span>
                                                                     </span>
                                                                 </li>
                                                                 <li class="widget-49-meeting-item">
-                                                                    <span>
-                                                                        Member:
-                                                                        <span class="@(string.IsNullOrEmpty(item.member1) ? "text-danger" : "text-success")">
-                                                                            @(item.member1 ?? "Name yet to Enter")
+                                                                        <span>
+                                                                            Evaluator 1:
+                                                                            <span>
+                                                                                @(item.Member1Name ?? "Not Assigned")
+                                                                            </span>
                                                                         </span>
-                                                                    </span>
+
                                                                 </li>
                                                                 <li class="widget-49-meeting-item">
-                                                                    <span>
-                                                                        Member:
-                                                                        <span class="@(string.IsNullOrEmpty(item.Member2) ? "text-danger" : "text-success")">
-                                                                            @(item.Member2 ?? "Name yet to Enter")
+                                                                        <span>
+                                                                            Evaluator 2:
+                                                                            <span >
+                                                                                @(item.Member2Name ?? "Not Assigned")
+                                                                            </span>
                                                                         </span>
-                                                                    </span>
+
                                                                 </li>
                                                             </ol>
                                                             <div class="widget-49-meeting-action">
+                                                                    
+                                                                        <button class="btn btn-primary btn-sm assignGroup" data-id="@item.Id" data-batch="@item.Batch">Assign</button>
+
 @*                                                                 <a class="btn btn-sm btn-flash-border-warning ChangeSupervisor" data-value="@item.GrouID">Change Supervisor</a>
  *@                                                                @* <a class="btn btn-sm btn-flash-border-warning">Edit</a> *@
                                                                 @* <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a> *@
@@ -146,6 +160,24 @@
 
 <style>
 
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
 
 
 
@@ -459,12 +491,18 @@
 </style>
 <script>
     $(document).ready(function () {
-        $("#CreateGroup").click(function () {
+        $(document).on('click', '.assignGroup', function (e) {
+            showLoadingSpinner(); // Show the loading spinner
+            var groupId = $(this).data("id");
+            var batches = $(this).data("batch");
             $.ajax({
-                url: '/supervisor/create',
+                url: "/studentgroups/FetchBatches",
                 type: "GET",
+                data: { id: groupId, batch: batches , assignRequest : true },
                 success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
                     $("#MainContainer").html(response);
+
                 },
                 error: function () {
 

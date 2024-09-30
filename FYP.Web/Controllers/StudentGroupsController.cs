@@ -18,8 +18,9 @@ namespace FYP.Web.Controllers
         private readonly IUserService _userService;
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
+        private readonly IFYPCommitteService _fYPCommitteService;
 
-        public StudentGroupsController(IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -29,6 +30,7 @@ namespace FYP.Web.Controllers
             _supervisorService = supervisorService;
             _changeSupervisorFormService = changeSupervisorFormService;
             _userService = userService;
+            _fYPCommitteService = fYPCommitteService;
         }
         public async Task<IActionResult> StudentGroups()
         {
@@ -347,6 +349,167 @@ namespace FYP.Web.Controllers
                 RedirectToAction("StudentGroups", "Supervsior");
             }
             return View(model);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Evaluators()
+        {
+            var LoggedInUser = _userManager.GetUserId(User);
+            var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
+            var FetchUserDepartment = FetchUser.Department;
+
+            // Fetch groups once
+            var allGroups = await _studentGroupService.GetAllAsync();
+            var supervisorList = await _userManager.GetUsersInRoleAsync("Supervisor");
+
+            var model = new FYPCommitteViewModel();
+            // Populate distinct batches
+            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+
+            return PartialView(model);
+        }
+
+        public async Task<IActionResult> FetchBatches(string id, string batch , string assignRequest)
+        {
+            var LoggedInUser = _userManager.GetUserId(User);
+            var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
+            var FetchUserDepartment = FetchUser.Department;
+            var allGroups = await _studentGroupService.GetAllAsync();
+            var supervisorList = await _userManager.GetUsersInRoleAsync("Supervisor");
+           
+              
+            
+            var model = new FYPCommitteViewModel();
+            if (!string.IsNullOrEmpty(batch))
+            {
+                var filteredGroups = allGroups.Where(x => x.Batch == batch).ToList();
+                if (filteredGroups.Any())
+                {
+                    model.studentGroups = filteredGroups.Select(x => new FetchGroupListViewModel
+                    {
+                        groupID = x.ID.ToString(),
+                        groupName = x.Name
+                    }).ToList();
+                    
+                }
+                model.batch = batch;
+                // Get supervisors for the department
+                if (supervisorList.Any() && !string.IsNullOrEmpty(id))
+                {
+                    var fetchCurrentGroup = allGroups.Where(x => x.ID.ToString() == id).FirstOrDefault();
+                    var fetchCurrentGroupSupervisor = allGroups.Where(x => x.SupervisorID == fetchCurrentGroup.SupervisorID).FirstOrDefault().SupervisorID;
+                    var departmentSupervisors = supervisorList
+                        .Where(x => x.Department == FetchUserDepartment)
+                        .Select((supervisor, index) => new { supervisor, index })
+                        .ToList();
+
+                    model.SupervisorList1 = departmentSupervisors
+                        .Where(x => x.index % 2 == 0 && x.supervisor.Id != fetchCurrentGroupSupervisor.ToString())
+                        .Select(x => new FetchSupervisorListViewModel
+                        {
+                            SupervisorID = x.supervisor.Id,
+                            SupervisorName = x.supervisor.Name
+                        }).ToList();
+
+                    model.SupervisorList2 = departmentSupervisors
+                        .Where(x => x.index % 2 != 0 && x.supervisor.Id != fetchCurrentGroupSupervisor.ToString())
+                        .Select(x => new FetchSupervisorListViewModel
+                        {
+                            SupervisorID = x.supervisor.Id,
+                            SupervisorName = x.supervisor.Name
+                        }).ToList();
+                    model.assignRequest = assignRequest;
+                }
+            }
+
+            // Handle id filtering
+            if (!string.IsNullOrEmpty(id))
+            {
+                var fypCommitte = await _fYPCommitteService.GetAllAsync();
+                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id).FirstOrDefault();
+
+                if (currentFypCommitte != null)
+                {
+                    model.Member1ID = currentFypCommitte.Member1ID;
+                    model.Member2ID = currentFypCommitte.Member2ID;
+                    model.groupID = currentFypCommitte.groupID;
+                    model.batch = currentFypCommitte.batch;
+                }
+                else
+                {
+                    model.groupID = id;
+                    model.batch = batch;
+                }
+            }
+            // Populate distinct batches
+            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+
+            return PartialView("Evaluators", model);
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FypCommitee([FromBody] FYPCommitteViewModel model)
+        {
+            var getFYPCommitte = await _fYPCommitteService.GetAllAsync();
+            var fypCommitte = getFYPCommitte.FirstOrDefault(x => x.groupID == model.groupID);
+
+            if (fypCommitte != null)
+            {
+                bool isUpdated = false;
+
+                if (fypCommitte.Member1ID != model.Member1ID)
+                {
+                    fypCommitte.Member1ID = model.Member1ID;
+                    isUpdated = true;
+                }
+
+                if (fypCommitte.Member2ID != model.Member2ID)
+                {
+                    fypCommitte.Member2ID = model.Member2ID;
+                    isUpdated = true;
+                }
+                
+
+                // If either member has been updated, proceed to update in the database
+                if (isUpdated)
+                {
+                    await _fYPCommitteService.UpdateAsync(fypCommitte);
+                }
+
+                // Redirect after the update
+                if (model.assignRequest == "true")
+                {
+                    return RedirectToAction("StudentGroup", "cordinator");
+                }
+                else
+                {
+                return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
+                }
+
+            }
+            else
+            {
+                // Initialize a new FYPCommitte instance if it doesn't exist
+                var newFypCommitte = new FYPCommitte
+                {
+                    Member1ID = model.Member1ID,
+                    Member2ID = model.Member2ID,
+                    groupID = model.groupID,
+                    batch = model.batch
+                };
+
+                await _fYPCommitteService.AddAsync(newFypCommitte);
+                if (model.assignRequest == "true")
+                {
+                    return RedirectToAction("StudentGroups", "studentgroups");
+                }
+                else
+                {
+                    return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
+                }
+            }
         }
 
     }

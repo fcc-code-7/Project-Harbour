@@ -6,228 +6,256 @@
 
 <!-- BEGIN: Content-->
 <div id="NewContainer">
-<div class="app-content content" >
-    <div class="content-overlay"></div>
-    <div class="content-wrapper">
-        <div class="content-header row">
-        </div>
-        <div class="content-body ">
-            <section class="users-list-wrapper">
-                <div class="users-list-filter px-1">
-                    <!-- Section 1 -->
-                    <div class="mb-2 ">
-                        <div class="p-6 bg-white text-black rounded-lg customheightcard">
-                            <!-- Column 1: -->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body ">
+                <section class="users-list-wrapper">
+                    <div class="users-list-filter px-1">
+                        <!-- Section 1 -->
+                        <div class="mb-2">
+                            <div class="p-6 bg-white text-black rounded-lg">
+                                <!-- Column 1: -->
 
-                            <div class=" grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                <div class="p-8  text-2xl font-bold ">
-                                    <h1>Weekly Logs</h1>
+                                <div class="w-full flex sm:flex-col lg:flex-row gap-4">
+                                    <div class="p-8 text-2xl font-bold">
+                                        <h1>Weekly Logs</h1>
+                                    </div>
+                                    
                                 </div>
-                            </div>
-                            @if (Model.CurrentProject != null)
-                            {
-
-                                @if (Model.weeklies == null || !Model.weeklies.Any())
+                                @if (Model.CurrentProject != null)
                                 {
-                                    <div class="container mt-0 md:mt-5 lg:mt-5">
-                                        <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
-                                            <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                <div class="card">
-                                                    <div class="card-header text-center">
-                                                        <h5 class="card-title">No Weekly Log Exists</h5>
+                                    @if (Model.ProjectStatus == "Approved")
+                                    {
+
+                                        @if (Model.weeklies == null || !Model.weeklies.Any())
+                                        {
+                                            <div class="container mt-0 md:mt-5 lg:mt-5">
+                                                <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                                    <div class="col-12 col-md-6 col-sm-12 col-lg-6">
+                                                        <div class="card">
+                                                            <div class="card-header text-center">
+                                                                <h5 class="card-title">No Weekly Log Exists</h5>
+                                                            </div>
+                                                            <div class="card-body text-center">
+                                                                <p>It looks like there are currently no weekly Logs available. Please check again in 30 seconds.</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="card-body text-center">
-                                                        <p>It looks like there are currently no weekly Logs available. Please Try in 30 seconds.</p>
-                                                    </div>
+
                                                 </div>
                                             </div>
 
+
+                                        }
+                                        else
+                                        {
+                                            <form class="form" id="submitweeklyLog">
+                                                <div class="modal-body">
+                                                    <div class="form-body">
+                                                        <div class="row d-flex justify-content-center">
+                                                            <input type="hidden" value="@Model.GroupId" name="GroupId" id="GroupId" />
+                                                            <input type="hidden" value="@Model.WeekNo" name="WeekNames" id="WeekNames" />
+                                                            <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                                <div class="form-group">
+                                                                    <label for="WeekName">Week</label>
+                                                                    <select id="WeekName" class="form-control WeekNames">
+                                                                        @foreach (var log in Model.weeklies)
+                                                                        {
+
+                                                                            // Compare the DateTime objects
+                                                                            if (log.currentDate >= log.AssignDate)
+                                                                            {
+                                                                                if (Model.WeekNo == log.WeekNo)
+                                                                                {
+                                                                                    <option value="@log.WeekNo" selected>@log.WeekNo</option>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <option value="@log.WeekNo">@log.WeekNo</option>
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    </select>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="col-12 col-lg-6 col-md-6 col-sm-12">
+                                                                <label for="WeekName">Room No</label>
+
+                                                                <div class="form-group">
+                                                                    <fieldset>
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text " id="basic-addon2"><i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
+                                                                            </div>
+                                                                            <input type="text" class="form-control" id="RoomNo" placeholder="Enter RoomNo" value="@(Model.RoomNo ?? "")" asp-for="RoomNo" aria-describedby="basic-addon1" name="RoomNo" required>
+
+                                                                        </div>
+                                                                        <span asp-validation-for="RoomNo" class="text-danger"></span>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                                <div class="form-group">
+                                                                    <label for="AssignDate">AssignDate</label>
+
+                                                                    <fieldset>
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text " id="basic-addon2"><i class="feather icon-calendar"></i></span>
+                                                                            </div>
+                                                                            <input type="text" class="form-control" id="AssignDate" placeholder="Enter AssignDate" value="@Model.AssignDate.ToString("dd/MM/yyyy")" asp-for="AssignDate" aria-describedby="basic-addon1" name="AssignDate" readonly>
+
+                                                                        </div>
+                                                                        <span asp-validation-for="AssignDate" class="text-danger"></span>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                                <div class="form-group">
+                                                                    <label for="Status">Status</label>
+                                                                    <fieldset>
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text " id="basic-addon2">
+                                                                                    <i class="feather icon-check-square"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                            @if (Model.currentDate > Model.SubmitDate)
+                                                                            {
+
+                                                                                <input type="text" class="form-control" id="Status" value="Late" placeholder="Enter Status" asp-for="Status" aria-describedby="basic-addon1" name="Status" readonly>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="text" class="form-control" id="Status" value="On Time" placeholder="Enter Status" asp-for="Status" aria-describedby="basic-addon1" name="Status" readonly>
+                                                                            }
+
+                                                                        </div>
+                                                                        <span asp-validation-for="Status" class="text-danger"></span>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                                <div class="form-group">
+
+                                                                    <label for="Summary">Summary</label>
+                                                                    <textarea class="form-control" id="Summary" placeholder="Enter Summary of progress made since last review meeting if this is week 1 so write Null" maxlength="300" asp-for="Summary" aria-describedby="basic-addon1" name="Summary" required style="height:100px; resize:none">@(Model.Summary ?? "")</textarea>
+
+                                                                    <span asp-validation-for="Summary" class="text-danger"></span>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                                <div class="form-group">
+
+                                                                    <label for="Activities">Activities</label>
+                                                                    <textarea class="form-control" id="Activities" placeholder="Activity/Data/Literature Reviews/Figure/Sample Analysis (Achievement based on Gantt chart)" maxlength="300" asp-for="Activities" aria-describedby="basic-addon1" name="Activities" required style="height:100px; resize:none">@(Model.Activities ?? "")</textarea>
+
+                                                                    <span asp-validation-for="Activities" class="text-danger"></span>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                                <div class="form-group">
+
+                                                                    <label for="Result">Result</label>
+                                                                    <textarea class="form-control" id="Result" placeholder="Result of discussion with supervisor" maxlength="300" asp-for="Result" aria-describedby="basic-addon1" name="Result" required style="height:100px; resize:none">@(Model.Result ?? "")</textarea>
+
+                                                                    <span asp-validation-for="Result" class="text-danger"></span>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                                <div class="form-group">
+
+                                                                    <label for="Tasks">Tasks</label>
+                                                                    <textarea class="form-control" id="Tasks" placeholder="Proposed tasks for the next meeting" maxlength="300" asp-for="Tasks" aria-describedby="basic-addon1" name="Tasks" required style="height:100px; resize:none">@(Model.Tasks ?? "")</textarea>
+
+                                                                    <span asp-validation-for="Tasks" class="text-danger"></span>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-primary FormSubmit" id="FormSubmit" disabled>Save</button>
+                                                </div>
+                                            </form>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
+                                            <div class="row justify-content-center align-items-center w-100">
+                                                <div class="col-12 col-md-6 col-sm-12 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-header d-flex justify-content-center">
+                                                            <h5 class="card-title "><i class="feather icon-alert-triangle text-danger"></i> Not Approved</h5>
+                                                        </div>
+                                                        <div class="card-body text-center mb-3">
+                                                            <p>It looks like your project not <span class="text-danger"> Approved </span> yet!</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-
-
+                                    }
                                 }
                                 else
                                 {
-                                    <form class="form" id="submitweeklyLog">
-                                        <div class="modal-body">
-                                            <div class="form-body">
-                                                <div class="row d-flex justify-content-center">
-                                                    <input type="hidden" value="@Model.GroupId" name="GroupId" id="GroupId" />
-                                                        <input type="hidden" value="@Model.WeekNo" name="WeekNames" id="WeekNames" />
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
-                                                        <div class="form-group">
-                                                            <label for="WeekName">Week</label>
-                                                            <select id="WeekName" class="form-control WeekNames">
-                                                                @foreach (var log in Model.weeklies)
-                                                                {
-
-                                                                    // Compare the DateTime objects
-                                                                    if (log.currentDate >= log.AssignDate)
-                                                                    {
-                                                                        if (Model.WeekNo == log.WeekNo)
-                                                                        {
-                                                                            <option value="@log.WeekNo" selected>@log.WeekNo</option>
-                                                                        }
-                                                                        else{
-                                                                          <option value="@log.WeekNo" >@log.WeekNo</option>
-                                                                        }
-                                                                    }
-
-                                                                }
-                                                            </select>
-                                                        </div>
-
+                                    <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+                                        <div class="row justify-content-center align-items-center w-100">
+                                            <div class="col-12 col-md-6 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header text-center">
+                                                        <h5 class="card-title">No Project Exists</h5>
                                                     </div>
-
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12">
-                                                        <label for="WeekName">Room No</label>
-
-                                                        <div class="form-group">
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                            <span class="input-group-text " id="basic-addon2"><i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="RoomNo" placeholder="Enter RoomNo" value="@(Model.RoomNo ?? "")" asp-for="RoomNo" aria-describedby="basic-addon1" name="RoomNo" required>
-
-                                                                </div>
-                                                                <span asp-validation-for="RoomNo" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
+                                                    <div class="card-body text-center mb-3">
+                                                        <p>It looks like there are currently no projects available.</p>
+                                                        <button class="btn btn-sm btn-primary ProjectCreate" id="btnsClick">Create New Project</button>
                                                     </div>
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
-                                                        <div class="form-group">
-                                                            <label for="AssignDate">AssignDate</label>
-
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                            <span class="input-group-text " id="basic-addon2"><i class="feather icon-calendar"></i></span>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="AssignDate" placeholder="Enter AssignDate" value="@Model.AssignDate.ToString("dd/MM/yyyy")" asp-for="AssignDate" aria-describedby="basic-addon1" name="AssignDate" readonly>
-
-                                                                </div>
-                                                                <span asp-validation-for="AssignDate" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                        </div>
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
-                                                        <div class="form-group">
-                                                            <label for="Status">Status</label>
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                            <span class="input-group-text " id="basic-addon2">
-                                                                                <i class="feather icon-check-square"></i>
-                                                                            </span>
-                                                                    </div>
-                                                                @if (Model.currentDate > Model.SubmitDate)
-                                                                    {
-                                                                        
-                                                                        <input type="text" class="form-control" id="Status" value="Late" placeholder="Enter Status"  asp-for="Status" aria-describedby="basic-addon1" name="Status" readonly>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <input type="text" class="form-control" id="Status" value="On Time" placeholder="Enter Status"  asp-for="Status" aria-describedby="basic-addon1" name="Status" readonly>
-                                                                    }
-
-                                                                </div>
-                                                                <span asp-validation-for="Status" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
-                                                        <div class="form-group">
-
-                                                            <label for="Summary">Summary</label>
-                                                            <textarea class="form-control" id="Summary" placeholder="Enter Summary of progress made since last review meeting if this is week 1 so write Null" maxlength="300" asp-for="Summary" aria-describedby="basic-addon1" name="Summary" required style="height:100px; resize:none">@(Model.Summary ?? "")</textarea>
-
-                                                            <span asp-validation-for="Summary" class="text-danger"></span>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
-                                                        <div class="form-group">
-
-                                                            <label for="Activities">Activities</label>
-                                                            <textarea class="form-control" id="Activities" placeholder="Activity/Data/Literature Reviews/Figure/Sample Analysis (Achievement based on Gantt chart)" maxlength="300" asp-for="Activities" aria-describedby="basic-addon1" name="Activities" required style="height:100px; resize:none">@(Model.Activities ?? "")</textarea>
-
-                                                            <span asp-validation-for="Activities" class="text-danger"></span>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
-                                                        <div class="form-group">
-
-                                                            <label for="Result">Result</label>
-                                                            <textarea class="form-control" id="Result" placeholder="Result of discussion with supervisor" maxlength="300" asp-for="Result" aria-describedby="basic-addon1" name="Result" required style="height:100px; resize:none">@(Model.Result ?? "")</textarea>
-
-                                                            <span asp-validation-for="Result" class="text-danger"></span>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
-                                                        <div class="form-group">
-
-                                                            <label for="Tasks">Tasks</label>
-                                                            <textarea class="form-control" id="Tasks" placeholder="Proposed tasks for the next meeting" maxlength="300" asp-for="Tasks" aria-describedby="basic-addon1" name="Tasks" required style="height:100px; resize:none">@(Model.Tasks ?? "")</textarea>
-
-                                                            <span asp-validation-for="Tasks" class="text-danger"></span>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-primary FormSubmit" id="FormSubmit" disabled>Save</button>
-                                            </div>
-                                    </form>
-                                }
-                            }
-                            else
-                            {
-                                <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
-                                    <div class="row justify-content-center align-items-center w-100">
-                                        <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                            <div class="card">
-                                                <div class="card-header text-center">
-                                                    <h5 class="card-title">No Project Exists</h5>
-                                                </div>
-                                                <div class="card-body text-center mb-3">
-                                                    <p>It looks like there are currently no projects available.</p>
-                                                    <button class="btn btn-sm btn-primary ProjectCreate" id="btnsClick">Create New Project</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                            }
+                                }
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-            </section>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
-</div>
 </div>
 <!-- END: Content-->
 <!-- Modal -->
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-
-<style>
-    /*  body {
+@if (Model.ProjectStatus != "Approved")
+{
+    <style>
+        body {
             overflow: hidden;
         }
 
-        .customheightcard {
+     @*    .customheightcard {
             height: 78vh !important
-        } */
+        } *@
+    </style>
+}
+
+<style>
+    
 
     .colorchange {
         transition: color 0.3s ease;
@@ -581,18 +609,18 @@
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=utf-8",  // Sending JSON
                 success: function (response) {
-                    $("#MainContainer").html(response); 
-                        Swal.fire({
-                            title: 'Successfully!',             // Title of the modal
-                            text: 'Your Weekly Log updated!', // Message/content in the modal
-                            icon: 'success',                 // Type of modal (success icon)
-                            confirmButtonText: 'OK',         // Text on the confirm button
-                            customClass: {
-                                confirmButton: 'btn btn-success',  // Bootstrap class for a green button
-                            },
-                            showCancelButton: false,         // Hides the cancel button
-                            buttonsStyling: false,           // Disables default button styling
-                        });
+                    $("#MainContainer").html(response);
+                    Swal.fire({
+                        title: 'Successfully!',             // Title of the modal
+                        text: 'Your Weekly Log updated!', // Message/content in the modal
+                        icon: 'success',                 // Type of modal (success icon)
+                        confirmButtonText: 'OK',         // Text on the confirm button
+                        customClass: {
+                            confirmButton: 'btn btn-success',  // Bootstrap class for a green button
+                        },
+                        showCancelButton: false,         // Hides the cancel button
+                        buttonsStyling: false,           // Disables default button styling
+                    });
                 },
                 error: function (xhr, status, error) {
                     // Handle the case where there's an error in the AJAX request

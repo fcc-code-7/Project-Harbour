@@ -17,8 +17,9 @@ namespace FYP.Web.Controllers
         private readonly ICompanyService _companyService;
         private readonly IEvaluationService _evaluationService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IFYPCommitteService _fYPCommitteService;
 
-        public CordinatorController(IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IDesignationService designationService, IStudentGroupService studentGroupService)
+        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IDesignationService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -29,16 +30,18 @@ namespace FYP.Web.Controllers
             _projectService = projectService;
             _companyService = companyService;
             _evaluationService = evaluationService;
+            _fYPCommitteService = fYPCommitteService;
         }
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult StudentGroup()
+        public async Task<IActionResult> StudentGroup()
         {
-            var studentGroup = _studentGroupService.GetAllAsync().Result;
+            var studentGroup =await _studentGroupService.GetAllAsync();
+            var existingFypCommitee =await _fYPCommitteService.GetAllAsync();
             var user = studentGroup.FirstOrDefault();
-            var allGroups = _studentGroupService.GetAllAsync().Result;
+            var allGroups =await _studentGroupService.GetAllAsync();
             var userGroup = allGroups
                 .Where(x => x.student1LID == user.student1LID || x.student2ID == user.student2ID || x.student3ID == user.student3ID)
                 .FirstOrDefault();
@@ -58,32 +61,44 @@ namespace FYP.Web.Controllers
                     student3ID = x.student3ID,
                     CoSupervisorID = x.CoSupervisorID,
                     SupervisorID = x.SupervisorID,
-                    supervisorname = _userService.GetAllAsync().Result.Where(x=>x.Id == supervisorId).FirstOrDefault().Name,
+                    supervisorname = _userService.GetAllAsync().Result.Where(y=>y.Id == x.SupervisorID).FirstOrDefault().Name,
                     LeaderName = _userManager.FindByIdAsync(x.student1LID).Result?.Name,
                     member1 = _userManager.FindByIdAsync(x.student2ID).Result?.Name,
                     Member2 = _userManager.FindByIdAsync(x.student3ID).Result?.Name,
-                    
+                    Member1Name = _userManager.FindByIdAsync(existingFypCommitee
+                .Where(y => y.groupID == x.ID.ToString())
+                .FirstOrDefault()?.Member1ID).Result?.Name ?? "Not Assigned",
+
+                    Member2Name = _userManager.FindByIdAsync(existingFypCommitee
+                .Where(y => y.groupID == x.ID.ToString())
+                .FirstOrDefault()?.Member2ID).Result?.Name ?? "Not Assigned",
+
                 }).ToList(),
                 
                 Batches = distinctBatches,
-                Years = distinctYears
+                Years = distinctYears,
+
 
             };
+           
             return PartialView(model);
         }
-        public IActionResult Projects()
+        public async Task<IActionResult> Projects()
         {
-            var studentGroup = _studentGroupService.GetAllAsync().Result;
+            var LoggedInUser = _userManager.GetUserId(User);
+            var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
+            var FetchUserDepartment = FetchUser.Department;
+            var studentGroup =await _studentGroupService.GetAllAsync();
             var user = studentGroup.FirstOrDefault();
-            var allGroups = _studentGroupService.GetAllAsync().Result;
+            var allGroups =await _studentGroupService.GetAllAsync();
             var userGroup = allGroups
                 .Where(x => x.student1LID == user.student1LID || x.student2ID == user.student2ID || x.student3ID == user.student3ID)
                 .FirstOrDefault();
             var supervisorId = userGroup.SupervisorID;
-
-            var projects = _projectService.GetAllAsync().Result.Where(x=>x.SupervsiorApproved == "Approved");
+            var project = await _projectService.GetAllAsync();
+            var projects = project.Where(x=>x.SupervsiorApproved == "Approved" && x.projectGroup == FetchUserDepartment);
             var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
-
+            
             var model = new ProjectViewModel
             {
                 projects = projects.Select(x => new ProjectViewModel
@@ -110,10 +125,14 @@ namespace FYP.Web.Controllers
                     changeTitleFormStatus = x.changeTitleFormStatus,
                    
                 }).ToList(),
-                  batches = distinctBatches,
                 
 
             };
+            if (distinctBatches != null)
+            {
+                model.batches = distinctBatches;
+            }
+           
             return PartialView(model);
         }
         [HttpPost]
@@ -149,6 +168,8 @@ namespace FYP.Web.Controllers
         {
             var studentGroups = (await _studentGroupService.GetAllAsync())
                                 .Where(x => x.Batch == batch);
+            var existingFypCommitee = await _fYPCommitteService.GetAllAsync();
+
             var studentGroup = (await _studentGroupService.GetAllAsync());
             var user = studentGroups.FirstOrDefault();
             if (user == null)
@@ -177,6 +198,7 @@ namespace FYP.Web.Controllers
             {
                 StudentGroups = studentGroups.Select(x => new StudentGroupViewModel
                 {
+                    Id = x.ID,
                     Name = x.Name,
                     Batch = x.Batch,
                     student1LID = x.student1LID,
@@ -187,7 +209,14 @@ namespace FYP.Web.Controllers
                     supervisorname = supervisorName,
                     LeaderName = leaderName,
                     member1 = member1Name,
-                    Member2 = member2Name
+                    Member2 = member2Name,
+                    Member1Name = _userManager.FindByIdAsync(existingFypCommitee
+                .Where(y => y.groupID == x.ID.ToString())
+                .FirstOrDefault()?.Member1ID).Result?.Name ?? "Not Assigned",
+
+                    Member2Name = _userManager.FindByIdAsync(existingFypCommitee
+                .Where(y => y.groupID == x.ID.ToString())
+                .FirstOrDefault()?.Member2ID).Result?.Name ?? "Not Assigned",
                 }).ToList(),
                 Batches = distinctBatches,
                 Years = distinctYears
@@ -265,7 +294,7 @@ namespace FYP.Web.Controllers
                 {
                     success = true,
                     marks = evaluation.Marks,
-                    lastDate = evaluation.LastDate.ToString("dd/MM/yyyy")  // Formatting date
+                    lastDate = evaluation.LastDate.ToString("dd/MM/yy")  // Formatting date
                 });
             }
             else

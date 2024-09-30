@@ -1,0 +1,432 @@
+﻿@model FYP.Web.ViewModels.FYPCommitteViewModel
+
+
+@{
+
+}
+
+<!-- BEGIN: Content-->
+<div id="NewContainer">
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body ">
+                <section class="users-list-wrapper">
+                    <div class="users-list-filter px-1">
+                        <!-- Section 1 -->
+                        <div class=" ">
+                            <div class="p-3 bg-white text-black rounded-lg customheightcard ">
+
+                                <!-- Column 1: -->
+                                <div class="" style="min-height:100px">
+                                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                        <div class=" text-2xl font-bold">
+                                            <h1>
+                                                Evaluators
+                                            </h1>
+                                        </div>
+
+                                    </div>
+                                    <form class="form" id="submitform">
+                                        <div class="modal-body">
+                                            <div class="form-body">
+                                                <div class="row d-flex justify-content-center">
+                                                    <div class="col-md-6 ">
+                                                        <input type="hidden" value="@Model.groupID" name="groupIDs" id="groupIDs" />
+                                                        <input type="hidden" value="@Model.batch" name="batches" id="batches" />
+                                                        <div class="form-group">
+                                                            <label>Batch</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3">
+                                                                            <i class="fa fa-graduation-cap" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    @if (Model.batches != null)
+                                                                    {
+                                                                        <select asp-for="batch" name="batch" id="batch" class="form-control batch">
+                                                                            <option value="">Select Batch</option>
+
+                                                                            @foreach (var item in Model.batches)
+                                                                            {
+                                                                                if (Model.batch != null && item == Model.batch)
+                                                                                {
+                                                                                    <option value="@item" selected>@item</option>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <option value="@item">@item</option>
+                                                                                }
+                                                                            }
+                                                                        </select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="No Batch Exist" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+
+                                                                </div>
+                                                                <span asp-validation-for="batch" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Groups</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3">
+                                                                            <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    @if (Model.studentGroups != null)
+                                                                    {
+                                                                        <select asp-for="groupID" name="groupID" id="groupID" class="form-control groupID">
+                                                                            <option value="">Select Student Groups</option>
+
+                                                                            @foreach (var item in Model.studentGroups)
+                                                                            {
+                                                                                if (Model.groupID != null && item.groupID == Model.groupID)
+                                                                                {
+                                                                                    <option value="@item.groupID" selected>@item.groupName</option>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <option value="@item.groupID">@item.groupName</option>
+                                                                                }
+                                                                            }
+                                                                        </select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+
+                                                                </div>
+                                                                <span asp-validation-for="groupID" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Evaluator 1</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3"><i class="fa fa-user-circle-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
+                                                                    </div>
+                                                                    @if (Model.SupervisorList1 != null)
+                                                                    {
+                                                                        <select asp-for="Member1ID" name="Member1ID" id="Member1ID" class="form-control">
+                                                                            <option value="">Select Evaluator</option>
+
+                                                                            @foreach (var item in Model.SupervisorList1)
+                                                                            {
+                                                                                if (Model.Member1ID != null && item.SupervisorID == Model.Member1ID)
+                                                                                {
+                                                                                    <option value="@item.SupervisorID" selected>@item.SupervisorName</option>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <option value="@item.SupervisorID">@item.SupervisorName</option>
+                                                                                }
+                                                                            }
+
+                                                                        </select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+                                                                </div>
+                                                                <span asp-validation-for="Member1ID" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Evaluator 2</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3"><i class="fa fa-user-circle-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
+                                                                    </div>
+                                                                    @if (Model.SupervisorList2 != null)
+                                                                    {
+                                                                        <select asp-for="Member2ID" name="Member2ID" id="Member2ID" class="form-control">
+                                                                            <option value="">Select Evaluator</option>
+
+                                                                            @foreach (var item in Model.SupervisorList2)
+                                                                            {
+                                                                                if (Model.Member2ID != null && item.SupervisorID == Model.Member2ID)
+                                                                                {
+                                                                                    <option value="@item.SupervisorID" selected>@item.SupervisorName</option>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <option value="@item.SupervisorID">@item.SupervisorName</option>
+                                                                                }
+                                                                            }
+
+                                                                        </select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+                                                                </div>
+                                                                <span asp-validation-for="Member2ID" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                        @if (Model.assignRequest == "true" )
+                                                        {
+                                                       <input type="hidden" name="assignRequest" id="AssignRequest" value="true" />
+                                                            
+                                                        }
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-outline-primary " id="EvaluatorFormSubmit">Save</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style>
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
+
+    input[readonly] {
+        background-color: #FFFFFF !important; /* Softer background */
+        color: #607d8b; /* Dimmed text color */
+        border: 1px solid #90a4ae; /* Soft border color */
+        cursor: not-allowed; /* Keep the not-allowed cursor */
+    }
+
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+
+    .noborder {
+        border-color: white !important;
+    }
+
+
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e6e4e9 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+        $(document).off('change', '.batch').on('change', '.groupID', function (e) {
+            showLoadingSpinner(); // Show the loading spinner
+            var groupId = $(this).val();
+            var batches = $("#batches").val();
+            $.ajax({
+                url: "/studentgroups/FetchBatches",
+                type: "GET",
+                data: { id: groupId, batch: batches },
+                success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $("#NewContainer").html(response);
+
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        $('.batch').on('change', function () {
+            var getbatch = $(this).val();
+            $.ajax({
+                url: "/studentgroups/FetchBatches",
+                type: "GET",
+                data: { batch: getbatch },
+                success: function (response) {
+                    $("#NewContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+
+
+        $(document).off('click', '#EvaluatorFormSubmit').on('click', '#EvaluatorFormSubmit', function (e) {
+            e.preventDefault();  // Prevent the default form submission
+            var formData = {
+                groupID: $("#groupIDs").val(),
+                Member1ID: $("#Member1ID").val(),
+                Member2ID: $("#Member2ID").val(),
+                batch: $("#batches").val(),
+                assignRequest: $("#AssignRequest").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/studentgroups/FypCommitee",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",  // Sending JSON
+                success: function (response) {
+                    $("#MainContainer").html(response);
+                    Swal.fire({
+                        title: 'Successfully!',             // Title of the modal
+                        text: 'Evaluators Assigned!', // Message/content in the modal
+                        icon: 'success',                 // Type of modal (success icon)
+                        confirmButtonText: 'OK',         // Text on the confirm button
+                        customClass: {
+                            confirmButton: 'btn btn-success',  // Bootstrap class for a green button
+                        },
+                        showCancelButton: false,         // Hides the cancel button
+                        buttonsStyling: false,           // Disables default button styling
+                    });
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: 'UnSuccessfully!',
+                        text: 'Something Error Occurs!',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',  // Updated button class to match error state
+                        },
+                        showCancelButton: false,
+                        buttonsStyling: false,
+                    });
+                }
+            });
+        });
+
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        // Store initial values when the form loads
+        var initialValues = {
+            groupID: $("#groupID").val(),
+            Member1ID: $("#Member1ID").val(),
+            Member2ID: $("#Member2ID").val(),
+        };
+
+        // Disable the submit button by default
+        $("#EvaluatorFormSubmit").prop('disabled', true);
+
+        // Function to check if any field has changed
+        function checkForChanges() {
+            var currentValues = {
+                groupID: $("#groupID").val(),
+                Member1ID: $("#Member1ID").val(),
+                Member2ID: $("#Member2ID").val(),
+            };
+
+            // Compare each field with the initial values
+            var hasChanged = false;
+            $.each(currentValues, function (key, value) {
+                if (initialValues[key] !== value) {
+                    hasChanged = true;
+                }
+            });
+
+            // Enable or disable the submit button based on changes
+            if (hasChanged) {
+                $("#EvaluatorFormSubmit").prop('disabled', false);
+            } else {
+                $("#EvaluatorFormSubmit").prop('disabled', true);
+            }
+        }
+
+        // Monitor changes in input fields
+        $("select").on('input change', function () {
+            checkForChanges();
+        });
+    });
+
+</script>
+
+

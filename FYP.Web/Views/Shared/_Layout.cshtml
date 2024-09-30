@@ -53,8 +53,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .loading-spinner-overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 9999; /* Ensure it appears above all other content */
+            background-color: rgba(0,0,0,0.5); /* Transparent black */
+        }
+
+
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .navbar-minimize-fixed {
+            opacity: 1 !important;
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
 </head>
 <body class="vertical-layout vertical-menu 2-columns   fixed-navbar" id="body" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+
     <header>
         <!-- BEGIN: Header-->
         <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-light navbar-border">
@@ -213,6 +254,9 @@
         </nav>
         <!-- END: Header-->
     </header>
+    <div id="loadingSpinner" class="loading-spinner-overlay">
+        <div class="spinner"></div>
+    </div>
    <main>
         <!-- BEGIN: Main Menu-->
         <div class="main-menu menu-fixed menu-light menu-accordion" data-scroll-to-active="true">
@@ -282,6 +326,12 @@
                                         <span class="menu-item" data-i18n="Projects">Projects</span>
                                     </a>
                                 </li>
+                                <li class="nav-item" id="Evaluators">
+                                    <a>
+                                        <i class="fa fa-calendar-check-o"></i>
+                                        <span class="menu-item" data-i18n="Evaluators">Evaluators</span>
+                                    </a>
+                                </li>
                             }
                             <li class="nav-item" id="messages">
                                 <a >
@@ -328,7 +378,15 @@
  @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
 <script>
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
     $(document).ready(function () {
         var currentUrl = window.location.pathname;
         $('.nav-item > a').each(function () {
@@ -339,11 +397,15 @@
         });
 
         function loadAdminIndex(successCallback) {
+            showLoadingSpinner(); // Show the loading spinner
             $.ajax({
                 url: "/supervisor/index",
                 type: "GET",
                 success: function (data) {
+
                     successCallback();
+                    hideLoadingSpinner(); // Hide the loading spinner
+
                 },
                 error: function (err) {
                     alert("An error occurred while loading the Admin Index: " + err.statusText);
@@ -415,7 +477,14 @@
         });
         $("#WeeklyLogs").click(function () {
             loadAdminIndex(function () {
+
                 loadSection("/Project/weeklylog", "#MainContainer");
+            });
+        });
+        $("#Evaluators").click(function () {
+            loadAdminIndex(function () {
+
+                loadSection("/studentGroups/Evaluators", "#MainContainer");
             });
         });
 

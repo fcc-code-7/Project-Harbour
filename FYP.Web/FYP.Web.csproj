@@ -28,4 +28,8 @@
     <Folder Include="wwwroot\PDocs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Logo\istockphoto-1359362604-1024x1024.jpg" />
+  </ItemGroup>
+
 </Project>

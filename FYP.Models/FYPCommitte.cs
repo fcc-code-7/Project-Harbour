@@ -11,5 +11,6 @@ namespace FYP.Entities
         public string? groupID { get; set; }
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
+        public string? batch { get; set; }
     }
 }

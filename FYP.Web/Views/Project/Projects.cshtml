@@ -28,7 +28,7 @@
         <div class="content-body">
             <!-- Section 1 -->
             <div class="mb-2 ">
-                <div class="p-6 bg-white text-black rounded-lg customheightcard">
+                <div class="p-6 bg-white text-black rounded-lg customheightcard" style="position:center">
                     <!-- Column 1: -->
 
                     <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
@@ -100,7 +100,7 @@
                                                         <li class="widget-49-meeting-item">
                                                             <span>
                                                                 Status:<span class="text-danger">
-                                                                    Not Approved
+                                                                    -
                                                                 </span>
                                                             </span>
                                                         </li>
@@ -110,18 +110,11 @@
 
                                                 </ol>
                                                 <div class="widget-49-meeting-action">
-                                                    <a href="#" class="btn btn-sm btn-flash-border-warning">Change Title Form</a>
                                                     @if (item.Status == "NotApproved")
                                                     {
                                                         <a class="btn btn-sm btn-flash-border-warning EditClick" data-id="@item.Id">Edit</a>
                                                     }
-                                                    @if (item.Status == "Approved")
-                                                    {
                                                         <p class="btn btn-sm btn-flash-border-warning ViewAll" data-id="@item.code">DETAILS</p>
-                                                        <a href="#" class="btn btn-sm btn-flash-border-warning Submission">Submissions</a>
-                                                        <a href="#" class="btn btn-sm btn-flash-border-warning" id="WeeklyLogs">Weekly Logs</a>
-                                                    }
-                                                    
                                                 </div>
                                             </div>
                                         </div>
