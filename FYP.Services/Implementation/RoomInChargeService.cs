@@ -11,33 +11,33 @@ using System.Threading.Tasks;
 
 namespace FYP.Services.Implementation
 {
-    public class SemesterManagementService : ISemesterManagementService
+    public class RoomInChargeService : IRoomInChargeService
     {
-        private readonly ISemesterManagementRepository _repository;
+        private readonly Repositories.Interfaces.IRoomInCharge _repository;
 
-        public SemesterManagementService(ISemesterManagementRepository repository)
+        public RoomInChargeService(Repositories.Interfaces.IRoomInCharge repository)
         {
             _repository = repository;
         }
 
-        public async Task<SemesterManagement> GetByIdAsync(string id)
+        public async Task<RoomInCharge> GetByIdAsync(string id)
         {
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<SemesterManagement>> GetAllAsync()
+        public async Task<IEnumerable<RoomInCharge>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
 
-        public async Task AddAsync(SemesterManagement SemesterManagement)
+        public async Task AddAsync(RoomInCharge RoomInCharge)
         {
-            await _repository.AddAsync(SemesterManagement);
+            await _repository.AddAsync(RoomInCharge);
         }
 
-        public async Task UpdateAsync(SemesterManagement SemesterManagement)
+        public async Task UpdateAsync(RoomInCharge RoomInCharge)
         {
-            await _repository.UpdateAsync(SemesterManagement);
+            await _repository.UpdateAsync(RoomInCharge);
         }
 
         public async Task DeleteAsync(string id)

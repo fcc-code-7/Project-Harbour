@@ -19,8 +19,10 @@ namespace FYP.Web.Controllers
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
         private readonly IFYPCommitteService _fYPCommitteService;
+        private readonly IRoomService _roomService;
+        private readonly IRoomInChargeService _roomInChargeService;
 
-        public StudentGroupsController(IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -31,6 +33,8 @@ namespace FYP.Web.Controllers
             _changeSupervisorFormService = changeSupervisorFormService;
             _userService = userService;
             _fYPCommitteService = fYPCommitteService;
+            _roomService = roomService;
+            _roomInChargeService = roomInChargeService;
         }
         public async Task<IActionResult> StudentGroups()
         {
@@ -370,16 +374,16 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
 
-        public async Task<IActionResult> FetchBatches(string id, string batch , string assignRequest)
+        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest)
         {
             var LoggedInUser = _userManager.GetUserId(User);
             var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
             var FetchUserDepartment = FetchUser.Department;
             var allGroups = await _studentGroupService.GetAllAsync();
             var supervisorList = await _userManager.GetUsersInRoleAsync("Supervisor");
-           
-              
-            
+
+
+
             var model = new FYPCommitteViewModel();
             if (!string.IsNullOrEmpty(batch))
             {
@@ -391,7 +395,7 @@ namespace FYP.Web.Controllers
                         groupID = x.ID.ToString(),
                         groupName = x.Name
                     }).ToList();
-                    
+
                 }
                 model.batch = batch;
                 // Get supervisors for the department
@@ -470,7 +474,7 @@ namespace FYP.Web.Controllers
                     fypCommitte.Member2ID = model.Member2ID;
                     isUpdated = true;
                 }
-                
+
 
                 // If either member has been updated, proceed to update in the database
                 if (isUpdated)
@@ -485,7 +489,7 @@ namespace FYP.Web.Controllers
                 }
                 else
                 {
-                return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
+                    return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
                 }
 
             }
@@ -512,5 +516,88 @@ namespace FYP.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> FetchRoom(string room)
+        {
+            var Room = await _roomService.GetAllAsync();
+            var fetchRoom = Room.Where(x => x.RoomNo == room).FirstOrDefault();
+            var model = new FYPCommitteViewModel();
+            if (fetchRoom != null)
+            {
+                fetchRoom.RoomNo = room;
+                await _roomService.UpdateAsync(fetchRoom);
+                model.Rooms = Room.Select(x => new RoomViewModel
+                {
+                    Id = x.ID.ToString(),
+                    RoomNo = x.RoomNo
+
+                }).ToList();
+
+
+                return Json(new { success = true, message = "Room already exists!" });
+            }
+            else
+            {
+                var result = _roomService.AddAsync(new Room { RoomNo = room.ToUpper() });
+                var fetchRoomagain = await _roomService.GetAllAsync();
+                if (result.IsCompletedSuccessfully)
+                {
+                    model.Rooms = fetchRoomagain.Select(x => new RoomViewModel
+                    {
+                        Id = x.ID.ToString(),
+                        RoomNo = x.RoomNo
+
+                    }).ToList();
+                    return Json(new { success = true, message = "Room added successfully!", room = model });
+                }
+            }
+            return Json(new { success = false, message = "Room not added successfully!" });
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> FetchRoomIncharge(string name, string email)
+        {
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var fetchRoomIncharge = RoomIncharge.Where(x => x.Email == email).FirstOrDefault();
+            var model = new FYPCommitteViewModel();
+            if (fetchRoomIncharge != null)
+            {
+                fetchRoomIncharge.Email = email;
+                fetchRoomIncharge.Name = name;
+                await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
+                var fetchRoomagain = await _roomInChargeService.GetAllAsync();
+                model.roomInCharges = fetchRoomagain.Select(x => new RoomInChargeViewModel
+                {
+                    Id = x.ID.ToString(),
+                    Email = x.Email,
+                    Name = x.Name,
+                    AllotedDate = x.AllotedDate,
+                    RoomAlloted = x.RoomAlloted
+
+                }).ToList();
+
+
+                return Json(new { success = true, message = "Room already exists!" });
+            }
+            else
+            {
+                var result = _roomInChargeService.AddAsync(new RoomInCharge { Name = name,Email = email
+                });
+                if (result.IsCompletedSuccessfully)
+                {
+                    var fetchRoomagain = await _roomInChargeService.GetAllAsync();
+                    model.roomInCharges = fetchRoomagain.Select(x => new RoomInChargeViewModel
+                    {
+                        Id = x.ID.ToString(),
+                        Email = x.Email,
+                        Name = x.Name,
+                    }).ToList();
+                    return Json(new { success = true, message = "Room added successfully!", room = model });
+                }
+            }
+            
+            return Json(new { success = false, message = "Room not added successfully!" });
+
+        }
     }
 }

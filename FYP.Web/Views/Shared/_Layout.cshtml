@@ -54,6 +54,18 @@
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        .mainDivGradient {
+            /* background: linear-gradient(90deg, #f6d5f7, #fbe9d7) !important; */
+            background : #ffffff !important;
+           
+        }
+
+        .cardList {
+            background : #f9f9f8 !important;
+        }
+
+
+
         .loading-spinner-overlay {
             display: none; /* Initially hidden */
             position: fixed;
@@ -94,11 +106,11 @@
         }
     </style>
 </head>
-<body class="vertical-layout vertical-menu 2-columns   fixed-navbar" id="body" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<body class="vertical-layout vertical-menu 2-columns  cardList fixed-navbar" id="body" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 
     <header>
         <!-- BEGIN: Header-->
-        <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-light navbar-border">
+        <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-light navbar-border ">
             <div class="navbar-wrapper">
                 <div class="navbar-header">
                     <ul class="nav navbar-nav flex-row">
@@ -257,19 +269,19 @@
     <div id="loadingSpinner" class="loading-spinner-overlay">
         <div class="spinner"></div>
     </div>
-   <main>
+    <main class="">
         <!-- BEGIN: Main Menu-->
-        <div class="main-menu menu-fixed menu-light menu-accordion" data-scroll-to-active="true">
-            <div class="main-menu-content">
+        <div class=" main-menu menu-fixed menu-light menu-accordion " data-scroll-to-active="true">
+            <div class=" main-menu-content ">
                 @{
                     if (User.Identity.IsAuthenticated)
                     {
-                        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                            <li class="navigation-header">
+                        <ul class=" navigation navigation-main " id="main-menu-navigation " data-menu="menu-navigation">
+                            <li class=" navigation-header">
                                 <span>General</span>
                                 <i class="feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="General"></i>
                             </li>
-                            <li class="nav-item" id="profile">
+                            <li class=" nav-item" id="profile">
                                 <a >
                                     <i class="fa fa-user-circle-o"></i>
                                     <span class="menu-item" data-i18n="Profile">Profile</span>
@@ -337,6 +349,12 @@
                                 <a >
                                     <i class="fa fa-envelope-o"></i>
                                     <span class="menu-item" data-i18n="Messages">Messages</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="messages">
+                                <a>
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="menu-item" data-i18n="Settings">Settings</span>
                                 </a>
                             </li>
                         </ul>

@@ -11,7 +11,7 @@ namespace FYP.Web.Controllers
         private readonly IUserService _userService;
         private readonly ISupervisorService _supervisorService;
         private readonly IProposalDefenseService _proposalDefenseService;
-        private readonly IDesignationService _designationService;
+        private readonly IRoomService _designationService;
         private readonly IStudentGroupService _studentGroupService;
         private readonly IProjectService _projectService;
         private readonly ICompanyService _companyService;
@@ -19,7 +19,7 @@ namespace FYP.Web.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IFYPCommitteService _fYPCommitteService;
 
-        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IDesignationService designationService, IStudentGroupService studentGroupService)
+        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -349,6 +349,13 @@ namespace FYP.Web.Controllers
 
 
         }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> Incharge()
+        //{
+
+        //}
 
     }
 }

@@ -24,9 +24,9 @@ namespace FYP.Db
         public DbSet<Student> Students { get; set; }
         public DbSet<StudentGroup> StudentGroups { get; set; }
         public DbSet<Supervisor> Supervisors { get; set; }
-        public DbSet<Designation> Designations { get; set; }
+        public DbSet<Room> Rooms { get; set; }
         public DbSet<WeeklyLogs> WeeklyLogs { get; set; }
-        public DbSet<SemesterManagement> SemesterManagements { get; set; }
+        public DbSet<RoomInCharge> RoomInCharge { get; set; }
         public DbSet<ChangeTitleForm> changeTitleForms { get; set; }
         public DbSet<ChangeSupervisorForm> changeSupervisorForms { get; set; }
     }

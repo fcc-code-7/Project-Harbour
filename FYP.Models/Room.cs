@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace FYP.Models
 {
-    public class SemesterManagement : BaseEntity
+    public class Room : BaseEntity
     {
-        public string? Name { get; set; }
-        public string? Batch { get; set; }
-        public string? Year { get; set; }
+        public string? RoomNo { get; set; }
     }
 }

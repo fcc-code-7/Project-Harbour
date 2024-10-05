@@ -76,12 +76,34 @@ namespace FYP.Web.ViewModels
 
     }
 
+    public class RoomInChargeViewModel
+    {
+        public string? Id { get; set; }
+
+        public string? Email { get; set; }
+        public string? Name { get; set; }
+        public string? RoomAlloted { get; set; }
+        public string? AllotedDate { get; set; }
+
+    }
     public class FYPCommitteViewModel
     {
         public Guid Id { get; set; }
+        [Required(ErrorMessage = "Room Incharge Email is required")]
+        public string? RoomInChargeEmail { get; set; }
+        [Required(ErrorMessage = "Room Incharge Name is required")]
+        public string? RoomInChargeName { get; set; }
         public string? groupID { get; set; }
+        public string? EvaluationID { get; set; }
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
+        [Required(ErrorMessage = "Room No is required")]
+        public string? Room { get; set; }
+        public DateTime AppointedDate { get; set; }
+        public DateTime AppointedTime { get; set; }
+        public string? Lapse { get; set; }
+        public string? RoomIncharge { get; set; }
+
         public string? batch { get; set; }
         public string? assignRequest { get; set; }
 
@@ -89,8 +111,17 @@ namespace FYP.Web.ViewModels
         public List<FetchSupervisorListViewModel> SupervisorList1 { get; set; }
         public List<FetchSupervisorListViewModel> SupervisorList2 { get; set; }
         public List<string> batches { get; set; }
+
+        public List<RoomViewModel> Rooms { get; set; }
+        public List<RoomInChargeViewModel> roomInCharges { get; set; }
     }
 
+    public class RoomViewModel
+    {
+        public string? Id { get; set; }
+        public string? RoomNo { get; set; }
+
+    }
     public class FetchGroupListViewModel
     {
         public string? groupID { get; set; }

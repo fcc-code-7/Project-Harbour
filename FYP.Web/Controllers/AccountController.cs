@@ -71,15 +71,8 @@ namespace FYP.Web.Controllers
 
         public IActionResult Register()
         {
-            var model = new RegisterViewModel()
-            {
-                DesignationList = _context.Designations.Select(x => new DesignationViewModel
-                {
-                    Id = x.ID.ToString(),
-                    Name = x.Name
-                }).ToList()
-            };
-            return View(model);
+            
+            return View();
         }
 
         [HttpPost]

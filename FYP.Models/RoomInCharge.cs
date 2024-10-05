@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace FYP.Models
 {
-    public class Designation : BaseEntity
+    public class RoomInCharge : BaseEntity
     {
+        public string? Email { get; set; }
         public string? Name { get; set; }
+        public string? RoomAlloted { get; set; }
+        public string? AllotedDate { get; set; }
+
     }
 }

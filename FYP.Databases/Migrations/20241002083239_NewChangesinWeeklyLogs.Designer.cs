@@ -3,6 +3,7 @@ using System;
 using FYP.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FYP.Databases.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241002083239_NewChangesinWeeklyLogs")]
+    partial class NewChangesinWeeklyLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -258,13 +261,7 @@ namespace FYP.Databases.Migrations
                     b.Property<DateTime>("AppointedTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Endime")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("EvaluationID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Lapse")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Member1ID")
@@ -600,41 +597,38 @@ namespace FYP.Databases.Migrations
                     b.ToTable("changeSupervisorForms");
                 });
 
-            modelBuilder.Entity("FYP.Models.Room", b =>
+            modelBuilder.Entity("FYP.Models.Designation", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoomNo")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("FYP.Models.RoomInCharge", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AllotedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RoomAlloted")
+                    b.HasKey("ID");
+
+                    b.ToTable("Designations");
+                });
+
+            modelBuilder.Entity("FYP.Models.SemesterManagement", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Batch")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Year")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
-                    b.ToTable("RoomInCharge");
+                    b.ToTable("SemesterManagements");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

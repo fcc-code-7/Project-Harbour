@@ -6,16 +6,16 @@
 
 <!-- BEGIN: Content-->
 <div id="ChangeDiv">
-<div class="app-content content" >
-    <div class="content-overlay"></div>
-    <div class="content-wrapper">
-        <div class="content-header row">
-        </div>
-        <div class="content-body ">
-            <section class="users-list-wrapper">
-                <div class="users-list-filter px-1">
-                    <!-- Section 1 -->
-                    <div class="mb-2 ">
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body ">
+                <section class="users-list-wrapper">
+                    <div class="users-list-filter px-1">
+                        <!-- Section 1 -->
+                        <div class="mb-2 ">
                             <div class="p-6 bg-white text-black rounded-lg " style="min-height:80vh">
                                 <!-- Column 1: -->
 
@@ -41,68 +41,69 @@
                                     </div>
                                 </div>
                                 @if (Model.StudentGroups == null)
-                            {
-                                <div class="container mt-0 md:mt-5 lg:mt-5">
-                                    <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
-                                        <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                            <div class="card">
-                                                <div class="card-header text-center">
-                                                    <h5 class="card-title">No Student Group Exists</h5>
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <p>It looks like there are currently no student groups available.</p>
+                                {
+                                    <div class="container mt-0 md:mt-5 lg:mt-5 ">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                            <div class="col-12 col-md-6 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header text-center">
+                                                        <h5 class="card-title">No Student Group Exists</h5>
+                                                    </div>
+                                                    <div class="card-body text-center">
+                                                        <p>It looks like there are currently no student groups available.</p>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         </div>
-
                                     </div>
-                                </div>
 
 
-                            }
-                            else
-                            {
+                                }
+                                else
+                                {
 
-                                <div class="container mt-0 md:mt-5 lg:mt-5" >
-                                    <div class="row d-flex justify-content-center " >
-                                        @foreach (var item in Model.StudentGroups)
-                                        {
+                                    <div class="container mt-0 md:mt-5 lg:mt-5">
+                                        <div class="row d-flex justify-content-center ">
+                                            @foreach (var item in Model.StudentGroups)
+                                            {
 
-                                            <div class="col-12 col-md-6 col-sm-12 col-lg-5">
-                                                <div class="card p-0">
-                                                    <div class="card-header no-border">
-                                                        <h5 class="card-title mx-1">@item.Name</h5>
+                                                <div class="col-12 col-md-6 col-sm-12 col-lg-5">
+                                                    <div class=" card p-0 cardList">
+                                                        <div class="card-header no-border">
+                                                            <h5 class="card-title mx-1">@item.Name</h5>
 
                                                             @if (item.Member1Name == "Not Assigned" && item.Member2Name == "Not Assigned")
                                                             {
-                                                                <span><i class="feather icon-check-circle text-danger"></i></span>
+                                                                <span class="custom-badge">Not Assigned</span>
                                                             }
                                                             else
                                                             {
-                                                                <span><i class="feather icon-check-circle text-success"></i></span>
+                                                                <span class="custom-badge-green">UnAssigned</span>
+
                                                             }
                                                         </div>
-                                                    <div class="card-body pt-0 ">
-                                                        <div class="widget-49">
-                                                            <div class="widget-49-title-wrapper">
-                                                                <div class="widget-49-date-warning">
-                                                                    <span class="widget-49-date-day">@(counter = counter + 1)</span>
+                                                        <div class="card-body pt-0 ">
+                                                            <div class="widget-49">
+                                                                <div class="widget-49-title-wrapper">
+                                                                    <div class="widget-49-date-warning">
+                                                                        <span class="widget-49-date-day">@(counter = counter + 1)</span>
+                                                                    </div>
+                                                                    <div class="widget-49-meeting-info">
+                                                                        <span class="widget-49-pro-title ">Project: @(item.supervisorname ?? "N/A")</span>
+                                                                        <span class="widget-49-meeting-time">@item.Batch</span>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="widget-49-meeting-info">
-                                                                    <span class="widget-49-pro-title ">Supervisor Name: @(item.supervisorname ?? "N/A")</span>
-                                                                    <span class="widget-49-meeting-time">@item.Batch</span>
-                                                                </div>
-                                                            </div>
-                                                            <ol class="widget-49-meeting-points">
-                                                                <li class="widget-49-meeting-item">
-                                                                    <span>
-                                                                        Supervisor:
+                                                                <ol class="widget-49-meeting-points">
+                                                                    <li class="widget-49-meeting-item">
                                                                         <span>
-                                                                            @(item.supervisorname ?? "Name yet to Enter")
+                                                                            Supervisor:
+                                                                            <span>
+                                                                                @(item.supervisorname ?? "Name yet to Enter")
+                                                                            </span>
                                                                         </span>
-                                                                    </span>
-                                                                </li>
-                                                                <li class="widget-49-meeting-item">
+                                                                    </li>
+                                                                    <li class="widget-49-meeting-item">
                                                                         <span>
                                                                             Evaluator 1:
                                                                             <span>
@@ -110,43 +111,43 @@
                                                                             </span>
                                                                         </span>
 
-                                                                </li>
-                                                                <li class="widget-49-meeting-item">
+                                                                    </li>
+                                                                    <li class="widget-49-meeting-item">
                                                                         <span>
                                                                             Evaluator 2:
-                                                                            <span >
+                                                                            <span>
                                                                                 @(item.Member2Name ?? "Not Assigned")
                                                                             </span>
                                                                         </span>
 
-                                                                </li>
-                                                            </ol>
-                                                            <div class="widget-49-meeting-action">
-                                                                    
-                                                                        <button class="btn btn-primary btn-sm assignGroup" data-id="@item.Id" data-batch="@item.Batch">Assign</button>
+                                                                    </li>
+                                                                </ol>
+                                                                <div class="widget-49-meeting-action">
 
-@*                                                                 <a class="btn btn-sm btn-flash-border-warning ChangeSupervisor" data-value="@item.GrouID">Change Supervisor</a>
- *@                                                                @* <a class="btn btn-sm btn-flash-border-warning">Edit</a> *@
-                                                                @* <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a> *@
+                                                                    <button class="btn btn-primary btn-sm assignGroup" data-id="@item.Id" data-batch="@item.Batch">Assign</button>
+
+                                                                    @*                                                                 <a class="btn btn-sm btn-flash-border-warning ChangeSupervisor" data-value="@item.GrouID">Change Supervisor</a>
+                                                            *@                                                                @* <a class="btn btn-sm btn-flash-border-warning">Edit</a> *@
+                                                                    @* <a href="#" class="btn btn-sm btn-flash-border-warning">View All</a> *@
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                        }
-                                        
+                                            }
 
 
+
+                                        </div>
                                     </div>
-                                </div>
-                            }
+                                }
                             </div>
 
                         </div>
                     </div>
 
-                </div>
+            </div>
             </section>
         </div>
     </div>
@@ -159,6 +160,44 @@
 
 
 <style>
+    
+    .custom-badge-green {
+        background-color: #bbf7d0; /* Tailwind bg-green-100 */
+        color: #065f46; /* Tailwind text-green-800 */
+        font-size: 0.55rem; /* Tailwind text-xs */
+        font-weight: 500; /* Tailwind font-medium */
+        margin-end: 0.5rem; /* Tailwind me-2 (margin-right in LTR) */
+        padding: 0.125rem 0.125rem; /* Tailwind px-2.5 py-0.5 */
+        border-radius: 0.25rem; /* Tailwind rounded */
+        border: 1px solid #34d399; /* Tailwind border-green-400 */
+    }
+
+    /* Dark mode styles */
+    @@media (prefers-color-scheme: dark) {
+        .custom-badge-green {
+            background-color: #374151; /* Tailwind dark:bg-gray-700 */
+            color: #6ee7b7; /* Tailwind dark:text-green-400 */
+        }
+    }
+
+    .custom-badge {
+        background-color: #fee2e2; /* Tailwind bg-red-100 */
+        color: #b91c1c; /* Tailwind text-red-800 */
+        font-size: 0.55rem; /* Tailwind text-xs */
+        font-weight: 500; /* Tailwind font-medium */
+        margin-end: 0.5rem; /* Tailwind me-2 (margin-right in LTR) */
+        padding: 0.125rem 0.125rem; /* Tailwind px-2.5 py-0.5 */
+        border-radius: 0.25rem; /* Tailwind rounded */
+        border: 1px solid #fca5a1; /* Tailwind border-red-400 */
+    }
+
+    /* Dark mode styles */
+    @@media (prefers-color-scheme: dark) {
+        .custom-badge {
+            background-color: #374151; /* Tailwind dark:bg-gray-700 */
+            color: #fb7185; /* Tailwind dark:text-red-400 */
+        }
+    }
 
     /* For Chrome, Safari, Edge, and Opera */
     ::-webkit-scrollbar {
@@ -498,7 +537,7 @@
             $.ajax({
                 url: "/studentgroups/FetchBatches",
                 type: "GET",
-                data: { id: groupId, batch: batches , assignRequest : true },
+                data: { id: groupId, batch: batches, assignRequest: true },
                 success: function (response) {
                     hideLoadingSpinner(); // Hide the loading spinner
                     $("#MainContainer").html(response);
@@ -513,7 +552,7 @@
 
         $(".batchChange").click(function () {
             var batch = $(this).data("id");
-                $.ajax({
+            $.ajax({
                 url: '/cordinator/StudentGroupbyBatch',
                 type: "GET",
                 data: { batch: batch }, // Send batch as a query parameter
@@ -522,12 +561,12 @@
 
                     $("#dropdownMenuButton").text(batch);
                 },
-                    error: function () {
+                error: function () {
 
-                    }
-                });
+                }
+            });
 
-            
+
         });
 
     });

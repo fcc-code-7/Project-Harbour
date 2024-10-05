@@ -11,33 +11,33 @@ using System.Threading.Tasks;
 
 namespace FYP.Services
 {
-    public class DesignationService : IDesignationService
+    public class RoomService : IRoomService
     {
-        private readonly IDesignationRepository _repository;
+        private readonly IRoomRepository _repository;
 
-        public DesignationService(IDesignationRepository repository)
+        public RoomService(IRoomRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Designation> GetByIdAsync(string id)
+        public async Task<Room> GetByIdAsync(string id)
         {
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Designation>> GetAllAsync()
+        public async Task<IEnumerable<Room>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
 
-        public async Task AddAsync(Designation Designation)
+        public async Task AddAsync(Room Room)
         {
-            await _repository.AddAsync(Designation);
+            await _repository.AddAsync(Room);
         }
 
-        public async Task UpdateAsync(Designation Designation)
+        public async Task UpdateAsync(Room Room)
         {
-            await _repository.UpdateAsync(Designation);
+            await _repository.UpdateAsync(Room);
         }
 
         public async Task DeleteAsync(string id)

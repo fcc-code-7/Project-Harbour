@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace FYP.Repositories.Interfaces
 {
-    public interface IDesignationRepository
+    public interface IRoomRepository
     {
-        Task<Designation> GetByIdAsync(string id);
-        Task<IEnumerable<Designation>> GetAllAsync();
-        Task AddAsync(Designation Designation);
-        Task UpdateAsync(Designation Designation);
+        Task<Room> GetByIdAsync(string id);
+        Task<IEnumerable<Room>> GetAllAsync();
+        Task AddAsync(Room Room);
+        Task UpdateAsync(Room Room);
         Task DeleteAsync(string id);
     }
 
