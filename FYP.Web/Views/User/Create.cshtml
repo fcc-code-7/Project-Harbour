@@ -251,6 +251,41 @@
 
 
                                                 </div>
+                                                @if (User.IsInRole("Student") || User.IsInRole("Supervisor"))
+                                                {
+                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon2">
+                                                                            <i class="feather icon-list"></i>
+                                                                        </span>
+                                                                    </div>
+
+                                                                    @{
+                                                                        var areaOfInterests = new List<SelectListItem>
+                                                                {
+                                                                new SelectListItem { Value = "", Text = "Select Area of Interests", Selected = string.IsNullOrEmpty(Model.areaofintrest), Disabled = true },
+                                                                new SelectListItem { Value = "1", Text = "Industrial", Selected = Model.areaofintrest == "1" },
+                                                                new SelectListItem { Value = "2", Text = "AI(Mining/Computer Vision/Image processing/Machine Learning)", Selected = Model.areaofintrest == "2" },
+                                                                new SelectListItem { Value = "3", Text = "Mobile App", Selected = Model.areaofintrest == "3" },
+                                                                new SelectListItem { Value = "4", Text = "Wireless Communication", Selected = Model.areaofintrest == "4" },
+                                                                new SelectListItem { Value = "5", Text = "Network & Security", Selected = Model.areaofintrest == "5" },
+                                                                new SelectListItem { Value = "6", Text = "Web App", Selected = Model.areaofintrest == "6" },
+                                                                new SelectListItem { Value = "7", Text = "Software Application/ERP", Selected = Model.areaofintrest == "7" },
+                                                                new SelectListItem { Value = "8", Text = "IOT/(H/W+S/W Application)", Selected = Model.areaofintrest == "8" }
+                                                                };
+                                                                    }
+
+                                                                    @Html.DropDownList("areaofintrest", areaOfInterests, new { @class = "form-control areaofintrest" })
+                                                                </div>
+                                                                <span asp-validation-for="areaofintrest" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                }
+
                                             </div>
                                         </div>
 
@@ -275,8 +310,26 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-
 <style>
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
+
 
     #imageContainer {
         width: 200px;
@@ -407,6 +460,7 @@
                 Enrollment: $("#Enrollment").val(),
                 regNo: $("#regNo").val(),
                 semester: $("#semester").val(),
+                areaofintrest: $(".areaofintrest").val(),
             };
             $.ajax({
                 type: "POST",

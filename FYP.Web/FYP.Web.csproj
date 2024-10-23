@@ -32,4 +32,11 @@
     <None Include="wwwroot\Logo\istockphoto-1359362604-1024x1024.jpg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\StudentGroups\RoomIncharges.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

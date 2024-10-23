@@ -1,7 +1,7 @@
 ﻿@model FYP.Web.ViewModels.AppUserViewModel
 
 @{
-   
+
 
 }
 @section Styles {
@@ -16,11 +16,11 @@
         <div class="content-body">
             <!-- Section 1 -->
             <div class="mb-2">
-                <div class="p-6 bg-white text-black rounded-lg" >
+                <div class="p-6 bg-white text-black rounded-lg  bg-opacity-100 backdrop-blur-lg shadow-md ">
                     <!-- Column 1: -->
 
                     <div class="w-full flex sm:flex-col lg:flex-row gap-4">
-                        <div class="p-8 text-2xl font-bold">
+                        <div class="p-10 text-2xl font-bold">
                             <h1>Profile</h1>
                         </div>
                         <div class="ml-auto">
@@ -56,10 +56,10 @@
 
                     <!-- Column 3 -->
                     <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mt-8 gap-6">
-                        <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                        <div class="flex p-2 bg-white rounded  bg-opacity-30 backdrop-blur-lg shadow-sm border border-dark">
                             <div class="flex-grow">
-@*                                 <h6>Personal info</h6>
- *@                                <table class="responsive">
+                                @*                                 <h6>Personal info</h6>
+                                *@                                <table class="responsive">
                                     @if (User.IsInRole("Student"))
                                     {
                                         <tr>
@@ -80,19 +80,20 @@
                                         </tr>
                                     }
                                     else
-                                    {
-                                        <tr>
-                                            <td class="text-lg font-bold">Role</td>
-                                            <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center ">
-                                                    @Model.Role
-                                                </span>
-                                            </td>
-                                        </tr>
+                                    {@*
+                                    <tr>
+                                    <td class="text-lg font-bold">Role</td>
+                                    <td>
+                                    <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center ">
+                                    @Model.Role
+                                    </span>
+                                    </td>
+                                    </tr> *@
                                         <tr>
                                             <td class="text-lg font-bold">Department</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+
+                                                <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
                                                     @(Model.Department ?? "N/A")
                                                 </span>
                                             </td>
@@ -101,7 +102,7 @@
                                     <tr>
                                         <td class="text-lg font-bold">CNIC</td>
                                         <td>
-                                            <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                            <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
                                                 @(Model.Cnic ?? "N/A")
                                             </span>
                                         </td>
@@ -109,7 +110,7 @@
                                     <tr>
                                         <td class="text-lg font-bold">Address</td>
                                         <td>
-                                            <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
                                                 @(Model.Address ?? "N/A")
                                             </span>
                                         </td>
@@ -120,7 +121,7 @@
 
                         @if (User.IsInRole("Student"))
                         {
-                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-sm rounded-lg border border-dark">
                                 <div class="flex-grow">
                                     <h6>Group info</h6>
                                     <table class="responsive">
@@ -149,7 +150,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-lg font-bold">Leader Name:</td>
+                                            <td class="text-lg font-bold">Supervisor Room:</td>
                                             <td>
                                                 <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
                                                     @(Model.LeaderName ?? "User")
@@ -163,39 +164,85 @@
                         }
                         else if (User.IsInRole("Supervisor"))
                         {
-                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+                            <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-sm rounded-lg shadow-sm rounded-lg border border-dark">
                                 <div class="flex-grow">
-@*                                     <h6>Group info</h6>
- *@                                    <table class="">
+                                    @*                                     <h6>Group info</h6>
+                                *@                                    <table class="">
                                         <tr>
-                                            <td class="text-lg font-bold">Group 1</td>
+                                            <td class="text-lg font-bold">Area of Interest</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.group1name ?? "No Group 1 Exist")
-                                                </span>
+                                                @if (Model.areaofintrest == "1")
+                                                {
+                                                    <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                        Industrial
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "2")
+                                                {
+                                                    <span class="text-blue-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                                                        AI (Mining/Computer Vision...)
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "3")
+                                                {
+                                                    <span class="text-yellow-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
+                                                        Mobile App
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "4")
+                                                {
+                                                    <span class="text-red-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+                                                        Wireless Communication
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "5")
+                                                {
+                                                    <span class="text-purple-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">
+                                                        Network & Security
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "6")
+                                                {
+                                                    <span class="text-orange-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-orange-900 dark:text-orange-300">
+                                                        Web App
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "7")
+                                                {
+                                                    <span class="text-pink-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-pink-900 dark:text-pink-300">
+                                                        Software Application/ERP
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "8")
+                                                {
+                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                        IOT (H/W + S/W Application)
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == null)
+                                                {
+                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                        N/A
+                                                    </span>
+                                                }
+                                               
                                             </td>
                                         </tr>
+
                                         <tr>
-                                            <td class="text-lg font-bold">Leader Email</td>
-                                            <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.group1leader ?? "N/A")
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-lg font-bold">Group 2</td>
+                                            <td class="text-lg font-bold">Groups</td>
                                             <td>
                                                 <span class="mx-2 text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
                                                     @(Model.group2name ?? "No Group 2 Exist")
                                                 </span>
                                             </td>
                                         </tr>
+
                                         <tr>
-                                            <td class="text-lg font-bold">Leader Email</td>
+                                            <td class="text-lg font-bold">Role</td>
                                             <td>
-                                                <span class="mx-2 text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.group2leader ?? "N/A")
+                                                <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                    @Model.Role
                                                 </span>
                                             </td>
                                         </tr>
@@ -210,162 +257,240 @@
                 </div>
             </div>
             <!-- Section 2 -->
-@*             <div class="">
-                <div class="bg-white p-6 text-black rounded-lg">
-                    <!-- Column 1 -->
-                    <div class="grid sm:grid-cols-1 lg:grid-cols-2">
-                        <div>
-                            <p class="p-8 ml-7 text-2xl font-bold ">Attendance History</p>
-                        </div>
-                        <div class="grid grid-cols-4 pt-8">
-                            <div>
-                                <i class="fa-solid fa-braille border border-1 border-white pt-1 pb-1 pr-2 pl-2 "></i>
-                            </div>
-                            <div>
-                                <i class="fa-solid fa-bars border border-1 border-white pt-1 pb-1 pr-2 pl-2"></i>
-                            </div>
-                            <div>
-                                <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
-                                    <i class="fa-solid fa-sort"></i> Sort
-                                </label>
-                            </div>
-                            <div>
-                                <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
-                                    <i class="fa-solid fa-filter"></i> Filter
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Column 2 -->
-                    <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
-                        <!-- Cards -->
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
-                                        On time
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
-                                        Late
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-red-700 border border-2 border-white pl-1 pr-1 bg-red-100 rounded-lg">
-                                        On time
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
-                                        On time
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg ">
-                                        On time
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
-                            <!-- card 1 -->
-                            <div class="grid grid-cols-2">
-                                <div>
-                                    <label for="" class="font-bold">
-                                        <i class="fa-regular fa-clock"></i> March 08 2023
-                                    </label>
-                                    <p class="pt-3">check in time</p>
-                                    <p>08:53</p>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
-                                        On time
-                                    </p>
-                                    <p class="pt-3">check out time</p>
-                                    <p>17:15</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+            @*             <div class="">
+            <div class="bg-white p-6 text-black rounded-lg">
+            <!-- Column 1 -->
+            <div class="grid sm:grid-cols-1 lg:grid-cols-2">
+            <div>
+            <p class="p-8 ml-7 text-2xl font-bold ">Attendance History</p>
             </div>
- *@        </div>
+            <div class="grid grid-cols-4 pt-8">
+            <div>
+            <i class="fa-solid fa-braille border border-1 border-white pt-1 pb-1 pr-2 pl-2 "></i>
+            </div>
+            <div>
+            <i class="fa-solid fa-bars border border-1 border-white pt-1 pb-1 pr-2 pl-2"></i>
+            </div>
+            <div>
+            <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
+            <i class="fa-solid fa-sort"></i> Sort
+            </label>
+            </div>
+            <div>
+            <label for="" class="border border-1 border-white pl-3 pr-3 pt-1 pb-1">
+            <i class="fa-solid fa-filter"></i> Filter
+            </label>
+            </div>
+            </div>
+            </div>
+            <!-- Column 2 -->
+            <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
+            <!-- Cards -->
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
+            On time
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
+            Late
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-red-700 border border-2 border-white pl-1 pr-1 bg-red-100 rounded-lg">
+            On time
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg">
+            On time
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-green-700 border border-2 border-white pl-1 pr-1 bg-green-100 rounded-lg ">
+            On time
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            <div class="text-center p-2 shadow-lg rounded-lg bg-white bg-opacity-30 backdrop-blur-md shadow-lg rounded-lg">
+            <!-- card 1 -->
+            <div class="grid grid-cols-2">
+            <div>
+            <label for="" class="font-bold">
+            <i class="fa-regular fa-clock"></i> March 08 2023
+            </label>
+            <p class="pt-3">check in time</p>
+            <p>08:53</p>
+            </div>
+            <div>
+            <p class="font-bold text-yellow-700 border border-2 border-white pl-1 pr-1 bg-yellow-100 rounded-lg">
+            On time
+            </p>
+            <p class="pt-3">check out time</p>
+            <p>17:15</p>
+            </div>
+            </div>
+            </div>
+
+            </div>
+            </div>
+            </div>
+            *@
+        </div>
     </div>
+    <div id="toast-container"></div>
 </div>
 <!-- END: Content-->
+@if (Context.Request.Query["toastrnotification"] == "Updated")
+{
+    <script>
+        // Function to show the toast notification
+        function showCustomToast() {
+            const toastContainer = document.getElementById('toast-container');
+
+            const toast = document.createElement('div');
+            toast.classList.add('Success-toast');
+
+            toast.innerHTML = `
+                         <div class="Success-toast-message">Successfully Updated!</div>
+                                                    `;
+
+            toastContainer.appendChild(toast);
+
+            // Show the toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            // Remove the toast after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300); // Allow for the transition
+            }, 5000);
+        }
+
+        // Automatically call the showCustomToast function to display the toast
+        showCustomToast();
+
+        // Remove the query parameters from the URL without reloading the page
+        if (window.history.replaceState) {
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+    </script>
+}
+@if (Context.Request.Query["toastrnotification"] == "Failed")
+{
+    <script>
+        // Function to show the toast notification
+        function showCustomToast() {
+            const toastContainer = document.getElementById('toast-container');
+
+            const toast = document.createElement('div');
+            toast.classList.add('Warning-toast');
+
+            toast.innerHTML = `
+                        <div class="Warning-toast-message">Failed to Update, Try Again!</div>
+                                                    `;
+
+            toastContainer.appendChild(toast);
+
+            // Show the toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            // Remove the toast after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300); // Allow for the transition
+            }, 5000);
+        }
+
+        // Automatically call the showCustomToast function to display the toast
+        showCustomToast();
+
+        // Remove the query parameters from the URL without reloading the page
+        if (window.history.replaceState) {
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+    </script>
+}
 
 @section Scripts {
 
@@ -391,20 +516,78 @@
             });
 
         });
-      
+
     });
+
+
+
 </script>
 
 <style>
+    #toast-container {
+        position: fixed;
+        top: 80px; /* Changed from bottom to top */
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .Warning-toast {
+        display: flex;
+        flex-direction: column;
+        background-color: #facc15; /* Custom background color */
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        width: 250px;
+        opacity: 0; /* Initially hidden */
+        transform: translateY(-20px); /* Slightly above the viewport */
+        transition: opacity 0.3s ease, transform 0.5s ease;
+    }
+
+        .Warning-toast.show {
+            opacity: 1; /* Fully visible */
+            transform: translateY(0); /* Slide to position */
+        }
+
+    .Warning-toast-message {
+        font-size: 14px;
+    }
+
+    .Success-toast {
+        display: flex;
+        flex-direction: column;
+        background-color: #6ee7b7;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        width: 250px;
+        opacity: 0; /* Initially hidden */
+        transform: translateY(-20px); /* Slightly above the viewport */
+        transition: opacity 0.3s ease, transform 0.5s ease;
+    }
+
+        .Success-toast.show {
+            opacity: 1; /* Fully visible */
+            transform: translateY(0); /* Slide to position */
+        }
+
+    .Success-toast-message {
+        font-size: 14px;
+    }
+
     .centered-content {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
     }
+
     body {
         overflow: hidden;
     }
+
     .badge-pill {
         font-size: 12px;
         padding: 0.4rem 0.75rem;

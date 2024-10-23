@@ -44,7 +44,8 @@ namespace FYP.Repositories.Implementation
 
         public async Task DeleteAsync(string id)
         {
-            var Room = await GetByIdAsync(id);
+            var Rooms = await GetAllAsync();
+            var Room = Rooms.Where(x=>x.ID.ToString() == id).FirstOrDefault();
             if (Room != null)
             {
                 _context.Rooms.Remove(Room);

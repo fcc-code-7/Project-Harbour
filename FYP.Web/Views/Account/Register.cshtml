@@ -35,7 +35,7 @@
 
 <body>
     <!-- Sign Up Form -->
-    <div class="container w-75 p-lg-5  shadow-lg mt-4 mb-3 ">
+    <div class="container w-75 p-md-5  shadow-lg mt-4 mb-3 ">
         <div class="row ">
 
             <!-- Text Portion -->
@@ -106,8 +106,7 @@
                                         class="w-100 border-0 border-bottom border-1 border-dark p-2 ps-5" required>
                                     <option selected value="">Select Role</option>
                                     <option value="Supervisor">Supervisor</option>
-                                    <option value="Coordinator">Coordinator</option>
-                                    <option value="Internal/External">Internal/External</option>
+                                    <option value="Cordinator">Cordinator</option>
                                 </select>
                             </div>
                             <span asp-validation-for="Role" class="text-danger text-start"></span>
@@ -191,4 +190,24 @@
     .error-icon {
         color: red !important;
     }
+
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
+
 </style>

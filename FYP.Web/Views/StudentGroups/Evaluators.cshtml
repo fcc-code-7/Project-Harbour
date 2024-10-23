@@ -16,7 +16,7 @@
                     <div class="users-list-filter px-1">
                         <!-- Section 1 -->
                         <div class=" ">
-                            <div class="p-3 bg-white text-black rounded-lg customheightcard ">
+                            <div class="p-3 bg-white text-black rounded-lg customheightcard bg-opacity-100 backdrop-blur-lg shadow-md">
 
                                 <!-- Column 1: -->
                                 <div class="" style="min-height:100px">
@@ -28,14 +28,15 @@
                                         </div>
 
                                     </div>
-                                    <form class="form" id="submitform">
+                                    <form class="form scrollable-div overflow-auto p-1" id="submitform">
                                         <div class="modal-body">
                                             <div class="form-body">
                                                 <div class="row d-flex justify-content-center">
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         <input type="hidden" value="@Model.groupID" name="groupIDs" id="groupIDs" />
                                                         <input type="hidden" value="@Model.batch" name="batches" id="batches" />
-                                                       @* Evaluation *@
+                                                        <input type="hidden" value="@Model.EvaluationID" name="Evaluation" id="Evaluation" />
+                                                        @* Batch *@
                                                         <div class="form-group">
                                                             <label>Batch</label>
 
@@ -48,7 +49,7 @@
                                                                     </div>
                                                                     @if (Model.batches != null)
                                                                     {
-                                                                        <select asp-for="batch" name="batch" id="batch" class="form-control batch">
+                                                                        <select asp-for="batch" name="batch" id="batch" class="form-control batchSelect">
                                                                             <option value="">Select Batch</option>
 
                                                                             @foreach (var item in Model.batches)
@@ -73,6 +74,42 @@
                                                                 <span asp-validation-for="batch" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
+                                                    </div>
+                                                    @* Evaluation *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                        @* Evaluation *@
+                                                        <div class="form-group">
+                                                            <label>Evaluation</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text " id="basic-addon3">
+                                                                            <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    @if (Model.batch != null)
+                                                                    {
+
+
+
+                                                                        @Html.DropDownListFor(model => model.EvaluationID,
+                                                                                 new SelectList(Model.Evaluations, Model.EvaluationID),
+                                                                                 "Select Evaluation",
+                                                                                 new { @class = "form-control EvaluationSelect", id = "EvaluationID" })
+                                                                        <span asp-validation-for="EvaluationID" class="text-danger"></span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                    }
+                                                                </div>
+                                                                <span asp-validation-for="EvaluationID" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         @* Group *@
                                                         <div class="form-group">
                                                             <label>Groups</label>
@@ -84,7 +121,7 @@
                                                                             <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
                                                                         </span>
                                                                     </div>
-                                                                    @if (Model.studentGroups != null)
+                                                                    @if (Model.studentGroups != null && Model.EvaluationID != null)
                                                                     {
                                                                         <select asp-for="groupID" name="groupID" id="groupID" class="form-control groupID">
                                                                             <option value="">Select Student Groups</option>
@@ -104,14 +141,67 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                        <input type="text" class="form-control" value="Select Evaluation First" aria-describedby="basic-addon1" readonly required>
                                                                     }
 
                                                                 </div>
                                                                 <span asp-validation-for="groupID" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
-                                                        @* Date *@
+                                                    </div>
+                                                    @* Room *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
+                                                        <div id="RoomContainer">
+                                                            <div class="form-group">
+                                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                    <label>Room <span class="text-danger">(if not Listed click Add)</span></label>
+                                                                    <a class="custom-badge-green" id="AddRoom">Add</a>
+                                                                </div>
+                                                                <fieldset>
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-prepend">
+                                                                            <span class="input-group-text" id="basic-addon3">
+                                                                                <i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        @if (Model.EvaluationID != null)
+                                                                        {
+                                                                            @if (Model.Rooms != null)
+                                                                            {
+                                                                                <select asp-for="Room" name="Room" id="Room" class="form-control Room">
+                                                                                    <option value="">Select Room</option>
+                                                                                    @foreach (var item in Model.Rooms)
+                                                                                    {
+                                                                                        if (Model.Rooms != null && item.Id == Model.Room)
+                                                                                        {
+                                                                                            <option value="@item.Id" selected>@item.RoomNo</option>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <option value="@item.Id">@item.RoomNo</option>
+                                                                                        }
+                                                                                    }
+                                                                                </select>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <select class="form-control">
+                                                                                    <option value="" selected>Add Room First</option>
+                                                                                </select>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <input type="text" class="form-control" value="Select Group First" aria-describedby="basic-addon1" readonly required>
+                                                                        }
+                                                                    </div>
+                                                                    <span asp-validation-for="Rooms" class="text-danger"></span>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @* Date *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         <div class="form-group">
                                                             <label>Date</label>
 
@@ -122,37 +212,34 @@
                                                                         <span class="input-group-text " id="basic-addon1"><i class="feather icon-calendar"></i></span>
                                                                     </div>
                                                                     <input type="date" class="form-control" id="AppointedDate" placeholder="Enter AppointedDate" asp-for="AppointedDate" aria-describedby="basic-addon1" name="AppointedDate" required>
-
-
                                                                 </div>
                                                                 <span asp-validation-for="AppointedDate" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
-                                                      @* Evaluator1 *@
+                                                    </div>
+                                                    @* Time *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         <div class="form-group">
-                                                            <label>Lapse<span class="text-danger">(How Long Evaluation occurs?)</span></label>
+                                                            <label>Time  <span class="text-danger">(Automatically Adjusted according to Room No)</span></label>
 
                                                             <fieldset>
                                                                 <div class="input-group">
+
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text " id="basic-addon3"><i class="fa fa-clock-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
+                                                                        <span class="input-group-text " id="basic-addon1"><i class="feather icon-clock"></i></span>
                                                                     </div>
+                                                                    <input type="time" class="form-control" id="AppointedTime" placeholder="Enter Time" asp-for="AppointedTime" aria-describedby="basic-addon1" name="AppointedTime" required>
 
-                                                                    <select asp-for="Lapse" name="Lapse" id="Lapse" class="form-control">
-                                                                            <option value="">Select Lapse</option>
 
-                                                                                    <option value="15">15 mins</option>
-                                                                                    <option value="30">30 mins</option>
-                                                                                    <option value="45">45 mins</option>
-                                                                                    <option value="60">60 mins</option>
-                                                                           
-                                                                        </select>
-                                                                   
+
                                                                 </div>
-                                                                <span asp-validation-for="Lapse" class="text-danger"></span>
+                                                                <span asp-validation-for="AppointedTime" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
-                                                        @* Evaluator1 *@
+                                                    </div>
+                                                  
+                                                    @* Evaluator1 *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         <div class="form-group">
                                                             <label>Evaluator 1</label>
 
@@ -188,161 +275,10 @@
                                                                 <span asp-validation-for="Member1ID" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
-                                                        @if (Model.assignRequest == "true")
-                                                        {
-                                                            <input type="hidden" name="assignRequest" id="AssignRequest" value="true" />
-
-                                                        }
-
                                                     </div>
-                                                    <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
-                                                        @* Evaluation *@
-                                                        <div class="form-group">
-                                                            <label>Evaluation</label>
+                                                    @* Evaluator2 *@
+                                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
 
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                        <span class="input-group-text " id="basic-addon3">
-                                                                            <i class="fa fa-graduation-cap" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
-                                                                        </span>
-                                                                    </div>
-                                                                    @if (Model.batches != null)
-                                                                    {
-                                                                        <select asp-for="batch" name="batch" id="batch" class="form-control batch">
-                                                                            <option value="">Select Batch</option>
-
-                                                                            @foreach (var item in Model.batches)
-                                                                            {
-                                                                                if (Model.batch != null && item == Model.batch)
-                                                                                {
-                                                                                    <option value="@item" selected>@item</option>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <option value="@item">@item</option>
-                                                                                }
-                                                                            }
-                                                                        </select>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <input type="text" class="form-control" value="No Batch Exist" aria-describedby="basic-addon1" readonly required>
-                                                                    }
-
-                                                                </div>
-                                                                <span asp-validation-for="batch" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                        @* Room *@
-                                                        <div id="RoomContainer">
-
-                                                        <div class="form-group">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <label>Room <span class="text-danger">(if not Listed click Add)</span></label>
-                                                                <a class="custom-badge-green" id="AddRoom">Add</a>
-                                                            </div>
-
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                        <span class="input-group-text " id="basic-addon3"><i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
-                                                                    </div>
-                                                                    @if (Model.Rooms != null)
-                                                                    {
-                                                                            <select asp-for="Room" name="Room" id="Room" class="form-control">
-                                                                            <option value="">Select Room</option>
-
-                                                                            @foreach (var item in Model.Rooms)
-                                                                            {
-                                                                                if (Model.Rooms!= null && item.Id == Model.Room)
-                                                                                {
-                                                                                    <option value="@item.Id" selected>@item.RoomNo</option>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <option value="@item.Id">@item.RoomNo</option>
-                                                                                }
-                                                                            }
-
-                                                                        </select>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <select class="form-control">
-                                                                            <option value="">Select Room</option>
-                                                                            <option value="307">307</option>
-                                                                            <option value="407">407</option>
-                                                                            <option value="507">507</option>
-
-                                                                        </select>
-                                                                    }
-                                                                </div>
-                                                                <span asp-validation-for="Member2ID" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                        </div>
-                                                        @* Time *@
-                                                        <div class="form-group">
-                                                            <label>Time</label>
-
-                                                            <fieldset>
-                                                                <div class="input-group">
-
-                                                                    <div class="input-group-prepend">
-                                                                        <span class="input-group-text " id="basic-addon1"><i class="feather icon-clock"></i></span>
-                                                                    </div>
-                                                                    <input type="time" class="form-control" id="AppointedTime" placeholder="Enter Time" asp-for="AppointedTime" aria-describedby="basic-addon1" name="AppointedTime" required>
-
-
-
-                                                                </div>
-                                                                <span asp-validation-for="AppointedTime" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                        @* In-Charge *@
-                                                                    <div id="RoomInchargeContainer">
-                                                        <div class="form-group">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <label>In-Charge <span class="text-danger">(if not Listed click Add)</span></label>
-                                                                <a id="AddRoomIncharge" class="custom-badge-green">Add</a>
-                                                            </div>
-                                                            <fieldset>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                            <span class="input-group-text " id="basic-addon3"><i class="fa fa-id-badge" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
-                                                                    </div>
-                                                                    @if (Model.RoomIncharge != null)
-                                                                    {
-                                                                            <select asp-for="RoomIncharge" name="RoomIncharge" id="RoomIncharge" class="form-control">
-                                                                    <option value="">Select mins Lapse</option>
-
-                                                                    @foreach (var item in Model.roomInCharges)
-                                                                    {
-                                                                    if (Model.RoomIncharge != null && item.Id == Model.RoomIncharge)
-                                                                    {
-                                                                    <option value="@item.Id" selected>@item.Name</option>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                    <option value="@item.Id">@item.Name</option>
-                                                                    }
-                                                                    }
-
-                                                                    </select>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <select class="form-control">
-                                                                            <option value="" id="AddRoomIncharge">Add Room Incharge</option>
-                                                                        </select>
-                                                                    }
-                                                                </div>
-                                                                    <span asp-validation-for="RoomIncharge" class="text-danger"></span>
-                                                            </fieldset>
-                                                        </div>
-                                                        </div>
-                                                        @* Evaluator2 *@
                                                         <div class="form-group">
                                                             <label>Evaluator 2</label>
 
@@ -379,98 +315,72 @@
                                                             </fieldset>
                                                         </div>
                                                     </div>
+                                                    @if (Model.assignRequest == "true")
+                                                    {
+                                                        <input type="hidden" name="assignRequest" id="AssignRequest" value="true" />
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="hidden" name="assignRequest" id="AssignRequest" value="false" />
+                                                    }
+
                                                 </div>
+                                            
+                                               
+                                               
+                                                
                                             </div>
+                                        </div>
+                                
 
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-outline-primary " id="EvaluatorFormSubmit">Save</button>
-                                            </div>
-                                    </form>
-
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-outline-primary " id="EvaluatorFormSubmit">Save</button>
                                 </div>
+                                </form>
+
                             </div>
                         </div>
-
                     </div>
-                </section>
+
+            </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="modalRoom" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <label>Room No</label>
+                        <fieldset>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                    </span>
+                                </div>
+                                <!-- Changed the input field ID -->
+                                <input type="text" class="form-control" id="NewRoom" placeholder="Enter Room No" aria-describedby="basic-addon1" name="Room" required>
+                            </div>
+                            <span asp-validation-for="Room" class="text-danger"></span>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalCloseRoom">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveRoom">Save changes</button>
             </div>
         </div>
     </div>
-    <div class="modal fade " id="modalRoomIncharge" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Room Incharge</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex justify-content-center">
-                    <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label>Name</label>
-
-                            <fieldset>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-user-circle-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="RoomInChargeName" placeholder="Enter RoomInCharge Name" asp-for="RoomInChargeName" aria-describedby="basic-addon1" name="RoomInChargeName" required>
-                                </div>
-                                <span asp-validation-for="RoomInChargeName" class="text-danger"></span>
-                            </fieldset>
-                      
-                        <div class="form-group">
-                            <label>Email</label>
-                            <fieldset>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1"><i class="feather icon-mail"></i></span>
-                                    </div>
-                                    <input type="email" class="form-control" id="RoomInChargeEmail" placeholder="Enter RoomInCharge Email" asp-for="RoomInChargeEmail" aria-describedby="basic-addon1" name="RoomInChargeEmail" required>
-                                </div>
-                                <span asp-validation-for="RoomInChargeEmail" class="text-danger"></span>
-                            </fieldset>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalClose">Close</button>
-                    <button type="button" class="btn btn-primary" id="SaveRoomIncharge">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade " id="modalRoom" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Room</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex justify-content-center">
-                    <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label>Room No</label>
-
-                            <fieldset>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="Room" placeholder="Enter Room No" asp-for="Room" aria-describedby="basic-addon1" name="Room" required>
-                                </div>
-                                <span asp-validation-for="Room" class="text-danger"></span>
-                            </fieldset>
-                    </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalCloseRoom">Close</button>
-                    <button type="button" class="btn btn-primary" id="SaveRoom">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 
 </div>
 <!-- END: Content-->
@@ -586,75 +496,33 @@
 </style>
 <script>
     $(document).ready(function () {
-        $(document).on('click', '#AddRoomIncharge', function (e) {
-            e.preventDefault();
-            $('#modalRoomIncharge').modal('show');
+        $('#modalRoom').on('hidden.bs.modal', function () {
+            $('#NewRoom').val(''); // Reset the input field when modal is closed
         });
+       
+
+       
         $(document).on('click', '#AddRoom', function (e) {
             e.preventDefault();
             $('#modalRoom').modal('show');
         });
-        $(document).on('click', '#modalClose', function (e) {
-            e.preventDefault();
-            $('#modalRoomIncharge').modal('hide');
-        });
+      
         $(document).on('click', '#modalCloseRoom', function (e) {
             e.preventDefault();
             $('#modalRoom').modal('hide');
         });
-        $(document).off('click', '#SaveRoomIncharge').on('click', '#SaveRoomIncharge', function (e) {
-            showLoadingSpinner(); // Show the loading spinner
-            var Name = $("#RoomInChargeName").val();
-            var Email = $("#RoomInChargeEmail").val();
-            $.ajax({
-                url: "/studentgroups/FetchRoomIncharge",
-                type: "POST",
-                data: { name: Name, email:Email },
-                success: function (response) {
-                    $('#modalRoomIncharge').modal('hide');
-                    hideLoadingSpinner(); // Hide the loading spinner
-                    // Clear the current RoomInchargeContainer
-                    $("#RoomInchargeContainer").empty();
-
-                    // Build new in-charge dropdown
-                    var inchargeSelectHtml = '<div class="form-group"><div style="display: flex; justify-content: space-between; align-items: center;">'
-                        + '<label>In-Charge <span class="text-danger">(if not Listed click Add)</span></label>'
-                        + '<a id="AddRoomIncharge" class="custom-badge-green">Add</a></div>'
-                        + '<fieldset><div class="input-group">'
-                        + '<div class="input-group-prepend">'
-                        + '<span class="input-group-text " id="basic-addon3">'
-                        + '<i class="fa fa-id-badge" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>'
-                        + '</div>'
-                        + '<select id="RoomIncharge" class="form-control">'
-                        + '<option value="">Select In-Charge</option>';
-
-                    // Assuming response.room contains the new list of in-charges
-                    response.room.roomInCharges.forEach(function (item) {
-                        inchargeSelectHtml += '<option value="' + item.id + '">' + item.name + '</option>';
-                    });
-
-                    inchargeSelectHtml += '</select></div>'
-                        + '<span asp-validation-for="RoomIncharge" class="text-danger"></span></fieldset></div>';
-
-                    // Append the new in-charge select element to RoomInchargeContainer
-                    $("#RoomInchargeContainer").append(inchargeSelectHtml);
-                },
-                error: function () {
-
-                }
-            });
-
-        });
         $(document).off('click', '#SaveRoom').on('click', '#SaveRoom', function (e) {
             showLoadingSpinner(); // Show the loading spinner
-            var roomNo = $("#Room").val();
+            var roomNo = $("#NewRoom").val(); // Use the new ID for the modal input field
+
             $.ajax({
                 url: "/studentgroups/FetchRoom",
                 type: "POST",
                 data: { room: roomNo },
                 success: function (response) {
-                    $('#modalRoom').modal('hide');
+                    $('#modalRoom').modal('hide'); // Hide the modal
                     hideLoadingSpinner(); // Hide the loading spinner
+
                     // Clear the current RoomContainer
                     $("#RoomContainer").empty();
 
@@ -664,37 +532,46 @@
                         + '<a class="custom-badge-green" id="AddRoom">Add</a></div>'
                         + '<fieldset><div class="input-group">'
                         + '<div class="input-group-prepend">'
-                        + '<span class="input-group-text " id="basic-addon3">'
+                        + '<span class="input-group-text" id="basic-addon3">'
                         + '<i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>'
                         + '</div>'
-                        + '<select id="Room" class="form-control">'
-                        + '<option value="">Select Room</option>';
+                        + '<select id="Room" class="form-control">';
 
-                    // Append each room to the select options
-                    response.room.rooms.forEach(function (item) {
-                        selectHtml += '<option value="' + item.id + '">' + item.roomNo + '</option>';
-                    });
+                    // Default option
+                    selectHtml += '<option value="">Select Room</option>';
+
+                    // Check if response.room.rooms exists and is an array
+                    if (response.room && Array.isArray(response.room.rooms) && response.room.rooms.length > 0) {
+                        response.room.rooms.forEach(function (item) {
+                            selectHtml += '<option value="' + item.id + '">' + item.roomNo + '</option>';
+                        });
+                    } else {
+                        selectHtml += '<option value="">No rooms available. Add one first!</option>';
+                    }
 
                     selectHtml += '</select></div>'
-                        + '<span asp-validation-for="room" class="text-danger"></span></fieldset></div>';
+                        + '<span asp-validation-for="Room" class="text-danger"></span></fieldset></div>';
 
                     // Append the new select element to RoomContainer
                     $("#RoomContainer").append(selectHtml);
                 },
-                error: function () {
-
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    console.error("Error fetching rooms:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the rooms. Please try again.");
                 }
             });
-
         });
-        $(document).off('click', '.batch').on('click', '.batch', function (e) {
+        $(document).off('change', '.groupID').on('change', '.groupID', function (e) {
+            e.preventDefault();
             showLoadingSpinner(); // Show the loading spinner
             var groupId = $(this).val();
             var batches = $("#batches").val();
+            var evaluation = $("#Evaluation").val();
             $.ajax({
                 url: "/studentgroups/FetchBatches",
                 type: "GET",
-                data: { id: groupId, batch: batches },
+                data: { id: groupId, batch: batches, EvalType: evaluation },
                 success: function (response) {
                     hideLoadingSpinner(); // Hide the loading spinner
                     $("#NewContainer").html(response);
@@ -706,13 +583,56 @@
             });
 
         });
-        $('.batch').on('change', function () {
+
+        $(document).off('change', '.Room').on('change', '.Room', function (e) {
+            e.preventDefault();
+            showLoadingSpinner(); // Show the loading spinner
+            var roomNo = $(this).val();
+            var groupId = $("#groupIDs").val();
+            var batches = $("#batches").val();
+            var evaluation = $("#Evaluation").val();
+            $.ajax({
+                url: "/studentgroups/FetchBatches",
+                type: "GET",
+                data: { id: groupId, batch: batches, EvalType: evaluation, room: roomNo },
+                success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $("#NewContainer").html(response);
+
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        $(document).off('change', '.batchSelect').on('change', '.batchSelect', function (e) {
             var getbatch = $(this).val();
+            showLoadingSpinner(); // Show the loading spinner
             $.ajax({
                 url: "/studentgroups/FetchBatches",
                 type: "GET",
                 data: { batch: getbatch },
                 success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $("#NewContainer").html(response);
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        $(document).off('change', '.EvaluationSelect').on('change', '.EvaluationSelect', function (e) {
+            var batches = $("#batches").val();
+            var evaluation = $(this).val();
+            showLoadingSpinner(); // Show the loading spinner
+            $.ajax({
+                url: "/studentgroups/FetchBatches",
+                type: "GET",
+                data: { batch: batches, EvalType: evaluation },
+                success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
                     $("#NewContainer").html(response);
                 },
                 error: function () {
@@ -725,18 +645,22 @@
 
         $(document).off('click', '#EvaluatorFormSubmit').on('click', '#EvaluatorFormSubmit', function (e) {
             e.preventDefault();  // Prevent the default form submission
-            var formData = {
-                groupID: $("#groupIDs").val(),
-                Member1ID: $("#Member1ID").val(),
-                Member2ID: $("#Member2ID").val(),
-                batch: $("#batches").val(),
-                assignRequest: $("#AssignRequest").val()
-            };
+            var formData = new FormData();
+            formData.append("groupID", $("#groupID").val());
+            formData.append("Member1ID", $("#Member1ID").val());
+            formData.append("Member2ID", $("#Member2ID").val());
+            formData.append("batch", $("#batches").val());
+            formData.append("assignRequest", $("#AssignRequest").val());
+            formData.append("EvaluationID", $("#Evaluation").val());
+            formData.append("Room", $("#Room").val());
+            formData.append("AppointedDate", $("#AppointedDate").val());
+            formData.append("AppointedTime", $("#AppointedTime").val());
             $.ajax({
                 type: "POST",
                 url: "/studentgroups/FypCommitee",
-                data: JSON.stringify(formData),
-                contentType: "application/json; charset=utf-8",  // Sending JSON
+                data: formData,
+                processData: false,  // Prevent jQuery from converting the data
+                contentType: false,   // Set content type to false to let jQuery set it
                 success: function (response) {
                     $("#MainContainer").html(response);
                     Swal.fire({

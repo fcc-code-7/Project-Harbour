@@ -13,11 +13,9 @@ namespace FYP.Entities
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
         public string? Room { get; set; }
-        public string? RoomIncharge { get; set; }
-        public string? Lapse { get; set; }
         public DateTime AppointedDate{ get; set; }
-        public DateTime AppointedTime{ get; set; }
-        public DateTime Endime{ get; set; }
+        public TimeOnly AppointedTime{ get; set; }
+        public TimeOnly Endime{ get; set; }
         public string? batch { get; set; }
     }
 }

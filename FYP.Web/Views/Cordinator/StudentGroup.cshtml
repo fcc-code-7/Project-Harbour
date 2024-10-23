@@ -16,7 +16,7 @@
                     <div class="users-list-filter px-1">
                         <!-- Section 1 -->
                         <div class="mb-2 ">
-                            <div class="p-6 bg-white text-black rounded-lg " style="min-height:80vh">
+                            <div class="p-6 bg-white text-black rounded-lg  bg-opacity-100 backdrop-blur-lg shadow-md  " style="min-height:80vh">
                                 <!-- Column 1: -->
 
                                 <div class="w-full flex justify-between items-center" id="container">
@@ -32,31 +32,37 @@
                                                 Select Batch
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                @foreach (var item in Model.Batches)
+                                               @if (Model.Batches.Any())
                                                 {
-                                                    <a class="dropdown-item batchChange" data-id="@item">@item</a>
+                                                    @foreach (var item in Model.Batches)
+                                                    {
+                                                        <a class="dropdown-item batchChange" data-id="@item">@item</a>
+                                                    }
+                                                }else{
+                                                    <span class="dropdown-item batchChange">No Group</span>
+
                                                 }
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                @if (Model.StudentGroups == null)
+                                @if (!Model.StudentGroups.Any())
                                 {
                                     <div class="container mt-0 md:mt-5 lg:mt-5 ">
                                         <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
                                             <div class="col-12 col-md-6 col-sm-12 col-lg-6">
                                                 <div class="card">
-                                                    <div class="card-header text-center">
-                                                        <h5 class="card-title">No Student Group Exists</h5>
+                                                    <div class="card-header d-flex justify-content-center align-items-center">
+                                                        <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Group Exists</h5>
                                                     </div>
                                                     <div class="card-body text-center">
                                                         <p>It looks like there are currently no student groups available.</p>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
+
 
 
                                 }
@@ -79,7 +85,7 @@
                                                             }
                                                             else
                                                             {
-                                                                <span class="custom-badge-green">UnAssigned</span>
+                                                                <span class="custom-badge-green">Assigned</span>
 
                                                             }
                                                         </div>

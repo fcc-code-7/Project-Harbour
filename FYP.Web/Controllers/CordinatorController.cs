@@ -3,6 +3,8 @@ using FYP.Services;
 using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileSystemGlobbing;
+using System.Globalization;
 
 namespace FYP.Web.Controllers
 {
@@ -42,18 +44,21 @@ namespace FYP.Web.Controllers
             var existingFypCommitee =await _fYPCommitteService.GetAllAsync();
             var user = studentGroup.FirstOrDefault();
             var allGroups =await _studentGroupService.GetAllAsync();
+            if (user != null)
+            {
             var userGroup = allGroups
                 .Where(x => x.student1LID == user.student1LID || x.student2ID == user.student2ID || x.student3ID == user.student3ID)
                 .FirstOrDefault();
             var supervisorId = userGroup.SupervisorID;
+            }
             var distinctBatches = studentGroup.Select(x => x.Batch).Distinct().ToList();
             var distinctYears = studentGroup.Select(x => x.Year).Distinct().ToList();
-
-            var model = new StudentGroupViewModel()
+            var model = new StudentGroupViewModel();
+            if (studentGroup != null)
             {
-                StudentGroups = studentGroup.Select(x => new StudentGroupViewModel
+                model.StudentGroups = studentGroup.Select(x => new StudentGroupViewModel
                 {
-                    Id =x.ID,
+                    Id = x.ID,
                     Name = x.Name,
                     Batch = x.Batch,
                     student1LID = x.student1LID,
@@ -61,26 +66,33 @@ namespace FYP.Web.Controllers
                     student3ID = x.student3ID,
                     CoSupervisorID = x.CoSupervisorID,
                     SupervisorID = x.SupervisorID,
-                    supervisorname = _userService.GetAllAsync().Result.Where(y=>y.Id == x.SupervisorID).FirstOrDefault().Name,
+                    supervisorname = _userService.GetAllAsync().Result.Where(y => y.Id == x.SupervisorID).FirstOrDefault().Name,
                     LeaderName = _userManager.FindByIdAsync(x.student1LID).Result?.Name,
                     member1 = _userManager.FindByIdAsync(x.student2ID).Result?.Name,
                     Member2 = _userManager.FindByIdAsync(x.student3ID).Result?.Name,
-                    Member1Name = _userManager.FindByIdAsync(existingFypCommitee
+                }).ToList();
+            }
+            if (distinctBatches != null)
+            {
+                model.Batches = distinctBatches;
+            }
+            if (distinctYears != null)
+            {
+                model.Years = distinctYears;
+            }
+            if (existingFypCommitee!= null)
+            {
+                model.StudentGroups = studentGroup.Select(x => new StudentGroupViewModel
+                {
+                   Member1Name = _userManager.FindByIdAsync(existingFypCommitee
                 .Where(y => y.groupID == x.ID.ToString())
                 .FirstOrDefault()?.Member1ID).Result?.Name ?? "Not Assigned",
 
                     Member2Name = _userManager.FindByIdAsync(existingFypCommitee
                 .Where(y => y.groupID == x.ID.ToString())
                 .FirstOrDefault()?.Member2ID).Result?.Name ?? "Not Assigned",
-
-                }).ToList(),
-                
-                Batches = distinctBatches,
-                Years = distinctYears,
-
-
-            };
-           
+                }).ToList();
+            }
             return PartialView(model);
         }
         public async Task<IActionResult> Projects()
@@ -269,12 +281,13 @@ namespace FYP.Web.Controllers
         {
             var projects = _projectService.GetAllAsync().Result.Where(x => x.SupervsiorApproved == "Approved");
             var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
-            
-                var model = new EvaluationViewModel()
+            string date = DateTime.Now.ToString("dd-MM-yy"); // Example string date
+            DateTime parsedDate = DateTime.ParseExact(date, "dd-MM-yy", CultureInfo.InvariantCulture);
+            var model = new EvaluationViewModel()
                 {
                     EvaluationName = Etype,
                     batches = distinctBatches,
-                    LastDate = DateTime.Now,
+                    LastDate = parsedDate,
                     Marks = marks,
                     
                 };

@@ -10,5 +10,6 @@ namespace FYP.Models
     public class Room : BaseEntity
     {
         public string? RoomNo { get; set; }
+        public string? Department { get; set; }
     }
 }

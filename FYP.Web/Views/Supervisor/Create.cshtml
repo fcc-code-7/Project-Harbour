@@ -187,7 +187,7 @@
     $(document).ready(function () {
         $("#previousbtn").click(function () {
             $.ajax({
-                url: '/supervisor/studentgroups',
+                url: '/studentgroups/studentgroups',
                 type: "GET",
                 success: function (response) {
                     $("#MainContainer").html(response);
@@ -232,7 +232,7 @@
             };
             $.ajax({
                 type: "POST",
-                url: "/Supervisor/StudentGroups",
+                url: "/studentgroups/StudentGroups",
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=utf-8",  // Sending JSON
                 success: function (response) {

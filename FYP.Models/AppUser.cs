@@ -13,5 +13,7 @@ namespace FYP.Entities
         public string? Role { get; set; } // This could be redundant as Identity already handles roles
 
         public string? Docs { get; set; }
+        public string? areaofintrest { get; set; }
+        public DateOnly DateofCreation { get; set; }
     }
 }

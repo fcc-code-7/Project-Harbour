@@ -18,7 +18,7 @@ namespace FYP.Web.Controllers
         private readonly IStudentService _studentService;
         private readonly UserManager<AppUser> _userManager;
 
-        public UserController(IStudentService studentService,IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense,IRoomService designationService,IStudentGroupService studentGroupService)
+        public UserController(IStudentService studentService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -32,10 +32,11 @@ namespace FYP.Web.Controllers
         {
             return View();
         }
-        public IActionResult Profile()
+        public IActionResult Profile(string toastrnotification)
         {
+            
             var LoggedInUser = _userManager.GetUserId(User);
-            var user =_userService.GetByIdAsync(LoggedInUser).Result;
+            var user = _userService.GetByIdAsync(LoggedInUser).Result;
             var model = new AppUserViewModel()
             {
                 Id = user.Id,
@@ -48,7 +49,8 @@ namespace FYP.Web.Controllers
                 Role = user.Role,
                 Docs = user.Docs,
                 Designation = user.Designation,
-                };
+                areaofintrest = user.areaofintrest,  // Trim to remove unwanted spaces
+            };
             if (User.IsInRole("Supervisor"))
             {
                 //var getSupervisor1stleadername = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).Select(x => x.student1LID).First();
@@ -70,9 +72,9 @@ namespace FYP.Web.Controllers
                 model.semester = _studentService.GetAllAsync().Result.Where(x => x.studentId == LoggedInUser).FirstOrDefault().Semester;
                 model.supervisorStudent = _userManager.FindByIdAsync(getSupervisor).Result.Name;
                 model.supervisorEmail = _userManager.FindByIdAsync(getSupervisor).Result.Email;
-                model.groupname = _studentGroupService.GetAllAsync().Result.Where(x=>x.ID == getGroup).Select(x=>x.Name).FirstOrDefault();
+                model.groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
                 model.LeaderName = _userManager.FindByIdAsync(getLeader).Result.Name;
-               }
+            }
             return PartialView(model);
         }
         public IActionResult Create()
@@ -92,6 +94,7 @@ namespace FYP.Web.Controllers
                 Role = user.Role,
                 Docs = user.Docs,
                 Designation = user.Designation,
+                areaofintrest = user.areaofintrest,
             };
 
             if (User.IsInRole("Student"))
@@ -146,21 +149,67 @@ namespace FYP.Web.Controllers
         {
             // Fetch the existing user from the database
             var user = await _userManager.FindByIdAsync(model.Id);
-            var supervisor = _supervisorService.GetAllAsync().Result.Where(x=>x.SupervisorID == model.Id).FirstOrDefault();
+            var supervisor = _supervisorService.GetAllAsync().Result.Where(x => x.SupervisorID == model.Id).FirstOrDefault();
             if (user == null)
             {
-                return Json(new { success = false, message = "User not found!" });
+                return RedirectToAction("Login", "Account", new { toastrnotification = "InvalidLogin" });
+            }
+            bool hasChanges = false;
+
+            if (user.Email != model.email)
+            {
+                user.Email = model.email;
+                hasChanges = true;
             }
 
-            // Update the user's properties with the new values from the view model
-            user.Email = model.email;
-            user.UserName = model.email;
-            user.Address = model.Address;
-            user.Cnic = model.Cnic;
-            user.Name = model.Name;
-            user.Department = model.Department;
-            user.Telephone = model.Telephone;
-            user.Docs = model.Docs;
+            if (user.UserName != model.email)
+            {
+                user.UserName = model.email;
+                hasChanges = true;
+            }
+
+            if (user.Address != model.Address)
+            {
+                user.Address = model.Address;
+                hasChanges = true;
+            }
+
+            if (user.Cnic != model.Cnic)
+            {
+                user.Cnic = model.Cnic;
+                hasChanges = true;
+            }
+
+            if (user.Name != model.Name)
+            {
+                user.Name = model.Name;
+                hasChanges = true;
+            }
+
+            if (user.Department != model.Department)
+            {
+                user.Department = model.Department;
+                hasChanges = true;
+            }
+
+            if (user.Telephone != model.Telephone)
+            {
+                user.Telephone = model.Telephone;
+                hasChanges = true;
+            }
+
+            if (user.Docs != model.Docs)
+            {
+                user.Docs = model.Docs;
+                hasChanges = true;
+            }
+
+            if (user.areaofintrest != model.areaofintrest)
+            {
+                user.areaofintrest = model.areaofintrest;
+                hasChanges = true;
+            }
+
             if (User.IsInRole("Supervisor") || User.IsInRole("Cordinator"))
             {
                 user.Designation = model.Designation;
@@ -168,33 +217,41 @@ namespace FYP.Web.Controllers
             }
             if (User.IsInRole("Student"))
             {
-            var student = _studentService.GetAllAsync().Result
-                       .Where(x => x.studentId == user.Id)
-                       .FirstOrDefault();
+                var student = _studentService.GetAllAsync().Result
+                           .Where(x => x.studentId == user.Id)
+                           .FirstOrDefault();
 
                 student.studentId = user.Id;
                 student.ENo = model.Enrollment;
                 student.RegNo = model.regNo;
                 student.Semester = model.semester;
-            await _studentService.UpdateAsync(student);
+                await _studentService.UpdateAsync(student);
 
             }
             //user.Role = model.Role;
             //supervisor.Designation = model.Designation;
             // Update the user in the database
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded )
+            if (hasChanges)
             {
-                return RedirectToAction("Profile", "User");
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Profile", "User", new { toastrnotification = "Updated" });
+                }
+                else
+                {
+                    return RedirectToAction("Profile", "User", new { toastrnotification = "Failed" });
+                }
             }
 
-            return Json(new { success = false, message = "Invalid data!" });
+            return RedirectToAction("Profile", "User", new { toastrnotification = "No Changes" });
+
         }
 
         public IActionResult Message()
         {
             return PartialView();
         }
-        
+
     }
 }

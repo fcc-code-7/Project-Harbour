@@ -5,6 +5,7 @@ using FYP.Services;
 using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace FYP.Web.Controllers
 {
@@ -21,8 +22,9 @@ namespace FYP.Web.Controllers
         private readonly IFYPCommitteService _fYPCommitteService;
         private readonly IRoomService _roomService;
         private readonly IRoomInChargeService _roomInChargeService;
+        private readonly IEvaluationService _evaluationService;
 
-        public StudentGroupsController(IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IEvaluationService evaluationService,IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -35,6 +37,7 @@ namespace FYP.Web.Controllers
             _fYPCommitteService = fYPCommitteService;
             _roomService = roomService;
             _roomInChargeService = roomInChargeService;
+            _evaluationService = evaluationService;
         }
         public async Task<IActionResult> StudentGroups()
         {
@@ -209,7 +212,7 @@ namespace FYP.Web.Controllers
                         await _studentService.AddAsync(studentData2);
                         await _studentService.AddAsync(studentData3);
                         await _studentGroupService.AddAsync(usergroup);
-                        return RedirectToAction("StudentGroups", "Supervisor");
+                        return RedirectToAction("StudentGroups", "studentgroups");
                     }
 
                 }
@@ -355,7 +358,6 @@ namespace FYP.Web.Controllers
             return View(model);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Evaluators()
         {
@@ -370,23 +372,59 @@ namespace FYP.Web.Controllers
             var model = new FYPCommitteViewModel();
             // Populate distinct batches
             model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
-
+            string date = DateTime.Now.ToString("dd-MM-yy"); // Example string date
+            DateTime parsedDate = DateTime.ParseExact(date, "dd-MM-yy", CultureInfo.InvariantCulture);
+            model.AppointedDate = parsedDate;
+            model.AppointedTime = new TimeOnly(9, 0);  // Set to 9:00 AM
             return PartialView(model);
         }
 
-        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest)
+        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest, string EvalType,string room)
         {
             var LoggedInUser = _userManager.GetUserId(User);
             var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
             var FetchUserDepartment = FetchUser.Department;
             var allGroups = await _studentGroupService.GetAllAsync();
             var supervisorList = await _userManager.GetUsersInRoleAsync("Supervisor");
-
-
+            var RoomsServices = await _roomService.GetAllAsync();
 
             var model = new FYPCommitteViewModel();
+            string date = DateTime.Now.ToString("dd-MM-yy"); // Example string date
+            DateTime parsedDate = DateTime.ParseExact(date, "dd-MM-yy", CultureInfo.InvariantCulture);
+            model.AppointedDate = parsedDate;
+            model.AppointedTime = new TimeOnly(9, 0);  // Set to 9:00 
             if (!string.IsNullOrEmpty(batch))
             {
+                var Evaluation = await _evaluationService.GetAllAsync();
+                //var fypCommittee = await _fYPCommitteService.GetAllAsync();
+                //var fetchFypCommittee = fypCommittee.Where(x => x.batch == batch);
+                var fetchEvaluation = Evaluation.Where(x => x.PBatch == batch && x.EvaluationName == EvalType);
+               model.Evaluations = new List<string> { "Proposal", "Mid", "Final" };
+                //if (fetchFypCommittee.Any())
+                //{
+                //    model.AppointedDate = fetchFypCommittee.Select(x => x.AppointedDate).FirstOrDefault();
+                //    model.Lapse = fetchFypCommittee.Select(x => x.Lapse).FirstOrDefault();
+                //}
+                if (fetchEvaluation.Any())
+                {
+                    
+                    model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
+                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Proposal")
+                    {
+                        model.EvaluationID = "Proposal";
+                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
+                    }
+                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Mid")
+                    {
+                        model.EvaluationID = "Mid";
+                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
+                    }
+                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Final")
+                    {
+                        model.EvaluationID = "Final";
+                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
+                    }
+                }
                 var filteredGroups = allGroups.Where(x => x.Batch == batch).ToList();
                 if (filteredGroups.Any())
                 {
@@ -395,8 +433,10 @@ namespace FYP.Web.Controllers
                         groupID = x.ID.ToString(),
                         groupName = x.Name
                     }).ToList();
+                   
 
                 }
+              
                 model.batch = batch;
                 // Get supervisors for the department
                 if (supervisorList.Any() && !string.IsNullOrEmpty(id))
@@ -426,12 +466,12 @@ namespace FYP.Web.Controllers
                     model.assignRequest = assignRequest;
                 }
             }
-
+          
             // Handle id filtering
             if (!string.IsNullOrEmpty(id))
             {
                 var fypCommitte = await _fYPCommitteService.GetAllAsync();
-                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id).FirstOrDefault();
+                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id && x.EvaluationID == EvalType ).FirstOrDefault();
 
                 if (currentFypCommitte != null)
                 {
@@ -439,26 +479,90 @@ namespace FYP.Web.Controllers
                     model.Member2ID = currentFypCommitte.Member2ID;
                     model.groupID = currentFypCommitte.groupID;
                     model.batch = currentFypCommitte.batch;
+                    model.Room = currentFypCommitte.Room;
+                    model.EvaluationID = currentFypCommitte.EvaluationID;
+                    // Convert AppointedDate to string in dd-MM-yy format
+                    string appointedDateString = currentFypCommitte.AppointedDate.ToString("dd-MM-yy");
+
+                    string appointedTimeString = currentFypCommitte.AppointedTime.ToString("HH:mm:ss"); // Format for time
+                                                                                                        // Parse AppointedDate from string back to DateTime
+                    DateTime parsedAppointedDate = DateTime.ParseExact(appointedDateString, "dd-MM-yy", CultureInfo.InvariantCulture);
+
+                    // If AppointedTime is a TimeSpan or a specific time format
+                    TimeOnly parsedAppointedTime = TimeOnly.ParseExact(appointedTimeString, "HH:mm:ss", CultureInfo.InvariantCulture);
+                    model.AppointedDate = parsedAppointedDate;
+                    model.AppointedTime = parsedAppointedTime;
+                   
                 }
                 else
                 {
                     model.groupID = id;
                     model.batch = batch;
+
                 }
             }
-            // Populate distinct batches
-            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+            if (RoomsServices.Any())
+            {
+                model.Rooms = RoomsServices.Select(x => new RoomViewModel
+                {
+                    Id = x.ID.ToString(),
+                    RoomNo = x.RoomNo
+                }).ToList();
+            }
+           
+            if (id != null && batch != null && EvalType != null && room != null)
+            {
+                var fypCommitte = await _fYPCommitteService.GetAllAsync();
+                var fetchLastRoom = fypCommitte.Where(x => x.Room == room).LastOrDefault();
+                var fetchRoomGroup = fypCommitte.Where(x => x.Room == room  && x.EvaluationID == EvalType).FirstOrDefault();
+                if (fetchLastRoom != null && fetchRoomGroup!=null)
+                {
+                    if (fetchLastRoom.Room == room && fetchRoomGroup.groupID != id)
+                    {
+                        if (EvalType == "Proposal")
+                        {
+                            TimeOnly time = fetchLastRoom.AppointedTime;
+                            TimeOnly newTime = time.AddMinutes(30);
+                            model.AppointedTime = newTime;
+                        }
+                        else if (EvalType == "Mid")
+                        {
+                            TimeOnly time = fetchLastRoom.AppointedTime;
+                            TimeOnly newTime = time.AddMinutes(45);
+                            model.AppointedTime = newTime;
+                        }
+                        else if (EvalType == "Final")
+                        {
+                            TimeOnly time = fetchLastRoom.AppointedTime;
+                            TimeOnly newTime = time.AddMinutes(45);
+                            model.AppointedTime = newTime;
+                        }
+                    }
 
+                }
+                else
+                {
+                    model.AppointedTime = new TimeOnly(9, 0);  // Set to 9:00 AM
+
+                }
+            }
+            
+              
+            
+            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+            
+                model.EvaluationID = EvalType;
+            
             return PartialView("Evaluators", model);
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> FypCommitee([FromBody] FYPCommitteViewModel model)
+        public async Task<IActionResult> FypCommitee(FYPCommitteViewModel model)
         {
             var getFYPCommitte = await _fYPCommitteService.GetAllAsync();
-            var fypCommitte = getFYPCommitte.FirstOrDefault(x => x.groupID == model.groupID);
-
+            var fypCommitte = getFYPCommitte.FirstOrDefault(x => x.groupID == model.groupID && x.EvaluationID == model.EvaluationID);
+      
             if (fypCommitte != null)
             {
                 bool isUpdated = false;
@@ -474,6 +578,20 @@ namespace FYP.Web.Controllers
                     fypCommitte.Member2ID = model.Member2ID;
                     isUpdated = true;
                 }
+                if (fypCommitte.AppointedTime != model.AppointedTime)
+                {
+                    TimeOnly time = model.AppointedTime;
+                    fypCommitte.AppointedTime = time;
+                    isUpdated = true;
+                }
+               
+                if (fypCommitte.Room != model.Room)
+                {
+                    fypCommitte.Room = model.Room;
+                    isUpdated = true;
+                }
+               
+               
 
 
                 // If either member has been updated, proceed to update in the database
@@ -489,115 +607,336 @@ namespace FYP.Web.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
+                    return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch, EvalType = model.EvaluationID });
                 }
 
             }
             else
             {
                 // Initialize a new FYPCommitte instance if it doesn't exist
+                // Convert AppointedDate to string in dd-MM-yy format
+                string appointedDateString = model.AppointedDate.ToString("dd-MM-yy");
+
+                // Convert AppointedTime to string (this assumes AppointedTime is also DateTime or TimeSpan)
+                string appointedTimeString = model.AppointedTime.ToString("HH:mm:ss"); // Format for time
+                                                                                                    // Parse AppointedDate from string back to DateTime
+                DateTime parsedAppointedDate = DateTime.ParseExact(appointedDateString, "dd-MM-yy", CultureInfo.InvariantCulture);
+
+                var evaluation = await _evaluationService.GetAllAsync();
+                
+                model.AppointedDate = parsedAppointedDate;
+                TimeOnly time = model.AppointedTime;
                 var newFypCommitte = new FYPCommitte
                 {
                     Member1ID = model.Member1ID,
                     Member2ID = model.Member2ID,
                     groupID = model.groupID,
-                    batch = model.batch
-                };
+                    batch = model.batch,
+                    AppointedDate = parsedAppointedDate,
+                    AppointedTime = time,
+                    Room = model.Room,
+                    EvaluationID = model.EvaluationID,
+                    
 
+
+                };
+               
+                if (model.EvaluationID == "Proposal")
+                {
+                    TimeOnly newTime = time.AddMinutes(30);
+                    newFypCommitte.Endime = newTime;
+                }
+                if (model.EvaluationID == "Mid")
+                {
+                    TimeOnly newTime = time.AddMinutes(45);
+                    newFypCommitte.Endime = newTime;
+                }
+                if (model.EvaluationID == "Final")
+                {
+                    TimeOnly newTime = time.AddMinutes(45);
+                    newFypCommitte.Endime = newTime;
+                }
                 await _fYPCommitteService.AddAsync(newFypCommitte);
+                var getFYPCommitteMid = await _fYPCommitteService.GetAllAsync();
+                var fypCommitteMid = getFYPCommitteMid.FirstOrDefault(x => x.groupID == model.groupID && x.EvaluationID == "Proposal");
+                if (fypCommitteMid != null)
+                {
+                    var newFypCommitteMid = new FYPCommitte
+                    {
+                        Member1ID = fypCommitteMid.Member1ID,
+                        Member2ID = fypCommitteMid.Member2ID,
+                        groupID = model.groupID,
+                        batch = model.batch,
+                        AppointedDate = evaluation.Where(x=>x.EvaluationName == "Mid").FirstOrDefault().LastDate,
+                        AppointedTime = fypCommitteMid.AppointedTime,
+                        Room = fypCommitteMid.Room,
+                        EvaluationID = "Mid"
+                    };
+
+                    TimeOnly newMidTime = fypCommitteMid.AppointedTime.AddMinutes(45);
+                    newFypCommitteMid.Endime = newMidTime;
+
+                    await _fYPCommitteService.AddAsync(newFypCommitteMid);
+                }
+                var getFYPCommitteFinal = await _fYPCommitteService.GetAllAsync();
+                var fypCommitteFinal = getFYPCommitteFinal.FirstOrDefault(x => x.groupID == model.groupID && x.EvaluationID == "Mid");
+                if (fypCommitteFinal != null)
+                {
+                    var newFypCommitteFinal = new FYPCommitte
+                    {
+                        Member1ID = fypCommitteFinal.Member1ID,
+                        Member2ID = fypCommitteFinal.Member2ID,
+                        groupID = model.groupID,
+                        batch = fypCommitteFinal.batch,
+                        AppointedDate = evaluation.Where(x => x.EvaluationName == "Final").FirstOrDefault().LastDate,
+                        AppointedTime = fypCommitteFinal.AppointedTime,
+                        Room = fypCommitteFinal.Room,
+                        EvaluationID = "Final"
+                    };
+
+                    TimeOnly newFinalTime = fypCommitteFinal.AppointedTime.AddMinutes(45);
+                    newFypCommitteFinal.Endime = newFinalTime;
+
+                    await _fYPCommitteService.AddAsync(newFypCommitteFinal);
+                }
                 if (model.assignRequest == "true")
                 {
                     return RedirectToAction("StudentGroups", "studentgroups");
                 }
                 else
                 {
+                   
                     return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
                 }
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> FetchRoom(string room)
+        public async Task<IActionResult> FetchRoom(string room , string isRoom , string id)
         {
             var Room = await _roomService.GetAllAsync();
-            var fetchRoom = Room.Where(x => x.RoomNo == room).FirstOrDefault();
+            var loggedUser = _userManager.GetUserId(User);
+            var fetchUser = await _userManager.FindByIdAsync(loggedUser);
+            var fetchRoom = Room.FirstOrDefault(x => x.ID.ToString() == id );
+            var fetchExistingRoom = Room.FirstOrDefault(x=>x.RoomNo.Trim().ToUpper() == room.Trim().ToUpper());
             var model = new FYPCommitteViewModel();
-            if (fetchRoom != null)
+            if (fetchExistingRoom != null)
             {
-                fetchRoom.RoomNo = room;
-                await _roomService.UpdateAsync(fetchRoom);
-                model.Rooms = Room.Select(x => new RoomViewModel
+                if (fetchExistingRoom.RoomNo == room.Trim().ToUpper())
+                {
+                    if (isRoom == "true")
+                    {
+                        return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Existed" });
+                    }
+                    else
+                    {
+                        return Json(new { success = true, message = "Room already exists!", room = model });
+                    }
+                }
+            }
+            else
+            {
+                if (fetchRoom != null)
+                {
+                    fetchRoom.RoomNo = room;
+                    await _roomService.UpdateAsync(fetchRoom);
+                    model.Rooms = Room.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
+                    {
+                        Id = x.ID.ToString(),
+                        RoomNo = x.RoomNo,
+
+                    }).ToList();
+
+                    if (isRoom == "true")
+                    {
+                        return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Updated" });
+                    }
+                    else
+                    {
+                        return Json(new { success = true, message = "Room Updated!", room = model });
+                    }
+
+
+                }
+                else
+                {
+                    var result = _roomService.AddAsync(new Room { RoomNo = room.ToUpper().Trim(), Department = fetchUser.Department });
+                    var fetchRoomagain = await _roomService.GetAllAsync();
+                    if (result.IsCompletedSuccessfully)
+                    {
+                        model.Rooms = fetchRoomagain.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
+                        {
+                            Id = x.ID.ToString(),
+                            RoomNo = x.RoomNo
+
+                        }).ToList();
+                        if (isRoom == "true")
+                        {
+                            return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Added" });
+                        }
+                        else
+                        {
+                            return Json(new { success = true, message = "Room added successfully!", room = model });
+                        }
+                    }
+                }
+            }
+                return Json(new { success = false, message = "Room not added successfully!" });
+        }
+        //[HttpPost]
+        //public async Task<IActionResult> FetchRoomIncharges(FYPCommitteViewModel incharge)
+        //{
+        //    var RoomIncharge = await _roomInChargeService.GetAllAsync();
+        //    var fetchRoomIncharge = RoomIncharge.FirstOrDefault(x => x.ID == incharge.Id);
+        //    var fetchExistingRoomIncharge = RoomIncharge.FirstOrDefault(x => x.Email == incharge.RoomInChargeEmail);
+        //    var model = new FYPCommitteViewModel();
+        //    if (fetchExistingRoomIncharge != null)
+        //    {
+        //        if (fetchExistingRoomIncharge.Email == incharge.RoomInChargeEmail && fetchExistingRoomIncharge.Name == incharge.RoomInChargeName )
+        //        { 
+        //                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Existed" }); 
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (fetchRoomIncharge != null)
+        //        {
+        //            if (incharge.istrue == "true")
+        //            {
+        //            fetchRoomIncharge.Email = incharge.RoomInChargeEmail;
+        //            fetchRoomIncharge.Name = incharge.RoomInChargeName;
+        //            }
+        //            fetchRoomIncharge.RoomAlloted = incharge.Room;
+        //            fetchRoomIncharge.Evaluation = incharge.EvaluationID;
+        //            await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
+        //            model.Rooms = Room.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
+        //            {
+        //                Id = x.ID.ToString(),
+        //                RoomNo = x.RoomNo,
+
+        //            }).ToList();
+
+        //            if (isRoom == "true")
+        //            {
+        //                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Updated" });
+        //            }
+        //            else
+        //            {
+        //                return Json(new { success = true, message = "Room Updated!", room = model });
+        //            }
+
+
+        //        }
+        //        else
+        //        {
+        //            var result = _roomService.AddAsync(new Room { RoomNo = room.ToUpper().Trim(), Department = fetchUser.Department });
+        //            var fetchRoomagain = await _roomService.GetAllAsync();
+        //            if (result.IsCompletedSuccessfully)
+        //            {
+        //                model.Rooms = fetchRoomagain.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
+        //                {
+        //                    Id = x.ID.ToString(),
+        //                    RoomNo = x.RoomNo
+
+        //                }).ToList();
+        //                if (isRoom == "true")
+        //                {
+        //                    return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Added" });
+        //                }
+        //                else
+        //                {
+        //                    return Json(new { success = true, message = "Room added successfully!", room = model });
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return Json(new { success = false, message = "Room not added successfully!" });
+        //}
+      
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRoom(string id)
+        {
+            var result = _roomService.DeleteAsync(id);
+            if (result.IsCompletedSuccessfully)
+            {
+                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Deleted" });
+            }
+            else
+            {
+                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Failed" });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteRoomIncharge(string id)
+        {
+            var result = _roomInChargeService.DeleteAsync(id);
+            if (result.IsCompletedSuccessfully)
+            {
+                return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Deleted" });
+            }
+            else
+            {
+                return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Failed" });
+            }
+        }
+
+
+       
+        [HttpGet]
+        public async Task<IActionResult> Rooms(string ViewValue)
+        {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
+            var Rooms = await _roomService.GetAllAsync();
+            var fetchRooms = Rooms.Select(x => new RoomViewModel
+            {
+                Id = x.ID.ToString(),
+                RoomNo = x.RoomNo
+            }).ToList();
+            var model = new FYPCommitteViewModel();
+            model.Rooms = fetchRooms;
+            return PartialView(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> RoomIncharges(string ViewValue)
+        {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
+
+            // Fetch all room incharges
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var fetchRoomsIncharge = RoomIncharge.Select(x => new RoomInChargeViewModel
+            {
+                Id = x.ID.ToString(),
+                Evaluation = x.Evaluation,
+                Email = x.Email,
+                Name = x.Name,
+                RoomAlloted = x.RoomAlloted
+            }).ToList();
+
+            // Fetch all rooms
+            var rooms = await _roomService.GetAllAsync();
+
+            // Filter rooms that are not allotted to any incharge
+            var fetchRooms = rooms
+                .Where(room => !RoomIncharge.Any(incharge => incharge.RoomAlloted == room.RoomNo))
+                .Select(x => new RoomViewModel
                 {
                     Id = x.ID.ToString(),
                     RoomNo = x.RoomNo
-
                 }).ToList();
 
-
-                return Json(new { success = true, message = "Room already exists!" });
-            }
-            else
-            {
-                var result = _roomService.AddAsync(new Room { RoomNo = room.ToUpper() });
-                var fetchRoomagain = await _roomService.GetAllAsync();
-                if (result.IsCompletedSuccessfully)
-                {
-                    model.Rooms = fetchRoomagain.Select(x => new RoomViewModel
-                    {
-                        Id = x.ID.ToString(),
-                        RoomNo = x.RoomNo
-
-                    }).ToList();
-                    return Json(new { success = true, message = "Room added successfully!", room = model });
-                }
-            }
-            return Json(new { success = false, message = "Room not added successfully!" });
-
-        }
-        [HttpPost]
-        public async Task<IActionResult> FetchRoomIncharge(string name, string email)
-        {
-            var RoomIncharge = await _roomInChargeService.GetAllAsync();
-            var fetchRoomIncharge = RoomIncharge.Where(x => x.Email == email).FirstOrDefault();
+            // Prepare the ViewModel
             var model = new FYPCommitteViewModel();
-            if (fetchRoomIncharge != null)
-            {
-                fetchRoomIncharge.Email = email;
-                fetchRoomIncharge.Name = name;
-                await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
-                var fetchRoomagain = await _roomInChargeService.GetAllAsync();
-                model.roomInCharges = fetchRoomagain.Select(x => new RoomInChargeViewModel
-                {
-                    Id = x.ID.ToString(),
-                    Email = x.Email,
-                    Name = x.Name,
-                    AllotedDate = x.AllotedDate,
-                    RoomAlloted = x.RoomAlloted
+            model.roomInCharges = fetchRoomsIncharge;
+            model.Rooms = fetchRooms;
 
-                }).ToList();
-
-
-                return Json(new { success = true, message = "Room already exists!" });
-            }
-            else
-            {
-                var result = _roomInChargeService.AddAsync(new RoomInCharge { Name = name,Email = email
-                });
-                if (result.IsCompletedSuccessfully)
-                {
-                    var fetchRoomagain = await _roomInChargeService.GetAllAsync();
-                    model.roomInCharges = fetchRoomagain.Select(x => new RoomInChargeViewModel
-                    {
-                        Id = x.ID.ToString(),
-                        Email = x.Email,
-                        Name = x.Name,
-                    }).ToList();
-                    return Json(new { success = true, message = "Room added successfully!", room = model });
-                }
-            }
-            
-            return Json(new { success = false, message = "Room not added successfully!" });
-
+            return PartialView(model);
         }
     }
 }

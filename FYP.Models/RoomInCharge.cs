@@ -12,7 +12,7 @@ namespace FYP.Models
         public string? Email { get; set; }
         public string? Name { get; set; }
         public string? RoomAlloted { get; set; }
-        public string? AllotedDate { get; set; }
+        public string? Evaluation { get; set; }
 
     }
 }

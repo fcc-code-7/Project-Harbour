@@ -3,6 +3,7 @@ using System;
 using FYP.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FYP.Databases.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241014033107_UpdateTimeDb")]
+    partial class UpdateTimeDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -33,9 +36,6 @@ namespace FYP.Databases.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("DateofCreation")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Department")
@@ -94,9 +94,6 @@ namespace FYP.Databases.Migrations
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("areaofintrest")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -623,10 +620,10 @@ namespace FYP.Databases.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("AllotedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Evaluation")
+                    b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

@@ -19,19 +19,19 @@ namespace FYP.Web.ViewModels
         [MaxLength(50) , MinLength(5)]
         public string Name { get; set; }
         public string student1LID { get; set; }
-        [DataType(DataType.EmailAddress)]
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        //[DataType(DataType.EmailAddress)]
+        //[Required(ErrorMessage = "Email is required")]
+        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string student1LEmail { get; set; }
         public string student2ID { get; set; }
-        [DataType(DataType.EmailAddress)]
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        //[DataType(DataType.EmailAddress)]
+        //[Required(ErrorMessage = "Email is required")]
+        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string student2Email { get; set; }
         public string student3ID { get; set; }
-        [DataType(DataType.EmailAddress)]
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        //[DataType(DataType.EmailAddress)]
+        //[Required(ErrorMessage = "Email is required")]
+        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
 
         public string student3Email { get; set; }
         public string Batch { get; set; }
@@ -83,7 +83,7 @@ namespace FYP.Web.ViewModels
         public string? Email { get; set; }
         public string? Name { get; set; }
         public string? RoomAlloted { get; set; }
-        public string? AllotedDate { get; set; }
+        public string? Evaluation { get; set; }
 
     }
     public class FYPCommitteViewModel
@@ -94,17 +94,19 @@ namespace FYP.Web.ViewModels
         [Required(ErrorMessage = "Room Incharge Name is required")]
         public string? RoomInChargeName { get; set; }
         public string? groupID { get; set; }
+        public List<string>? Evaluations { get; set; }
         public string? EvaluationID { get; set; }
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
         [Required(ErrorMessage = "Room No is required")]
         public string? Room { get; set; }
         public DateTime AppointedDate { get; set; }
-        public DateTime AppointedTime { get; set; }
+        public TimeOnly AppointedTime { get; set; }
         public string? Lapse { get; set; }
         public string? RoomIncharge { get; set; }
 
         public string? batch { get; set; }
+        public string? istrue { get; set; }
         public string? assignRequest { get; set; }
 
         public List<FetchGroupListViewModel> studentGroups { get; set; }
@@ -317,6 +319,7 @@ namespace FYP.Web.ViewModels
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         [Required(ErrorMessage = "Name is required")]
         public string? Name { get; set; }
+        public string? areaofintrest { get; set; }
 
         [StringLength(15, MinimumLength = 15, ErrorMessage = "CNIC must be exactly 13 characters.")]
         [Required(ErrorMessage = "CNIC is required")]

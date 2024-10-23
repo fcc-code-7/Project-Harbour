@@ -22,8 +22,12 @@ namespace FYP.Web.Controllers
             _supervisorService = supervisorService;
         }
 
-        public IActionResult Login()
+        public IActionResult Login(string toastrnotification)
         {
+            if (toastrnotification != null)
+            {
+                ViewBag.success = toastrnotification;
+            }
             return View();
         }
 
@@ -59,11 +63,14 @@ namespace FYP.Web.Controllers
                 else
                 {
                     ModelState.AddModelError("", "Invalid Login Attempt");
+                    return RedirectToAction("Login", "Account", new { toastrnotification = "InvalidAccountDetails" });
+
                 }
             }
             else
             {
                 ModelState.AddModelError("", "Invalid Login Attempt");
+                return RedirectToAction("Login", "Account" , new { toastrnotification = "NoAccount"});
             }
             return View(model);
         }
@@ -78,13 +85,16 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var toastrnotification = "Added";
             AppUser user = new()
             {
                 Email = model.Email,
                 UserName = model.Email,
                 Name = model.Name,
                 Department = model.Department,
-               
+                DateofCreation = DateOnly.FromDateTime(DateTime.Now),
+                
+
             };
             if (model.Role == "Supervisor")
             {
@@ -94,9 +104,8 @@ namespace FYP.Web.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, Roles.Supervisor.ToString());
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Supervisor");
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Login", "Account", new { toastrnotification});
                 }
                 else
                 {
@@ -110,13 +119,13 @@ namespace FYP.Web.Controllers
             {
                 user.Role = "Cordinator";
                 user.Designation = "Cordinator";
+                user.areaofintrest = "N/A";
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, Roles.Cordinator.ToString());
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Cordinator");
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Login", "Account", new { toastrnotification });
                 }
                 else
                 {
@@ -134,8 +143,8 @@ namespace FYP.Web.Controllers
                 {
                     await _userManager.AddToRoleAsync(user, Roles.Internal.ToString());
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Internal/External");
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Login", "Account");
                 }
                 else
                 {
