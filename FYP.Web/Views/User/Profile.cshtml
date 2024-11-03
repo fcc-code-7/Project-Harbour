@@ -110,7 +110,7 @@
                                     <tr>
                                         <td class="text-lg font-bold">Address</td>
                                         <td>
-                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                            <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
                                                 @(Model.Address ?? "N/A")
                                             </span>
                                         </td>
@@ -225,7 +225,7 @@
                                                         N/A
                                                     </span>
                                                 }
-                                               
+
                                             </td>
                                         </tr>
 
@@ -426,8 +426,8 @@
             toast.classList.add('Success-toast');
 
             toast.innerHTML = `
-                         <div class="Success-toast-message">Successfully Updated!</div>
-                                                    `;
+                                 <div class="Success-toast-message">Successfully Updated!</div>
+                                                            `;
 
             toastContainer.appendChild(toast);
 
@@ -464,8 +464,8 @@
             toast.classList.add('Warning-toast');
 
             toast.innerHTML = `
-                        <div class="Warning-toast-message">Failed to Update, Try Again!</div>
-                                                    `;
+                                <div class="Warning-toast-message">Failed to Update, Try Again!</div>
+                                                            `;
 
             toastContainer.appendChild(toast);
 
@@ -535,6 +535,7 @@
         display: flex;
         flex-direction: column;
         background-color: #facc15; /* Custom background color */
+        color: black;
         padding: 16px;
         border-radius: 8px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -557,7 +558,8 @@
     .Success-toast {
         display: flex;
         flex-direction: column;
-        background-color: #6ee7b7;
+        background-color: #4ade80;
+        color: black;
         padding: 16px;
         border-radius: 8px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);

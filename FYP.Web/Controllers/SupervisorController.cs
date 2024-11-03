@@ -79,13 +79,34 @@ namespace FYP.Web.Controllers
             return PartialView("projects", model);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return PartialView();
+            var phoneticAlphabet = new List<string> { "Alpha", "Bravo", "Charlie", "Delta" };
+            var random = new Random();
+            string uniqueGroupName;
+            bool isUnique;
 
+            do
+            {
+                var baseName = phoneticAlphabet[random.Next(phoneticAlphabet.Count)];
+                var uniqueSuffix = random.Next(1000, 9999); // Random 4-digit suffix
+                uniqueGroupName = $"{baseName}-{uniqueSuffix}";
+
+                // Check if the generated name already exists
+                var group = await _studentGroupService.GetAllAsync();
+                isUnique = !group.Any(x => x.Name == uniqueGroupName);
+
+            } while (!isUnique);
+
+            var model = new StudentGroupViewModel
+            {
+                Name = uniqueGroupName
+            };
+
+            return PartialView(model);
         }
 
-       
+
         public async Task<IActionResult> Projects()
         {
             var userId = _userManager.GetUserId(User);
@@ -134,6 +155,6 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
 
-     
+
     }
 }

@@ -51,7 +51,7 @@
                                                     </div>
                                                     <input type="hidden" name="Year" id="Year" value="@year"/>
                                                     <div class="form-group">
-                                                        <input type="text" id="groupName" class="form-control name" placeholder="Group Name" asp-for="Name" name="Name" required>
+                                                        <input type="text" id="groupName" class="form-control name" placeholder="Group Name" asp-for="Name" name="Name" value="@Model.Name" readonly required>
                                                         <span asp-validation-for="Name" class="text-danger"></span>
 
                                                     </div>
@@ -62,7 +62,7 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text email1" id="basic-addon1"><i class="feather icon-mail"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu1" placeholder="Leader's Email" asp-for="student1LEmail" aria-describedby="basic-addon1" name="student1LEmail" required readonly>
+                                                                <input type="text" class="form-control" id="stu1" placeholder="Leader's Enrollment No" asp-for="student1LEmail" aria-describedby="basic-addon1" name="student1LEmail" required >
 
 
                                                             </div>
@@ -75,7 +75,7 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text email2" id="basic-addon2"><i class="feather icon-mail"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu2" placeholder="Member2 Email" aria-describedby="basic-addon2" asp-for="student2Email" name="student2Email" required readonly>
+                                                                <input type="text" class="form-control" id="stu2" placeholder="Member2 Enrollment No" aria-describedby="basic-addon2" asp-for="student2Email" name="student2Email" required >
 
                                                             </div>
                                                             <span asp-validation-for="student2Email" class="text-danger"></span>
@@ -87,7 +87,7 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text email3" id="basic-addon3"><i class="feather icon-mail"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu3" placeholder="Member3 Email" asp-for="student3Email" aria-describedby="basic-addon3" name="student3Email" required readonly>
+                                                                <input type="text" class="form-control" id="stu3" placeholder="Member3 Enrollment No" asp-for="student3Email" aria-describedby="basic-addon3" name="student3Email" required >
 
                                                             </div>
                                                             <span asp-validation-for="student3Email" class="text-danger"></span>
@@ -199,26 +199,26 @@
 
         });
 
-        var $groupNameInput = $("#groupName");
-        var $stu1 = $("#stu1");
-        var $stu2 = $("#stu2");
-        var $stu3 = $("#stu3");
+        // var $groupNameInput = $("#groupName");
+        // var $stu1 = $("#stu1");
+        // var $stu2 = $("#stu2");
+        // var $stu3 = $("#stu3");
 
-        $groupNameInput.on("input", function () {
-            var groupNameVal = $groupNameInput.val().trim();
+        // $groupNameInput.on("input", function () {
+        //     var groupNameVal = $groupNameInput.val().trim();
 
-            if (groupNameVal.length > 0) {
-                // Enable the email fields
-                $stu1.prop("readonly", false);
-                $stu2.prop("readonly", false);
-                $stu3.prop("readonly", false);
-            } else {
-                // Disable the email fields
-                $stu1.prop("readonly", true);
-                $stu2.prop("readonly", true);
-                $stu3.prop("readonly", true);
-            }
-        });
+        //     if (groupNameVal.length > 0) {
+        //         // Enable the email fields
+        //         $stu1.prop("readonly", false);
+        //         $stu2.prop("readonly", false);
+        //         $stu3.prop("readonly", false);
+        //     } else {
+        //         // Disable the email fields
+        //         $stu1.prop("readonly", true);
+        //         $stu2.prop("readonly", true);
+        //         $stu3.prop("readonly", true);
+        //     }
+        // });
         $("#formsubmit").click(function (e) {
             $('#employeeModal').modal('hide');
             e.preventDefault();  // Prevent the default form submission

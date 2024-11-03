@@ -83,7 +83,14 @@ namespace FYP.Web.ViewModels
         public string? Email { get; set; }
         public string? Name { get; set; }
         public string? RoomAlloted { get; set; }
+        public string? Batch { get; set; }
         public string? Evaluation { get; set; }
+        public List<RoomInChargeViewModel> roomInCharges { get; set; }
+        public List<RoomInChargeViewModel> AllotedRoomIncharges { get; set; }
+        public List<string> Incharges { get; set; }
+        public List<string> Batchs { get; set; }
+        public List<RoomViewModel> Rooms { get; set; }
+
 
     }
     public class FYPCommitteViewModel

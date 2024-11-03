@@ -24,7 +24,7 @@ namespace FYP.Web.Controllers
         private readonly IRoomInChargeService _roomInChargeService;
         private readonly IEvaluationService _evaluationService;
 
-        public StudentGroupsController(IEvaluationService evaluationService,IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -39,16 +39,66 @@ namespace FYP.Web.Controllers
             _roomInChargeService = roomInChargeService;
             _evaluationService = evaluationService;
         }
-        public async Task<IActionResult> StudentGroups()
+        public async Task<IActionResult> StudentGroups(string istrue)
         {
-            var studentGroups = await _studentGroupService.GetAllAsync();
-            var user = _userManager.GetUserId(User);
+            var model = new StudentGroupViewModel();
+            var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
+            var Groups = await _studentGroupService.GetAllAsync();
+            var studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
+            if (istrue != "True")
+            {
+                var fetchLastBatch = studentGroups.LastOrDefault().Batch;
+
+                model.Batch = fetchLastBatch;
+                return RedirectToAction("StudentGroupbyBatch", "StudentGroups", new { batch = fetchLastBatch });
+            }
             var distinctBatches = studentGroups.Select(x => x.Batch).Distinct().ToList();
             var distinctYears = studentGroups.Select(x => x.Year).Distinct().ToList();
+            var project = await _projectService.GetAllAsync();
 
+            model.StudentGroups = studentGroups.Select(x => new StudentGroupViewModel
+            {
+                GrouID = x.ID.ToString(),
+                groupId = x.ID.ToString(),
+                companyID = x.companyID,
+                Batch = x.Batch,
+                CordinatorID = x.CordinatorID,
+                CoSupervisorID = x.CoSupervisorID,
+                Id = x.ID,
+                Name = x.Name,
+                student1LID = x.student1LID,
+                student2ID = x.student2ID,
+                student3ID = x.student3ID,
+                SupervisorID = x.SupervisorID,
+                Year = x.Year,
+                projectname = project.Where(y => y.projectGroup == x.Name).Select(y => y.Title).FirstOrDefault(),
+                LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Email,
+                member1 = _userService.GetByIdAsync(x.student2ID).Result.Email,
+                Member2 = _userService.GetByIdAsync(x.student3ID).Result.Email,
+                supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result.Name
+            }
+            ).ToList();
+            model.Batches = distinctBatches;
+            model.Years = distinctYears;
+
+
+            return PartialView(model);
+        }
+        public async Task<IActionResult> StudentGroupbyBatch(string batch)
+        {
+            if (batch == "All Groups")
+            {
+                return RedirectToAction("StudentGroups", "StudentGroups", new { istrue = "True" });
+            }
+            var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
+            var Groups = await _studentGroupService.GetAllAsync();
+            var studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id && x.Batch == batch).ToList();
+            var distinctBatches = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Batch).Distinct().ToList();
+            var distinctYears = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Year).Distinct().ToList();
+            var project = await _projectService.GetAllAsync();
             var model = new StudentGroupViewModel()
             {
-                StudentGroups = studentGroups.Where(x => x.SupervisorID == user).Select(x => new StudentGroupViewModel
+                StudentGroups = studentGroups.Select(x => new StudentGroupViewModel
                 {
                     GrouID = x.ID.ToString(),
                     groupId = x.ID.ToString(),
@@ -63,7 +113,7 @@ namespace FYP.Web.Controllers
                     student3ID = x.student3ID,
                     SupervisorID = x.SupervisorID,
                     Year = x.Year,
-                    projectname = _projectService.GetAllAsync().Result.Where(y => y.projectGroup == x.Name).Select(y => y.Title).FirstOrDefault(),
+                    projectname = project.Where(y => y.projectGroup == x.Name).Select(y => y.Title).FirstOrDefault(),
                     LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Email,
                     member1 = _userService.GetByIdAsync(x.student2ID).Result.Email,
                     Member2 = _userService.GetByIdAsync(x.student3ID).Result.Email,
@@ -74,54 +124,9 @@ namespace FYP.Web.Controllers
                 Years = distinctYears
             };
 
-            return PartialView(model);
-        }
-        public async Task<IActionResult> StudentGroupbyBatch(string batch)
-        {
-            if (batch == "All Projects")
-            {
-                return RedirectToAction("StudentGroups");
-            }
-            var userid = _userManager.GetUserId(User);
-            var studentGroups = (await _studentGroupService.GetAllAsync())
-                                .Where(x => x.Batch == batch && x.SupervisorID == userid);
-            var studentGroup = (await _studentGroupService.GetAllAsync());
-            var user = studentGroups.FirstOrDefault();
-            var allGroups = await _studentGroupService.GetAllAsync();
-            var userGroup = allGroups
-                .Where(x => x.student1LID == user.student1LID || x.student2ID == user.student2ID || x.student3ID == user.student3ID)
-                .FirstOrDefault();
-            var distinctBatches = studentGroup.Select(x => x.Batch).Distinct().ToList();
-            var distinctYears = studentGroup.Select(x => x.Year).Distinct().ToList();
-            var supervisorName = (await _userManager.FindByIdAsync(userGroup.SupervisorID))?.Name;
-            var leaderName = (await _userManager.FindByIdAsync(user.student1LID))?.Email;
-            var member1Name = (await _userManager.FindByIdAsync(user.student2ID))?.Email;
-            var member2Name = (await _userManager.FindByIdAsync(user.student3ID))?.Email;
-
-            var model = new StudentGroupViewModel()
-            {
-                StudentGroups = studentGroups.Select(x => new StudentGroupViewModel
-                {
-                    Id = x.ID,
-                    Name = x.Name,
-                    Batch = x.Batch,
-                    student1LID = x.student1LID,
-                    student2ID = x.student2ID,
-                    student3ID = x.student3ID,
-                    CoSupervisorID = x.CoSupervisorID,
-                    SupervisorID = x.SupervisorID,
-                    supervisorname = supervisorName,
-                    LeaderName = leaderName,
-                    member1 = member1Name,
-                    Member2 = member2Name
-                }).ToList(),
-                Batches = distinctBatches,
-                Years = distinctYears
-
-            };
-
             return PartialView("StudentGroups", model);
         }
+
         [HttpPost]
         public async Task<IActionResult> StudentGroups([FromBody] StudentGroupViewModel model)
         {
@@ -144,31 +149,21 @@ namespace FYP.Web.Controllers
 
 
                 };
-                var student3 = new AppUser()
-                {
-                    Email = model.student3Email,
-                    UserName = model.student3Email,
-                    Designation = "Student",
-                    Role = "Student"
 
-
-                };
                 var result = await _userManager.CreateAsync(student, "Bahria123@@");
                 var result2 = await _userManager.CreateAsync(student2, "Bahria123@@");
-                var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
 
-                if (result.Succeeded && result2.Succeeded || result3.Succeeded)
+
+                if (result.Succeeded && result2.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(student, Roles.Student.ToString());
                     var roleResult2 = await _userManager.AddToRoleAsync(student2, Roles.Student.ToString());
-                    var roleResult3 = await _userManager.AddToRoleAsync(student3, Roles.Student.ToString());
 
 
-                    if (roleResult.Succeeded && roleResult2.Succeeded || roleResult3.Succeeded)
+                    if (roleResult.Succeeded && roleResult2.Succeeded)
                     {
                         var studenta = await _userManager.FindByEmailAsync(model.student1LEmail);
                         var studentb = await _userManager.FindByEmailAsync(model.student2Email);
-                        var studentc = await _userManager.FindByEmailAsync(model.student3Email);
                         var userId = _userManager.GetUserId(User);
                         var studentData1 = new Student()
                         {
@@ -186,18 +181,12 @@ namespace FYP.Web.Controllers
                             Semester = null
 
                         };
-                        var studentData3 = new Student()
-                        {
-                            studentId = studentc.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
-                        };
+
+
                         var usergroup = new StudentGroup
                         {
                             student1LID = studenta.Id,
                             student2ID = studentb.Id,
-                            student3ID = studentc.Id,
                             SupervisorID = userId,
                             Name = model.Name,
                             companyID = null,
@@ -208,9 +197,41 @@ namespace FYP.Web.Controllers
                             Year = model.Year,
 
                         };
+                        if (model.student3Email != null)
+                        {
+                            var student3 = new AppUser()
+                            {
+                                Email = model.student3Email,
+                                UserName = model.student3Email,
+                                Designation = "Student",
+                                Role = "Student"
+
+
+                            };
+                            var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
+                            if (result3.Succeeded)
+                            {
+                                var roleResult3 = await _userManager.AddToRoleAsync(student3, Roles.Student.ToString());
+                                if (roleResult3.Succeeded)
+                                {
+                                    var studentc = await _userManager.FindByEmailAsync(model.student3Email);
+                                    var studentData3 = new Student()
+                                    {
+                                        studentId = studentc.Id,
+                                        ENo = null,
+                                        RegNo = 0,
+                                        Semester = null
+                                    };
+                                    usergroup.student3ID = studentc.Id;
+                                    await _studentService.AddAsync(studentData3);
+
+                                }
+
+                            }
+                        }
+
                         await _studentService.AddAsync(studentData1);
                         await _studentService.AddAsync(studentData2);
-                        await _studentService.AddAsync(studentData3);
                         await _studentGroupService.AddAsync(usergroup);
                         return RedirectToAction("StudentGroups", "studentgroups");
                     }
@@ -379,7 +400,7 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
 
-        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest, string EvalType,string room)
+        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest, string EvalType, string room)
         {
             var LoggedInUser = _userManager.GetUserId(User);
             var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
@@ -399,7 +420,7 @@ namespace FYP.Web.Controllers
                 //var fypCommittee = await _fYPCommitteService.GetAllAsync();
                 //var fetchFypCommittee = fypCommittee.Where(x => x.batch == batch);
                 var fetchEvaluation = Evaluation.Where(x => x.PBatch == batch && x.EvaluationName == EvalType);
-               model.Evaluations = new List<string> { "Proposal", "Mid", "Final" };
+                model.Evaluations = new List<string> { "Proposal", "Mid", "Final" };
                 //if (fetchFypCommittee.Any())
                 //{
                 //    model.AppointedDate = fetchFypCommittee.Select(x => x.AppointedDate).FirstOrDefault();
@@ -407,7 +428,7 @@ namespace FYP.Web.Controllers
                 //}
                 if (fetchEvaluation.Any())
                 {
-                    
+
                     model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
                     if (fetchEvaluation.FirstOrDefault().EvaluationName == "Proposal")
                     {
@@ -433,10 +454,10 @@ namespace FYP.Web.Controllers
                         groupID = x.ID.ToString(),
                         groupName = x.Name
                     }).ToList();
-                   
+
 
                 }
-              
+
                 model.batch = batch;
                 // Get supervisors for the department
                 if (supervisorList.Any() && !string.IsNullOrEmpty(id))
@@ -466,12 +487,12 @@ namespace FYP.Web.Controllers
                     model.assignRequest = assignRequest;
                 }
             }
-          
+
             // Handle id filtering
             if (!string.IsNullOrEmpty(id))
             {
                 var fypCommitte = await _fYPCommitteService.GetAllAsync();
-                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id && x.EvaluationID == EvalType ).FirstOrDefault();
+                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id && x.EvaluationID == EvalType).FirstOrDefault();
 
                 if (currentFypCommitte != null)
                 {
@@ -492,7 +513,7 @@ namespace FYP.Web.Controllers
                     TimeOnly parsedAppointedTime = TimeOnly.ParseExact(appointedTimeString, "HH:mm:ss", CultureInfo.InvariantCulture);
                     model.AppointedDate = parsedAppointedDate;
                     model.AppointedTime = parsedAppointedTime;
-                   
+
                 }
                 else
                 {
@@ -509,13 +530,13 @@ namespace FYP.Web.Controllers
                     RoomNo = x.RoomNo
                 }).ToList();
             }
-           
+
             if (id != null && batch != null && EvalType != null && room != null)
             {
                 var fypCommitte = await _fYPCommitteService.GetAllAsync();
                 var fetchLastRoom = fypCommitte.Where(x => x.Room == room).LastOrDefault();
-                var fetchRoomGroup = fypCommitte.Where(x => x.Room == room  && x.EvaluationID == EvalType).FirstOrDefault();
-                if (fetchLastRoom != null && fetchRoomGroup!=null)
+                var fetchRoomGroup = fypCommitte.Where(x => x.Room == room && x.EvaluationID == EvalType).FirstOrDefault();
+                if (fetchLastRoom != null && fetchRoomGroup != null)
                 {
                     if (fetchLastRoom.Room == room && fetchRoomGroup.groupID != id)
                     {
@@ -546,13 +567,13 @@ namespace FYP.Web.Controllers
 
                 }
             }
-            
-              
-            
+
+
+
             model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
-            
-                model.EvaluationID = EvalType;
-            
+
+            model.EvaluationID = EvalType;
+
             return PartialView("Evaluators", model);
 
         }
@@ -562,7 +583,7 @@ namespace FYP.Web.Controllers
         {
             var getFYPCommitte = await _fYPCommitteService.GetAllAsync();
             var fypCommitte = getFYPCommitte.FirstOrDefault(x => x.groupID == model.groupID && x.EvaluationID == model.EvaluationID);
-      
+
             if (fypCommitte != null)
             {
                 bool isUpdated = false;
@@ -584,14 +605,14 @@ namespace FYP.Web.Controllers
                     fypCommitte.AppointedTime = time;
                     isUpdated = true;
                 }
-               
+
                 if (fypCommitte.Room != model.Room)
                 {
                     fypCommitte.Room = model.Room;
                     isUpdated = true;
                 }
-               
-               
+
+
 
 
                 // If either member has been updated, proceed to update in the database
@@ -619,11 +640,11 @@ namespace FYP.Web.Controllers
 
                 // Convert AppointedTime to string (this assumes AppointedTime is also DateTime or TimeSpan)
                 string appointedTimeString = model.AppointedTime.ToString("HH:mm:ss"); // Format for time
-                                                                                                    // Parse AppointedDate from string back to DateTime
+                                                                                       // Parse AppointedDate from string back to DateTime
                 DateTime parsedAppointedDate = DateTime.ParseExact(appointedDateString, "dd-MM-yy", CultureInfo.InvariantCulture);
 
                 var evaluation = await _evaluationService.GetAllAsync();
-                
+
                 model.AppointedDate = parsedAppointedDate;
                 TimeOnly time = model.AppointedTime;
                 var newFypCommitte = new FYPCommitte
@@ -636,11 +657,11 @@ namespace FYP.Web.Controllers
                     AppointedTime = time,
                     Room = model.Room,
                     EvaluationID = model.EvaluationID,
-                    
+
 
 
                 };
-               
+
                 if (model.EvaluationID == "Proposal")
                 {
                     TimeOnly newTime = time.AddMinutes(30);
@@ -667,7 +688,7 @@ namespace FYP.Web.Controllers
                         Member2ID = fypCommitteMid.Member2ID,
                         groupID = model.groupID,
                         batch = model.batch,
-                        AppointedDate = evaluation.Where(x=>x.EvaluationName == "Mid").FirstOrDefault().LastDate,
+                        AppointedDate = evaluation.Where(x => x.EvaluationName == "Mid").FirstOrDefault().LastDate,
                         AppointedTime = fypCommitteMid.AppointedTime,
                         Room = fypCommitteMid.Room,
                         EvaluationID = "Mid"
@@ -705,20 +726,20 @@ namespace FYP.Web.Controllers
                 }
                 else
                 {
-                   
+
                     return RedirectToAction("FetchBatches", "studentgroups", new { id = model.groupID, batch = model.batch });
                 }
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> FetchRoom(string room , string isRoom , string id)
+        public async Task<IActionResult> FetchRoom(string room, string isRoom, string id)
         {
             var Room = await _roomService.GetAllAsync();
             var loggedUser = _userManager.GetUserId(User);
             var fetchUser = await _userManager.FindByIdAsync(loggedUser);
-            var fetchRoom = Room.FirstOrDefault(x => x.ID.ToString() == id );
-            var fetchExistingRoom = Room.FirstOrDefault(x=>x.RoomNo.Trim().ToUpper() == room.Trim().ToUpper());
+            var fetchRoom = Room.FirstOrDefault(x => x.ID.ToString() == id);
+            var fetchExistingRoom = Room.FirstOrDefault(x => x.RoomNo.Trim().ToUpper() == room.Trim().ToUpper());
             var model = new FYPCommitteViewModel();
             if (fetchExistingRoom != null)
             {
@@ -781,78 +802,9 @@ namespace FYP.Web.Controllers
                     }
                 }
             }
-                return Json(new { success = false, message = "Room not added successfully!" });
+            return Json(new { success = false, message = "Room not added successfully!" });
         }
-        //[HttpPost]
-        //public async Task<IActionResult> FetchRoomIncharges(FYPCommitteViewModel incharge)
-        //{
-        //    var RoomIncharge = await _roomInChargeService.GetAllAsync();
-        //    var fetchRoomIncharge = RoomIncharge.FirstOrDefault(x => x.ID == incharge.Id);
-        //    var fetchExistingRoomIncharge = RoomIncharge.FirstOrDefault(x => x.Email == incharge.RoomInChargeEmail);
-        //    var model = new FYPCommitteViewModel();
-        //    if (fetchExistingRoomIncharge != null)
-        //    {
-        //        if (fetchExistingRoomIncharge.Email == incharge.RoomInChargeEmail && fetchExistingRoomIncharge.Name == incharge.RoomInChargeName )
-        //        { 
-        //                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Existed" }); 
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (fetchRoomIncharge != null)
-        //        {
-        //            if (incharge.istrue == "true")
-        //            {
-        //            fetchRoomIncharge.Email = incharge.RoomInChargeEmail;
-        //            fetchRoomIncharge.Name = incharge.RoomInChargeName;
-        //            }
-        //            fetchRoomIncharge.RoomAlloted = incharge.Room;
-        //            fetchRoomIncharge.Evaluation = incharge.EvaluationID;
-        //            await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
-        //            model.Rooms = Room.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
-        //            {
-        //                Id = x.ID.ToString(),
-        //                RoomNo = x.RoomNo,
 
-        //            }).ToList();
-
-        //            if (isRoom == "true")
-        //            {
-        //                return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Updated" });
-        //            }
-        //            else
-        //            {
-        //                return Json(new { success = true, message = "Room Updated!", room = model });
-        //            }
-
-
-        //        }
-        //        else
-        //        {
-        //            var result = _roomService.AddAsync(new Room { RoomNo = room.ToUpper().Trim(), Department = fetchUser.Department });
-        //            var fetchRoomagain = await _roomService.GetAllAsync();
-        //            if (result.IsCompletedSuccessfully)
-        //            {
-        //                model.Rooms = fetchRoomagain.Where(x => x.Department == fetchUser.Department).Select(x => new RoomViewModel
-        //                {
-        //                    Id = x.ID.ToString(),
-        //                    RoomNo = x.RoomNo
-
-        //                }).ToList();
-        //                if (isRoom == "true")
-        //                {
-        //                    return RedirectToAction("Rooms", "StudentGroups", new { ViewValue = "Added" });
-        //                }
-        //                else
-        //                {
-        //                    return Json(new { success = true, message = "Room added successfully!", room = model });
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return Json(new { success = false, message = "Room not added successfully!" });
-        //}
-      
 
         [HttpPost]
         public async Task<IActionResult> DeleteRoom(string id)
@@ -882,7 +834,7 @@ namespace FYP.Web.Controllers
         }
 
 
-       
+
         [HttpGet]
         public async Task<IActionResult> Rooms(string ViewValue)
         {
@@ -937,6 +889,147 @@ namespace FYP.Web.Controllers
             model.Rooms = fetchRooms;
 
             return PartialView(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FetchRoomIncharges(FYPCommitteViewModel incharge)
+        {
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var fetchRoomIncharge = RoomIncharge.FirstOrDefault(x => x.ID == incharge.Id);
+            var fetchExistingRoomIncharge = RoomIncharge.FirstOrDefault(x => x.Email == incharge.RoomInChargeEmail);
+            var model = new FYPCommitteViewModel();
+            if (fetchExistingRoomIncharge != null)
+            {
+                if (fetchExistingRoomIncharge.Email == incharge.RoomInChargeEmail && fetchExistingRoomIncharge.Name == incharge.RoomInChargeName)
+                {
+                    return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Existed" });
+                }
+            }
+            else
+            {
+                if (fetchRoomIncharge != null)
+                {
+                    if (incharge.istrue == "true")
+                    {
+                        fetchRoomIncharge.Email = incharge.RoomInChargeEmail;
+                        fetchRoomIncharge.Name = incharge.RoomInChargeName;
+                    }
+                    fetchRoomIncharge.RoomAlloted = incharge.Room;
+                    fetchRoomIncharge.Evaluation = incharge.EvaluationID;
+                    await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
+                    return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Updated" });
+                }
+                else
+                {
+                    var result = _roomInChargeService.AddAsync(new RoomInCharge { Email = incharge.RoomInChargeEmail, Name = incharge.RoomInChargeName });
+                    var fetchRoomInchargeagain = await _roomService.GetAllAsync();
+                    if (result.IsCompletedSuccessfully)
+                    {
+                        return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Added" });
+                    }
+                }
+            }
+            return Json(new { success = false, message = "Room not added successfully!" });
+        }
+
+
+        public async Task<IActionResult> AssignIncharge(string Batch)
+        {
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var fetchRoomIncharge = RoomIncharge.ToList();
+            var Room = await _roomService.GetAllAsync();
+            var groups = await _studentGroupService.GetAllAsync();
+            if (Batch != null)
+            {
+
+                var fetchRoomInchargebyBatch = RoomIncharge.Where(x => x.Batch == Batch).ToList();
+
+
+                if (fetchRoomIncharge != null)
+                {
+                    // Determine if any rooms are allocated for the specified batch
+                    var roomsAllocatedForBatch = fetchRoomInchargebyBatch.Select(x => x.RoomAlloted).Distinct().ToList();
+
+                    var model = new RoomInChargeViewModel()
+                    {
+                        roomInCharges = fetchRoomIncharge.Select(x => new RoomInChargeViewModel
+                        {
+                            Id = x.ID.ToString(),
+                            Evaluation = x.Evaluation,
+                            Email = x.Email,
+                            Name = x.Name,
+                            RoomAlloted = x.RoomAlloted
+                        }).ToList(),
+                        Rooms = roomsAllocatedForBatch.Any()
+                            ? Room.Where(r => roomsAllocatedForBatch.Contains(r.RoomNo)).Select(x => new RoomViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                RoomNo = x.RoomNo
+                            }).ToList()
+                            : Room.Select(x => new RoomViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                RoomNo = x.RoomNo
+                            }).ToList(), // Show all rooms if no room is allocated for the batch
+                        Batchs = groups.Select(x => x.Batch).Distinct().ToList(),
+                        Batch = Batch,
+                        AllotedRoomIncharges = RoomIncharge
+                            .Where(x => !string.IsNullOrEmpty(x.RoomAlloted)&& x.Batch == Batch) // Only in-charges with an allotted room
+                            .Select(x => new RoomInChargeViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                Evaluation = x.Evaluation,
+                                Email = x.Email,
+                                Name = x.Name,
+                                RoomAlloted = Room.FirstOrDefault(r => r.ID.ToString() == x.RoomAlloted).RoomNo
+                            })
+                            .ToList(),
+                    };
+
+                    return PartialView(model);
+                }
+            }
+            fetchRoomIncharge = RoomIncharge.ToList();
+
+            if (fetchRoomIncharge != null)
+            {
+                // Determine if any rooms are allocated for the specified batch
+                var roomsAllocatedForBatch = fetchRoomIncharge.Select(x => x.RoomAlloted).Distinct().ToList();
+
+                var model = new RoomInChargeViewModel()
+                {
+                    Batchs = groups.Select(x => x.Batch).Distinct().ToList(),
+                    roomInCharges = null,
+                    Batch = null,
+                };
+
+                return PartialView(model);
+            }
+            return PartialView();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AssignIncharge(RoomInChargeViewModel incharge)
+        {
+            var fetchRoomIncharge = await _roomInChargeService.GetAllAsync();
+            var fetchExistingRoomIncharge = fetchRoomIncharge.FirstOrDefault(x => x.ID.ToString() == incharge.Name && x.Evaluation == incharge.Evaluation && x.Batch == incharge.Batch);
+            if (fetchExistingRoomIncharge != null)
+            {
+                fetchExistingRoomIncharge.RoomAlloted = incharge.RoomAlloted;
+                await _roomInChargeService.UpdateAsync(fetchExistingRoomIncharge);
+                return RedirectToAction("AssignIncharge", "StudentGroups", new { Batch = incharge.Batch });
+
+
+            }
+            else
+            {
+                var fetchRoomInchargeagain = fetchRoomIncharge.FirstOrDefault(x => x.ID.ToString() == incharge.Name);
+                fetchRoomInchargeagain.RoomAlloted = incharge.RoomAlloted;
+                fetchRoomInchargeagain.Evaluation = incharge.Evaluation;
+                fetchRoomInchargeagain.Batch = incharge.Batch;
+                await _roomInChargeService.UpdateAsync(fetchRoomInchargeagain);
+                return RedirectToAction("AssignIncharge", "StudentGroups", new { Batch = incharge.Batch });
+            }
+
         }
     }
 }
