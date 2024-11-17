@@ -1,0 +1,515 @@
+﻿@model FYP.Web.ViewModels.EvaluationMarksViewModel
+
+
+@{
+
+}
+<!-- BEGIN: Content-->
+<div id="ExamContainer">
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body ">
+                <section class="users-list-wrapper">
+                    <div class="users-list-filter px-1">
+                        <!-- Section 1 -->
+                        <div class=" ">
+                            <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
+                                <!-- Column 1: -->
+                                <div class="" style="min-height:100px;">
+                                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                        <div class=" text-2xl font-bold">
+                                            <h1>
+                                                Evaluation
+                                            </h1>
+                                        </div>
+
+                                    </div>
+                                    <div class="row p-2">
+
+                                        <!-- Group -->
+                                        <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-1 order-md-1 order-lg-1">
+                                            <div class="form-group">
+                                                <label>Group</label>
+                                                <fieldset>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="basic-addon3">
+                                                                <i class="fa fa-user-circle-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                            </span>
+                                                        </div>
+
+                                                        @if (Model.Groups != null)
+                                                        {
+                                                            <select class="form-control" id="GroupSelect">
+                                                                    <option selected>Select Group</option>
+                                                                @foreach (var item in Model.Groups)
+                                                                {
+                                                                    if (Model.GroupId!=null && Model.GroupId == item.ID.ToString())
+                                                                    {
+                                                                        
+                                                                        <option value="@item.ID" selected>@item.Name</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item.ID">@item.Name</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="text" class="form-control" placeholder="Add a Room Incharge" aria-describedby="basic-addon1" readonly required>
+                                                        }
+
+                                                    </div>
+                                                    <span asp-validation-for="Groups" class="text-danger"></span>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+
+                                        <!-- Evaluation -->
+                                        <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-2 order-md-2">
+                                            <div class="form-group">
+                                                <label>Evaluation</label>
+                                                <fieldset>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="basic-addon3">
+                                                                <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input type="text" class="form-control" placeholder="Select Evaluation First" aria-describedby="basic-addon1" value="@Model.EvalName" readonly required>
+
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-3 order-md-3">
+                                        @if (Model.EvalName !=null && Model.EvalName == "Proposal")
+                                        {
+                                            <form class="" id="Proposal">
+                                                <div >
+                                                <h3>Introduction & Background</h3>
+                                                <label>
+                                                    <input type="radio" name="intro" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="intro" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="intro" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="intro" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="intro" value="0.2"> Poor
+                                                </label>
+                                                </div>
+                                                <h3>Literature Review</h3>
+                                                <label>
+                                                    <input type="radio" name="literature" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="literature" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="literature" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="literature" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="literature" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Problem Statement</h3>
+                                                <label>
+                                                    <input type="radio" name="problem" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="problem" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="problem" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="problem" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="problem" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Scope of the Project</h3>
+                                                <label>
+                                                    <input type="radio" name="scope" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="scope" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="scope" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="scope" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="scope" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Project Objectives</h3>
+                                                <label>
+                                                    <input type="radio" name="objectives" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="objectives" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="objectives" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="objectives" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="objectives" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Methodology</h3>
+                                                <label>
+                                                    <input type="radio" name="methodology" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="methodology" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="methodology" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="methodology" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="methodology" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Deliverables</h3>
+                                                <label>
+                                                    <input type="radio" name="deliverables" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="deliverables" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="deliverables" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="deliverables" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="deliverables" value="0.2"> Poor
+                                                </label>
+
+                                                <h3>Presentation</h3>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="1"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="0.8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="0.6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="0.4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="0.2"> Poor
+                                                </label>
+
+                                            </form>
+                                            <br />
+                                            <label>Remarks:</label>
+                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
+                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
+                                                <div class="flex justify-center">
+                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Model.EvalName != null && Model.EvalName == "Mid")
+                                        {
+                                            <form class="" id="Mid">
+                                                <!-- Group 1 -->
+                                                <h3>Able to Cope with Advices / Suggestions Given (Scope Defined Clearly)</h3>
+                                                <label>
+                                                    <input type="radio" name="cope_scope" value="5"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="cope_scope" value="4"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="cope_scope" value="3"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="cope_scope" value="2"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="cope_scope" value="1"> Poor
+                                                </label>
+
+                                                <!-- Group 2 -->
+                                                <h3>Performing According to the Timeline (Studied Existing Systems Before Starting Project)</h3>
+                                                <label>
+                                                    <input type="radio" name="timeline_systems" value="5"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="timeline_systems" value="4"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="timeline_systems" value="3"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="timeline_systems" value="2"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="timeline_systems" value="1"> Poor
+                                                </label>
+
+                                                <!-- Group 3 -->
+                                                <h3>Designed Framework of the Project (Implementation / Coding)</h3>
+                                                <label>
+                                                    <input type="radio" name="framework_coding" value="5"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="framework_coding" value="4"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="framework_coding" value="3"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="framework_coding" value="2"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="framework_coding" value="1"> Poor
+                                                </label>
+
+                                                <!-- Group 4 -->
+                                                <h3>Able to Present / Demonstrate Work</h3>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="5"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="4"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="3"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="2"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="presentation" value="1"> Poor
+                                                </label>
+
+                                                <!-- Group 5 -->
+                                                <h3>Writing Abilities and Maintaining Log Files</h3>
+                                                <label>
+                                                    <input type="radio" name="writing_log" value="5"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="writing_log" value="4"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="writing_log" value="3"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="writing_log" value="2"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="writing_log" value="1"> Poor
+                                                </label>
+
+                                                <button type="submit">Submit</button>
+                                            </form>
+                                            <br />
+                                            <label>Remarks:</label>
+                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
+                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
+                                                <div class="flex justify-center">
+                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Model.EvalName != null && Model.EvalName == "Final")
+                                        {
+                                            <form class="" id="Final">
+                                                <!-- First Student -->
+                                                <h3>1st Student</h3>
+                                                <label>
+                                                    <input type="radio" name="student1" value="10"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student1" value="8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student1" value="6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student1" value="4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student1" value="2"> Poor
+                                                </label>
+
+                                                <!-- Second Student -->
+                                                <h3>2nd Student</h3>
+                                                <label>
+                                                    <input type="radio" name="student2" value="10"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student2" value="8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student2" value="6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student2" value="4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student2" value="2"> Poor
+                                                </label>
+
+
+
+                                                <h3>3rd Student Rating</h3>
+                                                <label>
+                                                    <input type="radio" name="student3" value="10"> Excellent
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student3" value="8"> Good
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student3" value="6"> Adequate
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student3" value="4"> Marginal
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="student3" value="2"> Poor
+                                                </label>
+
+                                                <button type="submit">Submit</button>
+                                            </form>
+                                            <br />
+                                            <label>Remarks:</label>
+                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
+                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
+                                                <div class="flex justify-center">
+                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                </div>
+                                            </div>
+                                        }
+                                       
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- END: Content-->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        // $("#Assign").click(function () {
+        //     var intro = $("input[name='intro']:checked").val();
+        //     var literature = $("input[name='literature']:checked").val();
+        //     var problem = $("input[name='problem']:checked").val();
+        //     var scope = $("input[name='scope']:checked").val();
+        //     var objectives = $("input[name='objectives']:checked").val();
+        //     var methodology = $("input[name='methodology']:checked").val();
+        //     var deliverables = $("input[name='deliverables']:checked").val();
+        //     var presentation = $("input[name='presentation']:checked").val();
+        //     var cope_scope = $("input[name='cope_scope']:checked").val();
+        //     var timeline_systems = $("input[name='timeline_systems']:checked").val();
+        //     var framework_coding = $("input[name='framework_coding']:checked").val();
+        //     var presentation = $("input[name='presentation']:checked").val();
+        //     var writing_log = $("input[name='writing_log']:checked").val();
+        //     var student1 = $("input[name='student1']:checked").val();
+        //     var student2 = $("input[name='student2']:checked").val();
+        //     var student3 = $("input[name='student3']:checked").val();
+        //     var Remarks = $("#Remarks").val();
+        //     var group = $("select option:selected").text();
+        //     var eval = $("input[name='eval']").val();
+        //     var data = {
+        //         intro: intro,
+        //         literature: literature,
+        //         problem: problem,
+        //         scope: scope,
+        //         objectives: objectives,
+        //         methodology: methodology,
+        //         deliverables: deliverables,
+        //         presentation: presentation,
+        //         cope_scope: cope_scope,
+        //         timeline_systems: timeline_systems,
+        //         framework_coding: framework_coding,
+        //         presentation: presentation,
+        //         writing_log: writing_log,
+        //         student1: student1,
+        //         student2: student2,
+        //         student3: student3,
+        //         Remarks: Remarks,
+        //         group: group,
+        //         eval: eval
+        //     };
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/StudentGroups/AssignMarks",
+        //         data: data,
+        //         success: function (response) {
+        //             alert(response);
+        //         }
+        //     });
+        // });
+        $(document).off('change', '#GroupSelect').on('change', '#GroupSelect', function (e) {
+            e.preventDefault();
+
+            showLoadingSpinner();
+            var Id = $(this).val();
+           
+
+            $.ajax({
+                url: "/studentgroups/GroupEvaluation",
+                type: "POST",
+                data: { groupId : Id },
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $("#ExamContainer").html(response);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    console.error("Error fetching rooms:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the rooms. Please try again.");
+                }
+            });
+        });
+    });
+</script>

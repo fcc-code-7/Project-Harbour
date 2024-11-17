@@ -12,7 +12,7 @@ namespace FYP.Web.Controllers
     public class ProjectController : Controller
     {
         private readonly IUserService _userService;
-        private readonly ISupervisorService _supervisorService;
+        private readonly Services.IRoomAllotmentService _supervisorService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly IRoomService _designationService;
         private readonly IStudentGroupService _studentGroupService;
@@ -22,7 +22,7 @@ namespace FYP.Web.Controllers
         private readonly IEvaluationService _evaluationService;
         private readonly UserManager<AppUser> _userManager;
 
-        public ProjectController(IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public ProjectController(IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;

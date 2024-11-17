@@ -1,11 +1,17 @@
 ﻿using FYP.Databases;
 using FYP.Entities;
 using FYP.Models;
+using FYP.Repositories.Interfaces;
 using FYP.Services;
 using FYP.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FYP.Web.Controllers
 {
@@ -15,7 +21,7 @@ namespace FYP.Web.Controllers
         private readonly IProjectService _projectService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ISupervisorService _supervisorService;
+        private readonly IRoomAllotmentService _roomAllotmentService;
         private readonly IUserService _userService;
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
@@ -24,14 +30,14 @@ namespace FYP.Web.Controllers
         private readonly IRoomInChargeService _roomInChargeService;
         private readonly IEvaluationService _evaluationService;
 
-        public StudentGroupsController(IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IRoomAllotmentService roomAllotmentService, IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
             _projectService = projectService;
             _proposalDefenseService = proposalDefense;
             _studentService = studentService;
-            _supervisorService = supervisorService;
+            _roomAllotmentService = roomAllotmentService;
             _changeSupervisorFormService = changeSupervisorFormService;
             _userService = userService;
             _fYPCommitteService = fYPCommitteService;
@@ -538,7 +544,7 @@ namespace FYP.Web.Controllers
                 var fetchRoomGroup = fypCommitte.Where(x => x.Room == room && x.EvaluationID == EvalType).FirstOrDefault();
                 if (fetchLastRoom != null && fetchRoomGroup != null)
                 {
-                    if (fetchLastRoom.Room == room && fetchRoomGroup.groupID != id)
+                    if (fetchLastRoom.Room == room && fetchRoomGroup.groupID != id && fetchLastRoom.batch == batch)
                     {
                         if (EvalType == "Proposal")
                         {
@@ -688,7 +694,6 @@ namespace FYP.Web.Controllers
                         Member2ID = fypCommitteMid.Member2ID,
                         groupID = model.groupID,
                         batch = model.batch,
-                        AppointedDate = evaluation.Where(x => x.EvaluationName == "Mid").FirstOrDefault().LastDate,
                         AppointedTime = fypCommitteMid.AppointedTime,
                         Room = fypCommitteMid.Room,
                         EvaluationID = "Mid"
@@ -709,7 +714,6 @@ namespace FYP.Web.Controllers
                         Member2ID = fypCommitteFinal.Member2ID,
                         groupID = model.groupID,
                         batch = fypCommitteFinal.batch,
-                        AppointedDate = evaluation.Where(x => x.EvaluationName == "Final").FirstOrDefault().LastDate,
                         AppointedTime = fypCommitteFinal.AppointedTime,
                         Room = fypCommitteFinal.Room,
                         EvaluationID = "Final"
@@ -822,6 +826,14 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteRoomIncharge(string id)
         {
+            var Allotment = await _roomAllotmentService.GetAllAsync();
+            var roomAllotment = Allotment.Where(x => x.InchargeId == id).FirstOrDefault();
+
+            if (roomAllotment != null)
+            {
+                // If there's an associated room allotment, don't allow deletion
+                return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "InchargeAssigned" });
+            }
             var result = _roomInChargeService.DeleteAsync(id);
             if (result.IsCompletedSuccessfully)
             {
@@ -865,28 +877,19 @@ namespace FYP.Web.Controllers
             var fetchRoomsIncharge = RoomIncharge.Select(x => new RoomInChargeViewModel
             {
                 Id = x.ID.ToString(),
-                Evaluation = x.Evaluation,
                 Email = x.Email,
                 Name = x.Name,
-                RoomAlloted = x.RoomAlloted
             }).ToList();
+            var groups = await _studentGroupService.GetAllAsync();
 
-            // Fetch all rooms
-            var rooms = await _roomService.GetAllAsync();
-
-            // Filter rooms that are not allotted to any incharge
-            var fetchRooms = rooms
-                .Where(room => !RoomIncharge.Any(incharge => incharge.RoomAlloted == room.RoomNo))
-                .Select(x => new RoomViewModel
-                {
-                    Id = x.ID.ToString(),
-                    RoomNo = x.RoomNo
-                }).ToList();
 
             // Prepare the ViewModel
             var model = new FYPCommitteViewModel();
             model.roomInCharges = fetchRoomsIncharge;
-            model.Rooms = fetchRooms;
+            if (groups != null)
+            {
+                model.batches = groups.Select(x => x.Batch).Distinct().ToList();
+            }
 
             return PartialView(model);
         }
@@ -898,6 +901,11 @@ namespace FYP.Web.Controllers
             var fetchRoomIncharge = RoomIncharge.FirstOrDefault(x => x.ID == incharge.Id);
             var fetchExistingRoomIncharge = RoomIncharge.FirstOrDefault(x => x.Email == incharge.RoomInChargeEmail);
             var model = new FYPCommitteViewModel();
+            if (incharge.RoomInChargeEmail==null && incharge.RoomInChargeName == null || incharge.RoomInChargeEmail == null || incharge.RoomInChargeName == null)
+            {
+                return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Null" });
+
+            }
             if (fetchExistingRoomIncharge != null)
             {
                 if (fetchExistingRoomIncharge.Email == incharge.RoomInChargeEmail && fetchExistingRoomIncharge.Name == incharge.RoomInChargeName)
@@ -905,131 +913,373 @@ namespace FYP.Web.Controllers
                     return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Existed" });
                 }
             }
+            if (fetchRoomIncharge != null)
+            {
+                if (incharge.istrue == "true")
+                {
+                    fetchRoomIncharge.Email = incharge.RoomInChargeEmail;
+                    fetchRoomIncharge.Name = incharge.RoomInChargeName;
+                }
+
+                await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
+                return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Updated" });
+            }
             else
             {
-                if (fetchRoomIncharge != null)
+                var result = _roomInChargeService.AddAsync(new RoomInCharge { Email = incharge.RoomInChargeEmail, Name = incharge.RoomInChargeName });
+                var fetchRoomInchargeagain = await _roomService.GetAllAsync();
+                if (result.IsCompletedSuccessfully)
                 {
-                    if (incharge.istrue == "true")
-                    {
-                        fetchRoomIncharge.Email = incharge.RoomInChargeEmail;
-                        fetchRoomIncharge.Name = incharge.RoomInChargeName;
-                    }
-                    fetchRoomIncharge.RoomAlloted = incharge.Room;
-                    fetchRoomIncharge.Evaluation = incharge.EvaluationID;
-                    await _roomInChargeService.UpdateAsync(fetchRoomIncharge);
-                    return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Updated" });
-                }
-                else
-                {
-                    var result = _roomInChargeService.AddAsync(new RoomInCharge { Email = incharge.RoomInChargeEmail, Name = incharge.RoomInChargeName });
-                    var fetchRoomInchargeagain = await _roomService.GetAllAsync();
-                    if (result.IsCompletedSuccessfully)
-                    {
-                        return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Added" });
-                    }
+                    return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Added" });
                 }
             }
-            return Json(new { success = false, message = "Room not added successfully!" });
+
+            return Json(new { success = false, message = "Incharge not Updated successfully!" });
         }
 
 
-        public async Task<IActionResult> AssignIncharge(string Batch)
+        public async Task<IActionResult> AssignIncharge(string Batch, string Evaluation, string ViewValue, string name)
         {
             var RoomIncharge = await _roomInChargeService.GetAllAsync();
             var fetchRoomIncharge = RoomIncharge.ToList();
             var Room = await _roomService.GetAllAsync();
             var groups = await _studentGroupService.GetAllAsync();
-            if (Batch != null)
+            var roomalloted = await _roomAllotmentService.GetAllAsync();
+            if (ViewValue != null)
             {
+                ViewBag.success = ViewValue;
+            }
 
-                var fetchRoomInchargebyBatch = RoomIncharge.Where(x => x.Batch == Batch).ToList();
-
-
+            if (Batch != null && Evaluation == null && roomalloted != null)
+            {
                 if (fetchRoomIncharge != null)
                 {
-                    // Determine if any rooms are allocated for the specified batch
-                    var roomsAllocatedForBatch = fetchRoomInchargebyBatch.Select(x => x.RoomAlloted).Distinct().ToList();
+                    var fetchRoomInchargebyBatch = roomalloted.Where(x => x.Batch == Batch).ToList();
 
                     var model = new RoomInChargeViewModel()
                     {
-                        roomInCharges = fetchRoomIncharge.Select(x => new RoomInChargeViewModel
-                        {
-                            Id = x.ID.ToString(),
-                            Evaluation = x.Evaluation,
-                            Email = x.Email,
-                            Name = x.Name,
-                            RoomAlloted = x.RoomAlloted
-                        }).ToList(),
-                        Rooms = roomsAllocatedForBatch.Any()
-                            ? Room.Where(r => roomsAllocatedForBatch.Contains(r.RoomNo)).Select(x => new RoomViewModel
-                            {
-                                Id = x.ID.ToString(),
-                                RoomNo = x.RoomNo
-                            }).ToList()
-                            : Room.Select(x => new RoomViewModel
-                            {
-                                Id = x.ID.ToString(),
-                                RoomNo = x.RoomNo
-                            }).ToList(), // Show all rooms if no room is allocated for the batch
+                        //roomInCharges = fetchRoomIncharge.Select(x =>
+                        //{
+                        //    // Find the room assignment for this in-charge for the specified batch
+                        //    var assignedRoom = fetchRoomInchargebyBatch.FirstOrDefault(r => r.InchargeId == x.ID.ToString());
+                        //    var roomDetails = assignedRoom != null ? Room.FirstOrDefault(r => r.ID.ToString() == assignedRoom.Room) : null;
+
+                        //    return new RoomInChargeViewModel
+                        //    {
+                        //        Id = x.ID.ToString(),
+                        //        Name = x.Name + (assignedRoom != null ? $" (Assigned - Room {roomDetails?.RoomNo})" : "")
+                        //    };
+                        //}).ToList(),
+
+                        //Rooms = Room.Select(x =>
+                        //{
+                        //    // Check if the room is allocated for the specific batch and in-charge
+                        //    var isAllocated = roomalloted.Any(r => r.Room == x.ID.ToString() && r.Batch == Batch );
+
+                        //    return new RoomViewModel
+                        //    {
+                        //        Id = x.ID.ToString(),
+                        //        RoomNo = isAllocated ? x.RoomNo + " (Allocated)" : x.RoomNo
+                        //    };
+                        //}).ToList(),
+
+
                         Batchs = groups.Select(x => x.Batch).Distinct().ToList(),
                         Batch = Batch,
-                        AllotedRoomIncharges = RoomIncharge
-                            .Where(x => !string.IsNullOrEmpty(x.RoomAlloted)&& x.Batch == Batch) // Only in-charges with an allotted room
-                            .Select(x => new RoomInChargeViewModel
-                            {
-                                Id = x.ID.ToString(),
-                                Evaluation = x.Evaluation,
-                                Email = x.Email,
-                                Name = x.Name,
-                                RoomAlloted = Room.FirstOrDefault(r => r.ID.ToString() == x.RoomAlloted).RoomNo
-                            })
-                            .ToList(),
+
+                        AllotedRoomIncharges = roomalloted
+                                .Where(x => !string.IsNullOrEmpty(x.Room) && x.Batch == Batch)
+                                .Select(x => new RoomInChargeViewModel
+                                {
+                                    Id = x.ID.ToString(),
+                                    Name = RoomIncharge.FirstOrDefault(r => r.ID.ToString() == x.InchargeId)?.Name,
+                                    RoomAlloted = Room.FirstOrDefault(r => r.ID.ToString() == x.Room)?.RoomNo,
+                                    Evaluation = x.Evaluation,
+                                    Batch = x.Batch
+
+                                }).ToList(),
                     };
 
                     return PartialView(model);
                 }
             }
-            fetchRoomIncharge = RoomIncharge.ToList();
+
+            if (Batch != null && Evaluation != null && roomalloted != null)
+            {
+                var fetchRoomInchargebyBatch = roomalloted.Where(x => x.Batch == Batch).ToList();
+
+                if (fetchRoomIncharge != null)
+                {
+
+                    var model = new RoomInChargeViewModel()
+                    {
+                        roomInCharges = fetchRoomIncharge.Select(x =>
+                        {
+                            // Find the room assignment for this in-charge for the specified batch and evaluation
+                            var assignedRoom = fetchRoomInchargebyBatch.FirstOrDefault(r => r.InchargeId == x.ID.ToString() && r.Evaluation == Evaluation);
+                            var roomDetails = assignedRoom != null ? Room.FirstOrDefault(r => r.ID.ToString() == assignedRoom.Room) : null;
+
+                            return new RoomInChargeViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                Name = x.Name + (assignedRoom != null ? $" (Assigned - Room {roomDetails?.RoomNo})" : "")
+                            };
+                        }).ToList(),
+
+                        Rooms = Room.Select(x =>
+                        {
+                            // Check if the room is allocated for the specific batch and in-charge
+                            var isAllocated = roomalloted.Any(r => r.Room == x.ID.ToString() && r.Batch == Batch && r.Evaluation == Evaluation);
+
+                            return new RoomViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                RoomNo = isAllocated ? x.RoomNo + " (Allocated)" : x.RoomNo
+                            };
+                        }).ToList(),
+
+                        Batchs = groups.Select(x => x.Batch).Distinct().ToList(),
+                        Batch = Batch,
+
+                        AllotedRoomIncharges = roomalloted
+                            .Where(x => !string.IsNullOrEmpty(x.Room) && x.Batch == Batch && x.Evaluation == Evaluation)
+                            .Select(x => new RoomInChargeViewModel
+                            {
+                                Id = x.ID.ToString(),
+                                Evaluation = x.Evaluation,
+                                Name = RoomIncharge.FirstOrDefault(r => r.ID.ToString() == x.InchargeId)?.Name,
+                                RoomAlloted = Room.FirstOrDefault(r => r.ID.ToString() == x.Room)?.RoomNo,
+                                Batch = x.Batch
+                            }).ToList(),
+
+                        Evaluation = Evaluation
+                    };
+                    if (name != null)
+                    {
+                        var fetchIncharge = roomalloted.Where(x => x.InchargeId == name && x.Batch == Batch && x.Evaluation == Evaluation);
+                        if (fetchRoomIncharge != null)
+                        {
+                            var fetchRoomInchargeRoom = fetchIncharge.Select(x => x.Room).FirstOrDefault();
+                            model.RoomAlloted = fetchRoomInchargeRoom;
+                        }
+                    }
+                    return PartialView(model);
+                }
+            }
 
             if (fetchRoomIncharge != null)
             {
-                // Determine if any rooms are allocated for the specified batch
-                var roomsAllocatedForBatch = fetchRoomIncharge.Select(x => x.RoomAlloted).Distinct().ToList();
-
-                var model = new RoomInChargeViewModel()
+                var roomsAllocatedForBatch = roomalloted.Select(x => x.Room).Distinct().ToList();
+                var fetchgroups = groups.Select(x => x.Batch).Distinct().ToList();
+                if (fetchgroups != null)
                 {
-                    Batchs = groups.Select(x => x.Batch).Distinct().ToList(),
-                    roomInCharges = null,
-                    Batch = null,
-                };
+                    var model = new RoomInChargeViewModel()
+                    {
+                        Batchs = fetchgroups,
+                        roomInCharges = null,
+                        Batch = null,
+                    };
+                    return PartialView(model);
 
-                return PartialView(model);
+                }
             }
+
             return PartialView();
         }
+
         [HttpPost]
         public async Task<IActionResult> AssignIncharge(RoomInChargeViewModel incharge)
         {
-            var fetchRoomIncharge = await _roomInChargeService.GetAllAsync();
-            var fetchExistingRoomIncharge = fetchRoomIncharge.FirstOrDefault(x => x.ID.ToString() == incharge.Name && x.Evaluation == incharge.Evaluation && x.Batch == incharge.Batch);
-            if (fetchExistingRoomIncharge != null)
+            if (incharge.Batch == null || incharge.RoomAlloted == null || incharge.Name == null || incharge.Evaluation == null)
             {
-                fetchExistingRoomIncharge.RoomAlloted = incharge.RoomAlloted;
-                await _roomInChargeService.UpdateAsync(fetchExistingRoomIncharge);
-                return RedirectToAction("AssignIncharge", "StudentGroups", new { Batch = incharge.Batch });
+                return RedirectToAction("AssignIncharge", "StudentGroups", new
+                {
+                    Batch = incharge.Batch,
+                    Evaluation = incharge.Evaluation,
+                    name = incharge.Name,
+                    ViewValue = "SelectFirst"
+                });
+            }
+            var fetchRoom = await _roomAllotmentService.GetAllAsync();
+            var fetchExistingRoom = fetchRoom.FirstOrDefault(x =>
+                x.Batch == incharge.Batch &&
+                x.Evaluation == incharge.Evaluation &&
+                x.InchargeId == incharge.Name);
 
+            var fetchExistingInchargebyRoom = fetchRoom.FirstOrDefault(x =>
+                x.Batch == incharge.Batch &&
+                x.Evaluation == incharge.Evaluation &&
+                x.Room == incharge.RoomAlloted);
 
+            // Condition 1: If in-charge ID and room are the same
+            if (fetchExistingRoom != null && fetchExistingRoom.Room == incharge.RoomAlloted)
+            {
+                return RedirectToAction("AssignIncharge", "StudentGroups", new
+                {
+                    Batch = incharge.Batch,
+                    Evaluation = incharge.Evaluation,
+                    ViewValue = "Existed"
+                });
+            }
+
+            // Condition 2: If the in-charge exists but the room exists and is assigned to someone else
+            if (fetchExistingRoom != null && fetchExistingInchargebyRoom != null && fetchExistingInchargebyRoom.InchargeId != incharge.Name)
+            {
+                return RedirectToAction("AssignIncharge", "StudentGroups", new
+                {
+                    Batch = incharge.Batch,
+                    Evaluation = incharge.Evaluation,
+                    ViewValue = "Assigned"
+                });
+            }
+
+            // Condition 3: If the in-charge does not exist but the room exists and is assigned to someone else
+            if (fetchExistingRoom == null && fetchExistingInchargebyRoom != null)
+            {
+                return RedirectToAction("AssignIncharge", "StudentGroups", new
+                {
+                    Batch = incharge.Batch,
+                    Evaluation = incharge.Evaluation,
+                    ViewValue = "Assigned"
+                });
+            }
+
+            // If no existing room assignments were found, create a new one
+            var newAllotment = new RoomAllotment
+            {
+                InchargeId = incharge.Name,
+                Room = incharge.RoomAlloted,
+                Batch = incharge.Batch,
+                Evaluation = incharge.Evaluation
+            };
+            await _roomAllotmentService.AddAsync(newAllotment);
+            return RedirectToAction("AssignIncharge", "StudentGroups", new
+            {
+                Batch = incharge.Batch,
+                Evaluation = incharge.Evaluation,
+                ViewValue = "Success"
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteRoomAllotment(string id, string Evaluation, string Batch)
+        {
+            // Fetch the room allotment using the provided ID
+            var roomAllotment = await _roomAllotmentService.GetAllAsync();
+            var RoomAllotmentToDelete = roomAllotment.FirstOrDefault(x => x.ID.ToString() == id);
+
+            // Check if the room allotment was found
+            if (RoomAllotmentToDelete != null)
+            {
+                // Remove the room allotment from the database
+
+                await _roomAllotmentService.DeleteAsync(id);
+                return RedirectToAction("AssignIncharge", "StudentGroups", new
+                {
+                    Evaluation = Evaluation,
+                    Batch = Batch,
+                    ViewValue = "Deleted"
+                });
             }
             else
             {
-                var fetchRoomInchargeagain = fetchRoomIncharge.FirstOrDefault(x => x.ID.ToString() == incharge.Name);
-                fetchRoomInchargeagain.RoomAlloted = incharge.RoomAlloted;
-                fetchRoomInchargeagain.Evaluation = incharge.Evaluation;
-                fetchRoomInchargeagain.Batch = incharge.Batch;
-                await _roomInChargeService.UpdateAsync(fetchRoomInchargeagain);
-                return RedirectToAction("AssignIncharge", "StudentGroups", new { Batch = incharge.Batch });
+                // Handle the case where the room allotment was not found
+                return RedirectToAction("AssignIncharge", "StudentGroups", new { ViewValue = "NotFound" });
+            }
+        }
+        public async Task<IActionResult> ExportAllotedRoomInchargesToExcel(string Batch, string Evaluation)
+        {
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var Rooms = await _roomService.GetAllAsync();
+            var roomalloted = await _roomAllotmentService.GetAllAsync();
+            var roomallotedbybatch = roomalloted.FirstOrDefault(x => x.Batch == Batch && x.Evaluation == Evaluation);
+
+            if (roomallotedbybatch == null)
+            {
+                return Json(new { success = false, message = "Data does not exist!" });
             }
 
+            // If data exists, respond with success
+            return Json(new { success = true });
         }
+
+        public async Task<IActionResult> GroupEvaluation(string groupId)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            var currentDate = DateTime.Today;
+            var committees = await _fYPCommitteService.GetAllAsync();
+            // Filter committees based on AppointedDate and logged-in user
+            var filteredCommittees = committees.Where
+                                                           (c=>c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
+            var viewModel = new EvaluationMarksViewModel();
+
+            if (filteredCommittees != null)
+            {
+                var filteredGroupIds = filteredCommittees.Select(c => c.groupID).Distinct().ToList();
+                var groups = await _studentGroupService.GetAllAsync();
+                var filteredGroups = groups.Where(g => filteredGroupIds.Contains(g.ID.ToString())).ToList();
+                viewModel.Groups = filteredGroups;
+            }
+            if (groupId !=null)
+            {
+                var evaluations = await _evaluationService.GetAllAsync();
+                var filteredEvaluations = filteredCommittees
+                    .Where(c => c.groupID == groupId && c.AppointedDate == currentDate)
+                    .FirstOrDefault().EvaluationID;
+                viewModel.EvalName = filteredEvaluations;
+                viewModel.GroupId = groupId;
+
+            }
+
+            return PartialView(viewModel);
+
+        }
+        public async Task<IActionResult> DownloadExcel(string Batch, string Evaluation)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var RoomIncharge = await _roomInChargeService.GetAllAsync();
+            var Rooms = await _roomService.GetAllAsync();
+            var roomalloted = await _roomAllotmentService.GetAllAsync();
+
+            var roomAllotments = roomalloted
+                .Where(x => !string.IsNullOrEmpty(x.Room) && x.Batch == Batch && x.Evaluation == Evaluation)
+                .Select(x => new RoomInChargeViewModel
+                {
+                    Id = x.ID.ToString(),
+                    Name = RoomIncharge.FirstOrDefault(r => r.ID.ToString() == x.InchargeId)?.Name,
+                    RoomAlloted = Rooms.FirstOrDefault(r => r.ID.ToString() == x.Room)?.RoomNo,
+                    Evaluation = x.Evaluation,
+                    Batch = x.Batch
+                }).ToList();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Room Incharges");
+                worksheet.Cells[1, 1].Value = "Name";
+                worksheet.Cells[1, 2].Value = "Room Alloted";
+                worksheet.Cells[1, 3].Value = "Evaluation";
+                worksheet.Cells[1, 4].Value = "Batch";
+                worksheet.Row(1).Style.Font.Bold = true;
+
+                int row = 2;
+                foreach (var item in roomAllotments)
+                {
+                    worksheet.Cells[row, 1].Value = item.Name;
+                    worksheet.Cells[row, 2].Value = item.RoomAlloted;
+                    worksheet.Cells[row, 3].Value = item.Evaluation;
+                    worksheet.Cells[row, 4].Value = item.Batch;
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                string excelName = $"AllotedRoomIncharges-{Batch}-{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+        }
+
     }
 }

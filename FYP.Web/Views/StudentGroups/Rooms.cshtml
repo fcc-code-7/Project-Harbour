@@ -31,7 +31,7 @@
                                     @if (Model.Rooms.Any())
                                     {
                                     <button type="button" class="btn btn-sm btn-primary add"  id="AddRoom">Add</button>
-                                        <div class="scrollable-div overflow-auto p-1 mt-2">
+                                        <div class="scrollable-div overflow-auto p-1 mt-1">
                                             <div class="row" id="RoomContainer">
 
                                                 @foreach (var item in Model.Rooms)
@@ -44,7 +44,7 @@
                                                                     <button type="button" class="btn btn-sm btn-primary editBTN" data-id="@item.Id" data-room="@item.RoomNo">Edit</button>
                                                                 </div>
                                                                 <div class="">
-                                                                    <button type="button" class="btn btn-sm btn-danger deleteBTN" data-id="@item.Id">Delete</button>
+                                                                    <button type="button" class="btn btn-sm btn-danger deleteBTN text-white" data-id="@item.Id">Delete</button>
                                                                 </div>
 
                                                             </div>

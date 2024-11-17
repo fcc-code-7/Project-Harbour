@@ -13,8 +13,8 @@ namespace FYP.Web.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private readonly ISupervisorService _supervisorService;
-        public AccountController(ISupervisorService supervisorService, SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ApplicationDbContext context)
+        private readonly IRoomAllotmentService _supervisorService;
+        public AccountController(IRoomAllotmentService supervisorService, SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager;

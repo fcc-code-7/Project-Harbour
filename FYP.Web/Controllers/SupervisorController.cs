@@ -18,12 +18,12 @@ namespace FYP.Web.Controllers
         private readonly IProjectService _projectService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ISupervisorService _supervisorService;
+        private readonly IRoomAllotmentService _supervisorService;
         private readonly IUserService _userService;
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
 
-        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, ISupervisorService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;

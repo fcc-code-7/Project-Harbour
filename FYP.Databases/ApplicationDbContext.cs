@@ -23,7 +23,7 @@ namespace FYP.Db
         public DbSet<ProposalDefense> ProposalDefenses { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudentGroup> StudentGroups { get; set; }
-        public DbSet<Supervisor> Supervisors { get; set; }
+        public DbSet<RoomAllotment> RoomAllotments { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<WeeklyLogs> WeeklyLogs { get; set; }
         public DbSet<RoomInCharge> RoomInCharge { get; set; }

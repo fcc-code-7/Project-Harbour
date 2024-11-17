@@ -44,12 +44,14 @@ namespace FYP.Repositories.Implementation
 
         public async Task DeleteAsync(string id)
         {
-            var RoomInCharge = await GetByIdAsync(id);
-            if (RoomInCharge != null)
+            var RoomInCharge = await GetAllAsync();
+            var roomincharge = RoomInCharge.Where(x => x.ID.ToString() == id).FirstOrDefault();
+            if (roomincharge != null)
             {
-                _context.RoomInCharge.Remove(RoomInCharge);
+                _context.RoomInCharge.Remove(roomincharge);
                 await _context.SaveChangesAsync();
             }
+            
         }
     }
 

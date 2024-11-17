@@ -11,8 +11,10 @@ using FYP.Services.Implementation;
 using FYP.Databases;
 using FYP.Web.ChatHub;
 using Microsoft.AspNetCore.Http.Features;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set to Commercial if you have a license
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -31,8 +33,8 @@ builder.Services.AddScoped<IWeeklyLogsRepository, WeeklyLogsRepository>();
 builder.Services.AddScoped<IWeeklyLogsService, WeeklyLogsService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ISupervisorRepository, SupervisorRepository>();
-builder.Services.AddScoped<ISupervisorService, SupervisorService>();
+builder.Services.AddScoped<IRoomAllotmentRepository, RoomAllotmentRepository>();
+builder.Services.AddScoped<IRoomAllotmentService, RoomAllotmentService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<FYP.Repositories.Interfaces.IRoomInCharge, RoomInChargeRepository>();

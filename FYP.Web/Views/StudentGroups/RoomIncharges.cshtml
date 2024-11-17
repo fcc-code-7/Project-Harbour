@@ -2,7 +2,7 @@
 
 
 @{
-    int counter =0;
+    int counter = 0;
 }
 <!-- BEGIN: Content-->
 <div id="RoomPageContainer">
@@ -30,9 +30,13 @@
                                     </div>
                                     @if (Model.roomInCharges.Any())
                                     {
-                                        <button type="button" class="btn btn-sm btn-primary add" id="AddRoomIncharge">Add</button>
-                                        <button type="button" class="btn btn-sm btn-warning assign text-white" id="AssignIncharge">Assign</button>
-                                        <button type="button" class="btn btn-sm btn-success view" id="AddRoomIncharge">View</button>
+
+
+                                        <div class="mx-1">
+                                            <button type="button" class=" btn btn-sm btn-primary add" id="AddRoomIncharge">Add</button>
+                                            <button type="button" class="btn btn-sm btn-warning assign text-white" id="AssignIncharge">Assign</button>
+                                            <button type="button" class="btn btn-sm btn-success view" id="DownloadIncharge">Download</button>
+                                        </div>
                                         <div class="scrollable-div overflow-auto p-1 mt-2">
                                             <div class="row" id="RoomContainer">
 
@@ -47,9 +51,9 @@
                                                                     </span>
                                                                 </div>
 
-@*                                                                 <h5 class="card-title">@item.Name</h5>
- *@                                                                <div class="ml-auto mx-1">
-                                                                    <button type="button" class="btn btn-sm btn-primary editBTN" data-id="@item.Id" data-name="@item.Name" data-email="@item.Email">Edit</button>
+                                                                @*                                                                 <h5 class="card-title">@item.Name</h5>
+                                                        *@       <div class="ml-auto mx-1">
+                                                                    <button type="button" class="btn btn-sm btn-primary Editbutton" data-id="@item.Id" data-name="@item.Name" data-email="@item.Email">Edit</button>
                                                                     <button type="button" class="btn btn-sm btn-danger deleteBTN text-white" data-id="@item.Id" data-name="@item.Name" data-email="@item.Email">Delete</button>
                                                                 </div>
                                                             </div>
@@ -123,33 +127,33 @@
                 </div>
                 <div class="modal-body d-flex justify-content-center">
                     <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-@*                         <div class="form-group">
-                            <label>Evaluation</label>
+                        @*                         <div class="form-group">
+                        <label>Evaluation</label>
 
-                            <fieldset>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text " id="basic-addon3">
-                                            <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
-                                        </span>
-                                    </div>
-                                    @if (Model.Evaluations != null)
-                                    {
-                                        @Html.DropDownListFor(model => model.EvaluationID,
-                                                 new SelectList(Model.Evaluations, Model.EvaluationID),
-                                                 "Select Evaluation",
-                                                 new { @class = "form-control EvaluationSelect", id = "EvaluationID" })
-                                        <span asp-validation-for="EvaluationID" class="text-danger"></span>
-                                    }
-                                    else
-                                    {
-                                        <input type="text" class="form-control" value="No evaluation Exist" aria-describedby="basic-addon1" readonly required>
-                                    }
-                                </div>
-                                <span asp-validation-for="EvaluationID" class="text-danger"></span>
-                            </fieldset>
+                        <fieldset>
+                        <div class="input-group">
+                        <div class="input-group-prepend">
+                        <span class="input-group-text " id="basic-addon3">
+                        <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                        </span>
                         </div>
- *@
+                        @if (Model.Evaluations != null)
+                        {
+                        @Html.DropDownListFor(model => model.EvaluationID,
+                        new SelectList(Model.Evaluations, Model.EvaluationID),
+                        "Select Evaluation",
+                        new { @class = "form-control EvaluationSelect", id = "EvaluationID" })
+                        <span asp-validation-for="EvaluationID" class="text-danger"></span>
+                        }
+                        else
+                        {
+                        <input type="text" class="form-control" value="No evaluation Exist" aria-describedby="basic-addon1" readonly required>
+                        }
+                        </div>
+                        <span asp-validation-for="EvaluationID" class="text-danger"></span>
+                        </fieldset>
+                        </div>
+                        *@
                         <div class="form-group">
                             <label>Name</label>
                             <fieldset>
@@ -174,65 +178,28 @@
                                     <span asp-validation-for="RoomInChargeEmail" class="text-danger"></span>
                                 </fieldset>
                             </div>
-@*                             <div class="form-group">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <label>Room <span class="text-danger">(if not Listed click Add)</span></label>
-                                    <a class="custom-badge-green" id="AddRoom">Add</a>
-                                </div>
-                                <fieldset>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon3">
-                                                <i class="fa fa-home" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
-                                            </span>
-                                        </div>
-                                           @if (Model.Rooms != null)
-                                            {
-                                                <select asp-for="Room" name="Room" id="Room" class="form-control Room">
-                                                    <option value="">Select Room</option>
-                                                    @foreach (var item in Model.Rooms)
-                                                    {
-                                                        if (Model.Rooms != null && item.Id == Model.Room)
-                                                        {
-                                                            <option value="@item.Id" selected>@item.RoomNo</option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="@item.Id">@item.RoomNo</option>
-                                                        }
-                                                    }
-                                                </select>
-                                            }
-                                            else
-                                            {
-                                                <select class="form-control">
-                                                    <option value="" selected>Add Room First</option>
-                                                </select>
-                                            }
-                                    </div>
-                                    <span asp-validation-for="Rooms" class="text-danger"></span>
-                                </fieldset>
-                            </div>
- *@                        </div>
+                          
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalClose">Close</button>
-                    <button type="button" class="btn btn-primary" id="Save">Save changes</button>
+                    <button type="submit" class="btn btn-primary" id="Save">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
+    @* EDIT MODAL *@
     <div class="modal fade " id="modalRoomInchargeEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Room Incharge</h5>
+                    <h5 class="modal-title">Edit Room Incharge</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center">
                     <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-                       
+
                         <div class="form-group">
                             <label>Name</label>
                             <fieldset>
@@ -240,7 +207,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="basic-addon1"><i class="fa fa-user-circle-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i></span>
                                     </div>
-                                    <input type="text" class="form-control" id="RoomInChargeName" placeholder="Enter  Name" asp-for="RoomInChargeName" aria-describedby="basic-addon1" name="RoomInChargeName" required>
+                                    <input type="text" class="form-control" id="InChargeName" placeholder="Enter  Name" asp-for="RoomInChargeName" aria-describedby="basic-addon1" name="RoomInChargeName" required>
                                 </div>
                                 <span asp-validation-for="RoomInChargeName" class="text-danger"></span>
                             </fieldset>
@@ -252,7 +219,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1"><i class="feather icon-mail"></i></span>
                                         </div>
-                                        <input type="email" class="form-control" id="RoomInChargeEmail" placeholder="Enter Email" asp-for="RoomInChargeEmail" aria-describedby="basic-addon1" name="RoomInChargeEmail" required>
+                                        <input type="email" class="form-control" id="InChargeEmail" placeholder="Enter Email" asp-for="RoomInChargeEmail" aria-describedby="basic-addon1" name="RoomInChargeEmail" required>
                                     </div>
                                     <span asp-validation-for="RoomInChargeEmail" class="text-danger"></span>
                                 </fieldset>
@@ -284,6 +251,75 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* DOWNLOAD MODAL *@
+    <div class="modal fade " id="modalDownload" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Room Incharge</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center">
+                    <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label>Batch</label>
+
+                            <fieldset>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text " id="basic-addon3">
+                                            <i class="fa fa-graduation-cap" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                        </span>
+                                    </div>
+
+                                    @if (Model.batches.Any())
+                                    {
+                                        @Html.DropDownListFor(model => model.batch,
+                                                 new SelectList(Model.batches, Model.batch),
+                                                 "Select Batch",
+                                                 new { @class = "form-control ", id = "Batchs", required = "required" })
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" placeholder="No Batch Exist" aria-describedby="basic-addon1" readonly required>
+                                    }
+                                </div>
+                                <span asp-validation-for="batch" class="text-danger"></span>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <label>Evaluation</label>
+
+                            <fieldset>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text " id="basic-addon3">
+                                            <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(model => model.EvaluationID,
+                                             new SelectList(new List<object>
+                                    {
+                                    new { Value = "", Text = "Select Evaluation" },
+                                    new { Value = "Proposal", Text = "Proposal" },
+                                    new { Value = "Mid", Text = "Mid" },
+                                    new { Value = "Final", Text = "Final" }
+                                    }, "Value", "Text", Model.EvaluationID),
+                                             new { @class = "form-control", id = "Evaluations", required = "required" })
+
+                                </div>
+                                <span asp-validation-for="EvaluationID" class="text-danger"></span>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalDownloadClose">Close</button>
+                    <button type="button" class="btn btn-primary" id="Download" disabled> Download</button>
                 </div>
             </div>
         </div>
@@ -677,8 +713,22 @@
             text-transform: uppercase !important;
         }
 
-
 </style>
+@if (ViewBag.success == "InchargeAssigned")
+{
+    <script>
+        Swal.fire({
+            title: '<span class="text-danger">Assigned InCharge!</span></br> <span >You can not delete any Assigned Incharge.</span>',        // Title of the modal
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-warning',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
 @if (ViewBag.success == "Existed")
 {
     <script>
@@ -770,25 +820,85 @@
         });
     </script>
 }
+@if (ViewBag.success == "Null")
+{
+    <script>
+        Swal.fire({
+            title: 'Fields are empty!',        // Title of the modal
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-warning',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+@if (ViewBag.success == "DataNotExist")
+{
+    <script>
+        Swal.fire({
+            title: 'DataNotExist!',        // Title of the modal
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-warning',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
 
 <script>
+    $(document).ready(function () {
+        function checkFields() {
+            const batchSelected = $('#Batchs').val();
+            const evaluationSelected = $('#Evaluations').val();
+            if (batchSelected && evaluationSelected) {
+                $('#Download').prop('disabled', false);
+            } else {
+                $('#Download').prop('disabled', true);
+            }
+        }
+
+        // Initial check on page load
+        checkFields();
+
+        // Event listeners for changes in dropdowns
+        $('#Batchs, #Evaluations').on('change', checkFields);
+        $('#modalDownload').on('hidden.bs.modal', function () {
+            $('#Batchs').val('').trigger('change');        // Clear batch selection
+            $('#Evaluations').val('').trigger('change');   // Clear evaluation selection
+            $('#Download').prop('disabled', true);         // Disable the download button
+        });
+    });
     $(document).ready(function () {
         var RoomInchargeId = null;
         var RoomInchargeName = null;
         var RoomInchargeEmail = null;
 
-
-        $(document).on('click', '#AddRoomIncharge', function (e) {
+        //Show
+        $(document).on('click', '#DownloadIncharge', function (e) {
+            e.preventDefault();
+            $('#modalDownload').modal('show');
+        }); $(document).on('click', '#AddRoomIncharge', function (e) {
             e.preventDefault();
             $('#modalRoomIncharge').modal('show');
         });
-        $(document).on('click', '#modalCloseRoom', function (e) {
+        //Hide
+        $(document).on('click', '#modalClose', function (e) {
             e.preventDefault();
-            $('#modalRoom').modal('hide');
+            $('#modalRoomIncharge').modal('hide');
         })
         $(document).on('click', '#modalCloseEdit', function (e) {
             e.preventDefault();
             $('#modalRoomInchargeEdit').modal('hide');
+        });
+        $(document).on('click', '#modalDownloadClose', function (e) {
+            e.preventDefault();
+            $('#modalDownload').modal('hide');
         });
         $(document).off('click', '#Save').on('click', '#Save', function (e) {
             e.preventDefault();
@@ -814,27 +924,29 @@
                 }
             });
         });
-        $(document).on('click', '.editBTN', function (e) {
+        $(document).on('click', '.Editbutton', function (e) {
             e.preventDefault();
             RoomInchargeId = $(this).data("id");
             RoomInchargeName = $(this).data("name");
             RoomInchargeEmail = $(this).data("email");
-            $("#RoomInChargeName").val(RoomInchargeName);
-            $("#RoomInChargeEmail").val(RoomInchargeEmail);
-            $('#modalRoomEdit').modal('show');
+            $("#InChargeName").val(RoomInchargeName);
+            $("#InChargeEmail").val(RoomInchargeEmail);
+            console.log(RoomInchargeId)
+            console.log(RoomInchargeEmail)
+            $('#modalRoomInchargeEdit').modal('show');
         });
         $(document).off('click', '#SaveEdit').on('click', '#SaveEdit', function (e) {
             e.preventDefault();
             $('#modalRoom').modal('hide');
             $('.modal-backdrop').remove();
             showLoadingSpinner();
-            var RoomInChargeEmail = $("#RoomInChargeEmail").val();
-            var RoomInChargeName = $("#RoomInChargeName").val();
+            var email = $("#InChargeEmail").val();
+            var name = $("#InChargeName").val();
 
             $.ajax({
                 url: "/studentgroups/FetchRoomIncharges",
                 type: "POST",
-                data: { id: RoomInchargeId, email: RoomInChargeEmail, name: RoomInChargeName , istrue : "true" },
+                data: { id: RoomInchargeId, RoomInChargeEmail: email, RoomInChargeName: name, istrue: "true" },
                 success: function (response) {
                     hideLoadingSpinner();
 
@@ -849,10 +961,49 @@
                 }
             });
         });
+        $(document).off('click', '#Download').on('click', '#Download', function (e) {
+            e.preventDefault();
+            $('#modalDownload').modal('hide');
+            $('.modal-backdrop').remove();
+            showLoadingSpinner();
+
+            var batch = $("#Batchs").val();
+            var evaluation = $("#Evaluations").val();
+
+            // First AJAX call to check if data exists
+            $.ajax({
+                url: "/studentgroups/ExportAllotedRoomInchargesToExcel",
+                type: "POST",
+                data: { Batch: batch, Evaluation: evaluation },
+                success: function (response) {
+                    hideLoadingSpinner();
+
+                    if (response.success) {
+                        // Redirect to download endpoint if data exists
+                        window.location.href = `/studentgroups/DownloadExcel?Batch=${batch}&Evaluation=${evaluation}`;
+                    } else {
+                        // Display alert if data does not exist
+                        Swal.fire({
+                            title: 'Data Not Exist!',
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            customClass: { confirmButton: 'btn btn-warning' },
+                            showCancelButton: false,
+                            buttonsStyling: false
+                        });
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner();
+                    console.error("Error checking data existence:", textStatus, errorThrown);
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        });
 
         $(document).on('click', '.deleteBTN', function (e) {
             e.preventDefault();
-            RoomId = $(this).data("id");
+            RoomInchargeId = $(this).data("id");
             $('#deleteRoomModal').modal('show');
         });
         $(document).off('click', '#confirmDelete').on('click', '#confirmDelete', function (e) {
@@ -861,9 +1012,9 @@
             $('.modal-backdrop').remove();
             showLoadingSpinner();
             $.ajax({
-                url: "/studentgroups/DeleteRoom",
+                url: "/studentgroups/DeleteRoomIncharge",
                 type: "POST",
-                data: { id: RoomId },
+                data: { id: RoomInchargeId },
                 success: function (response) {
                     hideLoadingSpinner();
 
@@ -880,7 +1031,7 @@
         });
         $(document).off('click', '#AssignIncharge').on('click', '#AssignIncharge', function (e) {
             e.preventDefault();
- 
+
             showLoadingSpinner();
             $.ajax({
                 url: "/studentgroups/AssignIncharge",
@@ -894,14 +1045,14 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                     hideLoadingSpinner(); // Hide the loading spinner
                     Swal.fire({
-                        title: 'An error occurred while fetching the rooms. Please try again! ',    
-                        icon: 'danger',                
-                        confirmButtonText: 'OK',       
+                        title: 'An error occurred while fetching the rooms. Please try again! ',
+                        icon: 'danger',
+                        confirmButtonText: 'OK',
                         customClass: {
-                            confirmButton: 'btn btn-danger',  
+                            confirmButton: 'btn btn-danger',
                         },
-                        showCancelButton: false,        
-                        buttonsStyling: false,          
+                        showCancelButton: false,
+                        buttonsStyling: false,
                     });
                 }
             });

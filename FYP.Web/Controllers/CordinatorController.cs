@@ -11,7 +11,7 @@ namespace FYP.Web.Controllers
     public class CordinatorController : Controller
     {
         private readonly IUserService _userService;
-        private readonly ISupervisorService _supervisorService;
+        private readonly IRoomAllotmentService _supervisorService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly IRoomService _designationService;
         private readonly IStudentGroupService _studentGroupService;
@@ -21,7 +21,7 @@ namespace FYP.Web.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IFYPCommitteService _fYPCommitteService;
 
-        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -277,10 +277,10 @@ namespace FYP.Web.Controllers
             return PartialView("projects",model);
         }
 
-        public IActionResult Evaluation(string Etype,int marks,string batch)
+        public async Task<IActionResult> Evaluation(string Etype,int marks,string batch)
         {
-            var projects = _projectService.GetAllAsync().Result.Where(x => x.SupervsiorApproved == "Approved");
-            var distinctBatches = projects.Select(x => x.batch).Distinct().ToList();
+            var group = await _studentGroupService.GetAllAsync();
+            var distinctBatches = group.Select(x => x.Batch).Distinct().ToList();
             string date = DateTime.Now.ToString("dd-MM-yy"); // Example string date
             DateTime parsedDate = DateTime.ParseExact(date, "dd-MM-yy", CultureInfo.InvariantCulture);
             var model = new EvaluationViewModel()
@@ -322,7 +322,7 @@ namespace FYP.Web.Controllers
             
                 // Check if the evaluation exists in the database by ID
                 var existingEvaluation = _evaluationService.GetAllAsync().Result
-                                            .FirstOrDefault(e => e.PBatch == model.PBatch);
+                                            .FirstOrDefault(e => e.PBatch == model.PBatch && e.EvaluationName == model.EvaluationName);
 
                 if (existingEvaluation != null)
                 {

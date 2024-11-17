@@ -11,14 +11,14 @@ namespace FYP.Web.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        private readonly ISupervisorService _supervisorService;
+        private readonly Services.IRoomAllotmentService _supervisorService;
         private readonly IProposalDefenseService _proposalDefenseService;
         private readonly IRoomService _designationService;
         private readonly IStudentGroupService _studentGroupService;
         private readonly IStudentService _studentService;
         private readonly UserManager<AppUser> _userManager;
 
-        public UserController(IStudentService studentService, IUserService userService, UserManager<AppUser> userManager, ISupervisorService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public UserController(IStudentService studentService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -149,7 +149,6 @@ namespace FYP.Web.Controllers
         {
             // Fetch the existing user from the database
             var user = await _userManager.FindByIdAsync(model.Id);
-            var supervisor = _supervisorService.GetAllAsync().Result.Where(x => x.SupervisorID == model.Id).FirstOrDefault();
             if (user == null)
             {
                 return RedirectToAction("Login", "Account", new { toastrnotification = "InvalidLogin" });

@@ -57,6 +57,32 @@ namespace FYP.Web.ViewModels
 
 
     }
+    public class EvaluationMarksViewModel
+
+    {
+        public Guid Id { get; set; }
+        public string? GroupId { get; set; }
+        public string? Batch { get; set; }
+        public string? EvalName { get; set; }
+        public string? Q1Marks { get; set; }
+
+        public string? Q2Marks { get; set; }
+
+        public string? Q3Marks { get; set; }
+
+        public string? Q4Marks { get; set; }
+
+        public string? Q5Marks { get; set; }
+        public string? Q6Marks { get; set; }
+        public string? Q7Marks { get; set; }
+        public string? Q8Marks { get; set; }
+        public string? Remarks { get; set; }
+        public string? CommiteeID { get; set; }
+        public int TotalMarks { get; set; }
+        public List<string> Batchs { get; set; }
+        public List<StudentGroup> Groups { get; set; }
+        public List<string> Evaluations { get; set; }
+    }
     public class ChangeSupervisorFormViewModel
     {
         public  Guid Id { get; set; }
@@ -79,16 +105,34 @@ namespace FYP.Web.ViewModels
     public class RoomInChargeViewModel
     {
         public string? Id { get; set; }
+        public string? isTrue { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
 
         public string? Email { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public string? Name { get; set; }
         public string? RoomAlloted { get; set; }
+        [Required(ErrorMessage = "Batch is required")]
         public string? Batch { get; set; }
+        [Required(ErrorMessage = "Evaluation is required")]
+
         public string? Evaluation { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public List<RoomInChargeViewModel> roomInCharges { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public List<RoomInChargeViewModel> AllotedRoomIncharges { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public List<string> Incharges { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public List<string> Batchs { get; set; }
+        [Required(ErrorMessage = "Field is required")]
+
         public List<RoomViewModel> Rooms { get; set; }
 
 
@@ -395,38 +439,6 @@ namespace FYP.Web.ViewModels
         public string companyMentor { get; set; }
         public string mentorcontact { get; set; }
         public string mentoremail { get; set; }
-    }
-    public class EvaluationCriteriaViewModel
-    {
-        public string Id { get; set; }
-        public List<string> EvalType { get; set; }
-        public string? PId { get; set; }
-        public string? EvalName { get; set; }
-        public string? Q1 { get; set; }
-        public string? Q1Desc { get; set; }
-        public string? Q1Marks { get; set; }
-        public string? Q2 { get; set; }
-        public string? Q2Desc { get; set; }
-
-        public string? Q2Marks { get; set; }
-        public string? Q3 { get; set; }
-        public string? Q3Desc { get; set; }
-
-        public string? Q3Marks { get; set; }
-        public string Q4 { get; set; }
-        public string? Q4Desc { get; set; }
-
-        public string? Q4Marks { get; set; }
-        public string? Q5 { get; set; }
-        public string? Q5Desc { get; set; }
-
-        public string? Q5Marks { get; set; }
-        public string? Remarks { get; set; }
-        public string? CommiteeID { get; set; }
-
-        public int TotalMarks { get; set; }
-
-
     }
 
 }
