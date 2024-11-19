@@ -25,7 +25,9 @@ namespace FYP.Entities
         public string? Q8Marks { get; set; }
         public string? Remarks { get; set; }
         public string? CommiteeID { get; set; }
-        public int TotalMarks { get; set; }
+        public decimal TotalMarks { get; set; }
+        public DateTime? SubmissionTime { get; set; }
+        public DateTime? SubmissionDate { get; set; }
 
 
     }

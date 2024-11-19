@@ -63,7 +63,8 @@
         }
 
         .cardList {
-            background : #f9f9f8 !important;
+            background: #ffffff !important;
+            font-family: Arial, sans-serif !important;
         }
 
 
@@ -93,10 +94,7 @@
             transform: translate(-50%, -50%);
         }
 
-        .navbar-minimize-fixed {
-            opacity: 1 !important;
-        }
-
+    
         @@keyframes spin {
             0% {
                 transform: translate(-50%, -50%) rotate(0deg);
@@ -108,11 +106,11 @@
         }
     </style>
 </head>
-<body class="vertical-layout vertical-menu 2-columns  cardList fixed-navbar" id="body" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<body class="vertical-layout vertical-menu 2-columns  cardList fixed-navbar " id="body" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 
     <header>
         <!-- BEGIN: Header-->
-        <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-light navbar-border ">
+        <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-dark navbar-shadow">
             <div class="navbar-wrapper">
                 <div class="navbar-header">
                     <ul class="nav navbar-nav flex-row">
@@ -273,7 +271,7 @@
     </div>
     <main class="">
         <!-- BEGIN: Main Menu-->
-        <div class=" main-menu menu-fixed menu-light menu-accordion " data-scroll-to-active="true">
+        <div class=" main-menu menu-fixed menu-dark menu-accordion menu-shadow " data-scroll-to-active="true">
             <div class=" main-menu-content ">
                 @{
                     if (User.Identity.IsAuthenticated)
@@ -352,26 +350,27 @@
                                         <span class="menu-item" data-i18n="Evaluators">Evaluators</span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a>
+                                        <i class="feather icon-settings"></i>
+                                        <span class="menu-item" data-i18n="Settings">Settings</span>
+                                    </a>
+                                    <ul class="menu-content">
+                                        <li>
+                                            <a class="menu-item" id="Rooms" data-i18n="Rooms">Rooms</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-item" id="RoomIncharges" data-i18n="Room Incharge">Room Incharge</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                             }
                             <li class="nav-item" id="messages">
                                 <a >
                                     <i class="feather icon-mail"></i>
                                     <span class="menu-item" data-i18n="Messages">Messages</span>
                                 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a>
-                                    <i class="feather icon-settings" ></i>
-                                    <span class="menu-item" data-i18n="Settings">Settings</span>
-                                </a>
-                                <ul class="menu-content" >
-                                    <li>
-                                        <a class="menu-item" id="Rooms" data-i18n="Rooms">Rooms</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" id="RoomIncharges" data-i18n="Room Incharge">Room Incharge</a>
-                                    </li>
-                                </ul>
                             </li>
                         </ul>
                     }

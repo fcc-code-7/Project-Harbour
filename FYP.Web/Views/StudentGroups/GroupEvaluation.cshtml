@@ -4,6 +4,13 @@
 @{
 
 }
+<style>
+    .cardLisst {
+        background: #fef9c3 !important;
+        font-family: Arial, sans-serif !important;
+    }
+
+</style>
 <!-- BEGIN: Content-->
 <div id="ExamContainer">
     <div class="app-content content">
@@ -16,7 +23,7 @@
                     <div class="users-list-filter px-1">
                         <!-- Section 1 -->
                         <div class=" ">
-                            <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+                            <div class="p-6 bg-white text-black  " style="height:80vh ; min-height:80vh">
 
                                 <!-- Column 1: -->
                                 <div class="" style="min-height:100px;">
@@ -45,12 +52,12 @@
                                                         @if (Model.Groups != null)
                                                         {
                                                             <select class="form-control" id="GroupSelect">
-                                                                    <option selected>Select Group</option>
+                                                                <option selected>Select Group</option>
                                                                 @foreach (var item in Model.Groups)
                                                                 {
-                                                                    if (Model.GroupId!=null && Model.GroupId == item.ID.ToString())
+                                                                    if (Model.GroupId != null && Model.GroupId == item.ID.ToString())
                                                                     {
-                                                                        
+
                                                                         <option value="@item.ID" selected>@item.Name</option>
                                                                     }
                                                                     else
@@ -62,7 +69,7 @@
                                                         }
                                                         else
                                                         {
-                                                            <input type="text" class="form-control" placeholder="Add a Room Incharge" aria-describedby="basic-addon1" readonly required>
+                                                            <input type="text" class="form-control" placeholder="No Group Exist" aria-describedby="basic-addon1" readonly required>
                                                         }
 
                                                     </div>
@@ -82,7 +89,7 @@
                                                                 <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
                                                             </span>
                                                         </div>
-                                                        <input type="text" class="form-control" placeholder="Select Evaluation First" aria-describedby="basic-addon1" value="@Model.EvalName" readonly required>
+                                                        <input type="text" class="form-control" placeholder="Select Group First" id="EvalName" aria-describedby="basic-addon1" value="@Model.EvalName" readonly required>
 
                                                     </div>
                                                 </fieldset>
@@ -91,330 +98,276 @@
 
                                     </div>
                                     <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-3 order-md-3">
-                                        @if (Model.EvalName !=null && Model.EvalName == "Proposal")
+                                        @if (Model.EvalName != null && Model.EvalName == "Proposal")
                                         {
-                                            <form class="" id="Proposal">
-                                                <div >
-                                                <h3>Introduction & Background</h3>
-                                                <label>
-                                                    <input type="radio" name="intro" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="intro" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="intro" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="intro" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="intro" value="0.2"> Poor
-                                                </label>
+
+                                            <div class="container" id="evaluationForm">
+                                                <!-- 1. Introduction & Background -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Introduction & Background</p>
                                                 </div>
-                                                <h3>Literature Review</h3>
-                                                <label>
-                                                    <input type="radio" name="literature" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="literature" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="literature" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="literature" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="literature" value="0.2"> Poor
-                                                </label>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno1" value="1" @(Model.qno1 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno1" value="0.8" @(Model.qno1 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno1" value="0.6" @(Model.qno1 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno1" value="0.4" @(Model.qno1 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno1" value="0.2" @(Model.qno1 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Problem Statement</h3>
-                                                <label>
-                                                    <input type="radio" name="problem" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="problem" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="problem" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="problem" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="problem" value="0.2"> Poor
-                                                </label>
+                                                <!-- 2. Literature Review -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Literature Review</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno2" value="1" @(Model.qno2 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno2" value="0.8" @(Model.qno2 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno2" value="0.6" @(Model.qno2 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno2" value="0.4" @(Model.qno2 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno2" value="0.2" @(Model.qno2 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Scope of the Project</h3>
-                                                <label>
-                                                    <input type="radio" name="scope" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="scope" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="scope" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="scope" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="scope" value="0.2"> Poor
-                                                </label>
+                                                <!-- 3. Problem Statement -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Problem Statement</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno3" value="1" @(Model.qno3 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno3" value="0.8" @(Model.qno3 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno3" value="0.6" @(Model.qno3 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno3" value="0.4" @(Model.qno3 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno3" value="0.2" @(Model.qno3 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Project Objectives</h3>
-                                                <label>
-                                                    <input type="radio" name="objectives" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="objectives" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="objectives" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="objectives" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="objectives" value="0.2"> Poor
-                                                </label>
+                                                <!-- 4. Scope of the Project -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Scope of the Project</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno4" value="1" @(Model.qno4 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno4" value="0.8" @(Model.qno4 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno4" value="0.6" @(Model.qno4 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno4" value="0.4" @(Model.qno4 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno4" value="0.2" @(Model.qno4 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Methodology</h3>
-                                                <label>
-                                                    <input type="radio" name="methodology" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="methodology" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="methodology" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="methodology" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="methodology" value="0.2"> Poor
-                                                </label>
+                                                <!-- 5. Project Objectives -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Project Objectives</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno5" value="1" @(Model.qno5 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno5" value="0.8" @(Model.qno5 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno5" value="0.6" @(Model.qno5 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno5" value="0.4" @(Model.qno5 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno5" value="0.2" @(Model.qno5 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Deliverables</h3>
-                                                <label>
-                                                    <input type="radio" name="deliverables" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="deliverables" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="deliverables" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="deliverables" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="deliverables" value="0.2"> Poor
-                                                </label>
+                                                <!-- 6. Methodology -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Methodology</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno6" value="1" @(Model.qno6 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno6" value="0.8" @(Model.qno6 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno6" value="0.6" @(Model.qno6 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno6" value="0.4" @(Model.qno6 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno6" value="0.2" @(Model.qno6 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <h3>Presentation</h3>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="1"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="0.8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="0.6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="0.4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="0.2"> Poor
-                                                </label>
+                                                <!-- 7. Deliverables -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Deliverables</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno7" value="1" @(Model.qno7 == "1" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno7" value="0.8" @(Model.qno7 == "0.8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno7" value="0.6" @(Model.qno7 == "0.6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno7" value="0.4" @(Model.qno7 == "0.4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno7" value="0.2" @(Model.qno7 == "0.2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                            </form>
-                                            <br />
-                                            <label>Remarks:</label>
-                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
-                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
-                                                <div class="flex justify-center">
-                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                <!-- Remarks -->
+                                                <div class="w-100 mt-2">
+                                                    <label>Remarks:</label>
+                                                    <textarea name="Remarks" id="Remarks" class="form-control" style="resize:none; height:150px;"
+                                                              placeholder="Enter Remarks">@Model.Remarks</textarea>
+                                                </div>
+
+                                                <!-- Submit Button -->
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
+                                                    <div class="flex justify-center">
+                                                        <button id="submitEvaluation" class="btn btn-primary">Submit</button>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         }
                                         @if (Model.EvalName != null && Model.EvalName == "Mid")
                                         {
-                                            <form class="" id="Mid">
-                                                <!-- Group 1 -->
-                                                <h3>Able to Cope with Advices / Suggestions Given (Scope Defined Clearly)</h3>
-                                                <label>
-                                                    <input type="radio" name="cope_scope" value="5"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="cope_scope" value="4"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="cope_scope" value="3"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="cope_scope" value="2"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="cope_scope" value="1"> Poor
-                                                </label>
+                                            <div class="container" id="evaluationForm">
+                                                <!-- 1 -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Able to Cope with Advices / Suggestions Given (Scope Defined Clearly)</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno1" value="5" @(Model.qno1 == "5" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno1" value="4" @(Model.qno1 == "4" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno1" value="3" @(Model.qno1 == "3" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno1" value="2" @(Model.qno1 == "2" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno1" value="1" @(Model.qno1 == "1" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <!-- Group 2 -->
-                                                <h3>Performing According to the Timeline (Studied Existing Systems Before Starting Project)</h3>
-                                                <label>
-                                                    <input type="radio" name="timeline_systems" value="5"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="timeline_systems" value="4"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="timeline_systems" value="3"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="timeline_systems" value="2"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="timeline_systems" value="1"> Poor
-                                                </label>
+                                                <!-- 2 -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Performing According to the Timeline (Studied Existing Systems Before Starting Project)</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno2" value="5" @(Model.qno2 == "5" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno2" value="4" @(Model.qno2 == "4" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno2" value="3" @(Model.qno2 == "3" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno2" value="2" @(Model.qno2 == "2" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno2" value="1" @(Model.qno2 == "1" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <!-- Group 3 -->
-                                                <h3>Designed Framework of the Project (Implementation / Coding)</h3>
-                                                <label>
-                                                    <input type="radio" name="framework_coding" value="5"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="framework_coding" value="4"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="framework_coding" value="3"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="framework_coding" value="2"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="framework_coding" value="1"> Poor
-                                                </label>
+                                                <!-- 3 -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Designed Framework of the Project (Implementation / Coding)</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno3" value="5" @(Model.qno3 == "5" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno3" value="4" @(Model.qno3 == "4" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno3" value="3" @(Model.qno3 == "3" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno3" value="2" @(Model.qno3 == "2" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno3" value="1" @(Model.qno3 == "1" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <!-- Group 4 -->
-                                                <h3>Able to Present / Demonstrate Work</h3>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="5"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="4"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="3"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="2"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="presentation" value="1"> Poor
-                                                </label>
+                                                <!-- 4 -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Able to Present / Demonstrate Work</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno4" value="5" @(Model.qno4 == "5" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno4" value="4" @(Model.qno4 == "4" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno4" value="3" @(Model.qno4 == "3" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno4" value="2" @(Model.qno4 == "2" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno4" value="1" @(Model.qno4 == "1" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <!-- Group 5 -->
-                                                <h3>Writing Abilities and Maintaining Log Files</h3>
-                                                <label>
-                                                    <input type="radio" name="writing_log" value="5"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="writing_log" value="4"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="writing_log" value="3"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="writing_log" value="2"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="writing_log" value="1"> Poor
-                                                </label>
+                                                <!-- 5 -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">Writing Abilities and Maintaining Log Files</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno5" value="5" @(Model.qno5 == "5" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno5" value="4" @(Model.qno5 == "4" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno5" value="3" @(Model.qno5 == "3" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno5" value="2" @(Model.qno5 == "2" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno5" value="1" @(Model.qno5 == "1" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <button type="submit">Submit</button>
-                                            </form>
-                                            <br />
-                                            <label>Remarks:</label>
-                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
-                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
-                                                <div class="flex justify-center">
-                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                <!-- Remarks -->
+                                                <div class="w-100 mt-2">
+                                                    <label>Remarks:</label>
+                                                    <textarea name="Remarks" id="Remarks" class="form-control" style="resize:none; height:150px;"
+                                                              placeholder="Enter Remarks">@Model.Remarks</textarea>
+                                                </div>
+
+                                                <!-- Submit Button -->
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
+                                                    <div class="flex justify-center">
+                                                        <button id="submitEvaluation" class="btn btn-primary">Submit</button>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         }
                                         @if (Model.EvalName != null && Model.EvalName == "Final")
                                         {
-                                            <form class="" id="Final">
-                                                <!-- First Student -->
-                                                <h3>1st Student</h3>
-                                                <label>
-                                                    <input type="radio" name="student1" value="10"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student1" value="8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student1" value="6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student1" value="4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student1" value="2"> Poor
-                                                </label>
+                                            <div class="container" id="evaluationForm">
+                                                <!-- 1st Student -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">1<sup>st</sup> Student - @Model.stu1</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno1" value="10" @(Model.qno1 == "10" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno1" value="8" @(Model.qno1 == "8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno1" value="6" @(Model.qno1 == "6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno1" value="4" @(Model.qno1 == "4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno1" value="2" @(Model.qno1 == "2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
-                                                <!-- Second Student -->
-                                                <h3>2nd Student</h3>
-                                                <label>
-                                                    <input type="radio" name="student2" value="10"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student2" value="8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student2" value="6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student2" value="4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student2" value="2"> Poor
-                                                </label>
+                                                <!-- 2nd Student -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">2<sup>nd</sup> Student - @Model.stu2</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno2" value="10" @(Model.qno2 == "10" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno2" value="8" @(Model.qno2 == "8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno2" value="6" @(Model.qno2 == "6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno2" value="4" @(Model.qno2 == "4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno2" value="2" @(Model.qno2 == "2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
+                                                <!-- 3rd Student -->
+                                                <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
+                                                    <p class="fw-bold fs-4 px-2 py-2">3<sup>rd</sup> Student - @Model.stu3</p>
+                                                </div>
+                                                <div class="border border-2 border-dark w-100 py-2">
+                                                    <div class="d-flex gap-3 mx-2">
+                                                        <input type="radio" name="qno3" value="10" @(Model.qno3 == "10" ? "checked" : "") /> Excellent
+                                                        <input type="radio" name="qno3" value="8" @(Model.qno3 == "8" ? "checked" : "") /> Good
+                                                        <input type="radio" name="qno3" value="6" @(Model.qno3 == "6" ? "checked" : "") /> Adequate
+                                                        <input type="radio" name="qno3" value="4" @(Model.qno3 == "4" ? "checked" : "") /> Marginal
+                                                        <input type="radio" name="qno3" value="2" @(Model.qno3 == "2" ? "checked" : "") /> Poor
+                                                    </div>
+                                                </div>
 
+                                                <!-- Remarks -->
+                                                <div class="w-100 mt-2">
+                                                    <label>Remarks:</label>
+                                                    <textarea name="Remarks" id="Remarks" class="form-control" style="resize:none; height:150px;"
+                                                              placeholder="Enter Remarks">@Model.Remarks</textarea>
+                                                </div>
 
-                                                <h3>3rd Student Rating</h3>
-                                                <label>
-                                                    <input type="radio" name="student3" value="10"> Excellent
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student3" value="8"> Good
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student3" value="6"> Adequate
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student3" value="4"> Marginal
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="student3" value="2"> Poor
-                                                </label>
-
-                                                <button type="submit">Submit</button>
-                                            </form>
-                                            <br />
-                                            <label>Remarks:</label>
-                                            <textarea name="Remarks" id="Remarks" rows="3" cols="30" placeholder="Enter Remarks"></textarea>
-                                            <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-5 order-md-5">
-                                                <div class="flex justify-center">
-                                                    <button id="Assign" class="btn btn-primary">Assign</button>
+                                                <!-- Submit Button -->
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
+                                                    <div class="flex justify-center">
+                                                        <button id="submitEvaluation" class="btn btn-primary">Submit</button>
+                                                    </div>
                                                 </div>
                                             </div>
+
+
                                         }
-                                       
+
                                     </div>
 
                                 </div>
@@ -433,75 +386,119 @@
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
 
+@if (Model.GroupId != null && Model.EvalName != null)
+{
+    <script>
+        $(document).ready(function () {
+        const groupId = $('#GroupSelect').val(); // Get the selected group ID
+        const evalName = $('#EvalName').val(); // Get the evaluation name
 
+        // Make an AJAX call to check submission eligibility
+        $.ajax({
+            url: '/studentgroups/CheckSubmissionEligibility', // Replace with your controller's route
+            type: 'GET',
+            data: { groupId: groupId, evalName: evalName },
+            success: function (response) {
+                const $submitButton = $('#submitEvaluation');
+
+                if (!response.canAssign) {
+                    if (response.isLocked) {
+                        // Permanently lock the button
+                        $submitButton
+                            .prop('disabled', true)
+                            .text('Submit (Locked)');
+                    } else {
+                        // Temporarily disable the button for the remaining minutes
+                        $submitButton
+                            .prop('disabled', true)
+                            .text('Submit (Disabled for ' + Math.ceil(response.minutesLeft) + ' minutes)');
+                    }
+                } else {
+                    // Enable the button if the user can assign marks
+                    $submitButton
+                        .prop('disabled', false)
+                        .text('Submit');
+                }
+            },
+            error: function () {
+                console.error('An error occurred while checking submission eligibility.');
+            }
+        }); 
+        });
+
+    </script>
+}
 
 
 <script>
     $(document).ready(function () {
-        // $("#Assign").click(function () {
-        //     var intro = $("input[name='intro']:checked").val();
-        //     var literature = $("input[name='literature']:checked").val();
-        //     var problem = $("input[name='problem']:checked").val();
-        //     var scope = $("input[name='scope']:checked").val();
-        //     var objectives = $("input[name='objectives']:checked").val();
-        //     var methodology = $("input[name='methodology']:checked").val();
-        //     var deliverables = $("input[name='deliverables']:checked").val();
-        //     var presentation = $("input[name='presentation']:checked").val();
-        //     var cope_scope = $("input[name='cope_scope']:checked").val();
-        //     var timeline_systems = $("input[name='timeline_systems']:checked").val();
-        //     var framework_coding = $("input[name='framework_coding']:checked").val();
-        //     var presentation = $("input[name='presentation']:checked").val();
-        //     var writing_log = $("input[name='writing_log']:checked").val();
-        //     var student1 = $("input[name='student1']:checked").val();
-        //     var student2 = $("input[name='student2']:checked").val();
-        //     var student3 = $("input[name='student3']:checked").val();
-        //     var Remarks = $("#Remarks").val();
-        //     var group = $("select option:selected").text();
-        //     var eval = $("input[name='eval']").val();
-        //     var data = {
-        //         intro: intro,
-        //         literature: literature,
-        //         problem: problem,
-        //         scope: scope,
-        //         objectives: objectives,
-        //         methodology: methodology,
-        //         deliverables: deliverables,
-        //         presentation: presentation,
-        //         cope_scope: cope_scope,
-        //         timeline_systems: timeline_systems,
-        //         framework_coding: framework_coding,
-        //         presentation: presentation,
-        //         writing_log: writing_log,
-        //         student1: student1,
-        //         student2: student2,
-        //         student3: student3,
-        //         Remarks: Remarks,
-        //         group: group,
-        //         eval: eval
-        //     };
-        //     $.ajax({
-        //         type: "POST",
-        //         url: "/StudentGroups/AssignMarks",
-        //         data: data,
-        //         success: function (response) {
-        //             alert(response);
-        //         }
-        //     });
-        // });
+        $(document).off('click', '#submitEvaluation').on('click', '#submitEvaluation', function (e) {
+            e.preventDefault();
+            showLoadingSpinner();
+
+            // Manually collect form data
+            let formData = {
+                GroupId: $('#GroupSelect').val(), // Assuming you have a select dropdown for GroupId
+                EvalName: $('#EvalName').val(), // Assuming a select or input for EvalName
+                qno1: $('input[name="qno1"]:checked').val(), // Get selected value for qno1
+                qno2: $('input[name="qno2"]:checked').val(), // Get selected value for qno2
+                qno3: $('input[name="qno3"]:checked').val(), // Get selected value for qno3
+                qno4: $('input[name="qno4"]:checked').val(), // Get selected value for qno4
+                qno5: $('input[name="qno5"]:checked').val(), // Get selected value for qno5
+                qno6: $('input[name="qno6"]:checked').val(), // Get selected value for qno6
+                qno7: $('input[name="qno7"]:checked').val(), // Get selected value for qno7
+                qno8: $('input[name="qno8"]:checked').val(), // Get selected value for qno8
+                Remarks: $('#Remarks').val(), // Get Remarks textarea value
+            };
+
+            
+
+            // Make AJAX POST request
+            $.ajax({
+                url: '/studentgroups/AssignEvaluationMarks', // Replace with your action method URL
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $("#MainContainer").html(response);
+
+                  
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while submitting the form.');
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        // Helper function to calculate Total Marks
+        function calculateTotalMarks() {
+            // Implement your total marks calculation logic based on the answers selected
+            let total = 0;
+            for (let i = 1; i <= 8; i++) {
+                let value = parseInt($(`input[name="qno${i}"]:checked`).val());
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            }
+            return total;
+        }
+
         $(document).off('change', '#GroupSelect').on('change', '#GroupSelect', function (e) {
             e.preventDefault();
 
             showLoadingSpinner();
             var Id = $(this).val();
-           
+
 
             $.ajax({
                 url: "/studentgroups/GroupEvaluation",
                 type: "POST",
-                data: { groupId : Id },
+                data: { groupId: Id },
                 success: function (response) {
                     hideLoadingSpinner();
-                    $("#ExamContainer").html(response);
+                    $("#MainContainer").html(response);
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {

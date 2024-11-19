@@ -64,24 +64,29 @@ namespace FYP.Web.ViewModels
         public string? GroupId { get; set; }
         public string? Batch { get; set; }
         public string? EvalName { get; set; }
-        public string? Q1Marks { get; set; }
+        public string? qno1 { get; set; }
 
-        public string? Q2Marks { get; set; }
+        public string? qno2 { get; set; }
 
-        public string? Q3Marks { get; set; }
+        public string? qno3 { get; set; }
 
-        public string? Q4Marks { get; set; }
+        public string? qno4 { get; set; }
 
-        public string? Q5Marks { get; set; }
-        public string? Q6Marks { get; set; }
-        public string? Q7Marks { get; set; }
-        public string? Q8Marks { get; set; }
+        public string? qno5 { get; set; }
+        public string? qno6 { get; set; }
+        public string? qno7 { get; set; }
+        public string? qno8 { get; set; }
         public string? Remarks { get; set; }
         public string? CommiteeID { get; set; }
-        public int TotalMarks { get; set; }
+        public string? stu1 { get; set; }
+        public string? stu2 { get; set; }
+        public string? stu3 { get; set; }
+        public decimal TotalMarks { get; set; }
         public List<string> Batchs { get; set; }
         public List<StudentGroup> Groups { get; set; }
         public List<string> Evaluations { get; set; }
+        public DateTime? SubmissionTime { get; set; }
+
     }
     public class ChangeSupervisorFormViewModel
     {

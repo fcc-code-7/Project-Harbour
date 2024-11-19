@@ -3,6 +3,7 @@ using FYP.Entities;
 using FYP.Models;
 using FYP.Repositories.Interfaces;
 using FYP.Services;
+using FYP.Services.Implementation;
 using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -29,8 +30,9 @@ namespace FYP.Web.Controllers
         private readonly IRoomService _roomService;
         private readonly IRoomInChargeService _roomInChargeService;
         private readonly IEvaluationService _evaluationService;
+        private readonly IEvaluationCriteriaService _evaluationCriteriaService;
 
-        public StudentGroupsController(IRoomAllotmentService roomAllotmentService, IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(IEvaluationCriteriaService evaluationCriteriaService ,IRoomAllotmentService roomAllotmentService, IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -44,6 +46,7 @@ namespace FYP.Web.Controllers
             _roomService = roomService;
             _roomInChargeService = roomInChargeService;
             _evaluationService = evaluationService;
+            _evaluationCriteriaService = evaluationCriteriaService;
         }
         public async Task<IActionResult> StudentGroups(string istrue)
         {
@@ -1202,8 +1205,12 @@ namespace FYP.Web.Controllers
             return Json(new { success = true });
         }
 
-        public async Task<IActionResult> GroupEvaluation(string groupId)
+        public async Task<IActionResult> GroupEvaluation(string groupId ,  string ViewValue , string EvalName)
         {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
             var currentUserId = _userManager.GetUserId(User);
             var currentDate = DateTime.Today;
             var committees = await _fYPCommitteService.GetAllAsync();
@@ -1212,10 +1219,10 @@ namespace FYP.Web.Controllers
                                                            (c=>c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
             var viewModel = new EvaluationMarksViewModel();
 
+                var groups = await _studentGroupService.GetAllAsync();
             if (filteredCommittees != null)
             {
                 var filteredGroupIds = filteredCommittees.Select(c => c.groupID).Distinct().ToList();
-                var groups = await _studentGroupService.GetAllAsync();
                 var filteredGroups = groups.Where(g => filteredGroupIds.Contains(g.ID.ToString())).ToList();
                 viewModel.Groups = filteredGroups;
             }
@@ -1228,11 +1235,155 @@ namespace FYP.Web.Controllers
                 viewModel.EvalName = filteredEvaluations;
                 viewModel.GroupId = groupId;
 
+                var fetchGroup = groups.Where(x => x.ID.ToString() == groupId).FirstOrDefault();
+                var userGet = await _userService.GetAllAsync();
+                viewModel.stu1 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student1LID).FirstOrDefault().Name;
+                viewModel.stu2 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student2ID).FirstOrDefault().Name;
+                viewModel.stu3 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student3ID).FirstOrDefault().Name;
+                if (groupId != null )
+                {
+                    var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
+
+                    // Fetch the existing record based on GroupId and EvalName
+                    var existingRecord = evaluationCriteriaList
+                        .FirstOrDefault(e => e.GId == groupId && e.SubmissionDate == currentDate);
+                    if (existingRecord != null)
+                    {
+                        viewModel.qno1 = existingRecord.Q1Marks;
+                        viewModel.qno2 = existingRecord.Q2Marks;
+                        viewModel.qno3 = existingRecord.Q3Marks;
+                        viewModel.qno4 = existingRecord.Q4Marks;
+                        viewModel.qno5 = existingRecord.Q5Marks;
+                        viewModel.qno6 = existingRecord.Q6Marks;
+                        viewModel.qno7 = existingRecord.Q7Marks;
+                        viewModel.qno8 = existingRecord.Q8Marks;
+                        viewModel.Remarks = existingRecord.Remarks;
+                    }
+                }
+
+
             }
 
             return PartialView(viewModel);
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckSubmissionEligibility(string groupId, string evalName)
+        {
+            // Fetch the record from the database
+            var EvaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+            var record = EvaluationCriteria.FirstOrDefault(e => e.GId == groupId && e.EvalName == evalName);
+
+            if (record != null && record.SubmissionTime.HasValue)
+            {
+                // Calculate the time elapsed since the first submission
+                var timeElapsed = DateTime.UtcNow - record.SubmissionTime.Value;
+
+                // If less than 30 minutes have passed, allow assigning marks
+                if (timeElapsed.TotalMinutes < 30)
+                {
+                    return Json(new { canAssign = true, minutesLeft = 30 - timeElapsed.TotalMinutes });
+                }
+
+                // If 30 minutes have passed, permanently lock the button
+                return Json(new { canAssign = false, isLocked = true });
+            }
+
+            // If no record exists, allow assigning marks
+            return Json(new { canAssign = true, isLocked = false });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignEvaluationMarks([FromBody] EvaluationMarksViewModel viewModel)
+        {
+           
+
+            // Store the question marks in an array and calculate TotalMarks
+            var questionMarks = new string[] { viewModel.qno1, viewModel.qno2, viewModel.qno3,
+                                       viewModel.qno4, viewModel.qno5, viewModel.qno6,
+                                       viewModel.qno7, viewModel.qno8 };
+            decimal totalMarks = questionMarks
+                .Select(q => string.IsNullOrEmpty(q) ? 0 : Convert.ToDecimal(q)) // Convert each to decimal or 0
+                .Sum(); // Sum all the marks
+
+            viewModel.TotalMarks = totalMarks;
+
+
+            // Set the calculated TotalMarks in the viewModel
+            viewModel.TotalMarks = totalMarks;
+
+            var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
+
+            // Fetch the existing record based on GroupId and EvalName
+            var existingRecord = evaluationCriteriaList
+                .FirstOrDefault(e => e.GId == viewModel.GroupId && e.EvalName == viewModel.EvalName);
+
+            if (existingRecord != null)
+            {
+                // Update existing record with new data
+                existingRecord.Q1Marks = viewModel.qno1;
+                existingRecord.Q2Marks = viewModel.qno2;
+                existingRecord.Q3Marks = viewModel.qno3;
+                existingRecord.Q4Marks = viewModel.qno4;
+                existingRecord.Q5Marks = viewModel.qno5;
+                existingRecord.Q6Marks = viewModel.qno6;
+                existingRecord.Q7Marks = viewModel.qno7;
+                existingRecord.Q8Marks = viewModel.qno8;
+
+                if (!string.IsNullOrEmpty(viewModel.Remarks))
+                {
+                    existingRecord.Remarks = viewModel.Remarks;
+                }
+
+                existingRecord.TotalMarks = viewModel.TotalMarks;
+                existingRecord.SubmissionTime = DateTime.UtcNow;
+                existingRecord.SubmissionDate = DateTime.Today;
+
+                await _evaluationCriteriaService.UpdateAsync(existingRecord);
+
+                return RedirectToAction("GroupEvaluation", "StudentGroups", new
+                {
+                    groupId = viewModel.GroupId,
+                    ViewValue = "Updated"
+                });
+            }
+            else
+            {
+                // Create a new record if no existing one was found
+                var newEvaluation = new EvaluationCriteria
+                {
+                    GId = viewModel.GroupId,
+                    Batch = viewModel.Batch,
+                    EvalName = viewModel.EvalName,
+                    Q1Marks = viewModel.qno1,
+                    Q2Marks = viewModel.qno2,
+                    Q3Marks = viewModel.qno3,
+                    Q4Marks = viewModel.qno4,
+                    Q5Marks = viewModel.qno5,
+                    Q6Marks = viewModel.qno6,
+                    Q7Marks = viewModel.qno7,
+                    Q8Marks = viewModel.qno8,
+                    Remarks = viewModel.Remarks,
+                    TotalMarks = viewModel.TotalMarks,
+                    CommiteeID = viewModel.CommiteeID,
+                    SubmissionTime = DateTime.UtcNow,
+                    SubmissionDate = DateTime.Today
+                };
+
+                await _evaluationCriteriaService.AddAsync(newEvaluation);
+
+                return RedirectToAction("GroupEvaluation", "StudentGroups", new
+                {
+                    groupId = viewModel.GroupId,
+                    ViewValue = "Assigned"
+                });
+            }
+        }
+
+
+
+
         public async Task<IActionResult> DownloadExcel(string Batch, string Evaluation)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
