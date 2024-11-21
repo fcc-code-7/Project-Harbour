@@ -2,6 +2,7 @@
 
 
 @{
+    int counter = 0;
 
 }
 <!-- BEGIN: Content-->
@@ -28,9 +29,27 @@
                                         </div>
 
                                     </div>
-                                    @if (Model.Rooms.Any())
+                                    @if (!Model.Rooms.Any())
                                     {
-                                    <button type="button" class="btn btn-sm btn-primary add"  id="AddRoom">Add</button>
+                                        <button type="button" class="btn btn-sm AddButton text-white add" id="AddRoom">Add</button>
+
+                                        <div class="container">
+                                            <div class="row justify-content-center align-items-center" style="min-height: 69vh;">
+                                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                    <!-- Trash Icon -->
+                                                    <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                    <!-- Text Below the Icon -->
+                                                    <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Room Exist!</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    }
+                                    else
+                                    {
+
+                                        <button type="button" class="btn btn-sm btn-primary add" id="AddRoom">Add</button>
                                         <div class="scrollable-div overflow-auto p-1 mt-1">
                                             <div class="row" id="RoomContainer">
 
@@ -39,7 +58,12 @@
                                                     <div class="col-12 col-lg-4 col-md-12 col-sm-12">
                                                         <div class="card p-0">
                                                             <div class="card-header no-border">
-                                                                <h5 class="card-title" data-id="@item.Id">@item.RoomNo</h5>
+                                                                <h5 class="widget-49-date-warning" data-id="@item.Id">
+                                                                    <span class="badge bg-warning rounded-circle text-dark d-inline-flex align-items-center justify-content-center " style="width: 24px; height: 24px;">
+                                                                        @(counter = counter + 1)
+                                                                    </span>
+                                                                    <span class="mx-1">@item.RoomNo</span>
+                                                                </h5>
                                                                 <div class="ml-auto mx-1">
                                                                     <button type="button" class="btn btn-sm btn-primary editBTN" data-id="@item.Id" data-room="@item.RoomNo">Edit</button>
                                                                 </div>
@@ -54,25 +78,6 @@
 
                                                 }
 
-                                            </div>
-                                        </div>
-
-                                    }
-                                    else
-                                    {
-                                        <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                            <div class="row justify-content-center align-items-center w-100">
-                                                <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="card">
-                                                        <div class="card-header d-flex justify-content-center align-items-center">
-                                                            <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Room Exists</h5>
-                                                        </div>
-                                                        <div class="card-body text-center mb-3">
-                                                            <p>It looks like there are currently no Rooms available.</p>
-                                                            <button class="btn btn-sm btn-primary" id="AddRoom">Add New Room</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -272,7 +277,7 @@
         word-wrap: break-word !important;
         background-color: #ffffff !important;
         background-clip: border-box !important;
-        border: 1px solid #e6e4e9 !important;
+        border: 1px solid #3b0764 !important;
         border-radius: 8px !important;
     }
 

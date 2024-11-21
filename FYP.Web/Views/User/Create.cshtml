@@ -26,7 +26,7 @@
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
                     <div class="mb-2 ">
-                        <div class="p-3 bg-white text-black ">
+                        <div class="p-3  text-black ">
                             <!-- Column 1: -->
                             <div class="" style="min-height:100px">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
@@ -62,9 +62,9 @@
                                                             <div class="input-group">
 
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark" id="basic-addon1"><i class="feather icon-user"></i></span>
+                                                                    <span class="input-group-text  " id="basic-addon1"><i class="feather icon-user"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="Name" placeholder="Enter Name" value='@(Model.Name ?? "")' asp-for="Name" aria-describedby="basic-addon1" name="Name" required>
+                                                                <input type="text" class="form-control  " id="Name" placeholder="Enter Name" value='@(Model.Name ?? "")' asp-for="Name" aria-describedby="basic-addon1" name="Name" required>
 
 
                                                             </div>
@@ -77,9 +77,9 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text border border-dark " id="basic-addon3"><i class="feather icon-at-sign"></i></span>
+                                                                        <span class="input-group-text   " id="basic-addon3"><i class="feather icon-at-sign"></i></span>
                                                                     </div>
-                                                                    <input type="text" class="form-control border border-dark" id="Enrollment" placeholder="Enter Enrollment" value="@(Model.Enrollment ?? "")" asp-for="Enrollment" aria-describedby="basic-addon1" name="Enrollment" required>
+                                                                    <input type="text" class="form-control  " id="Enrollment" placeholder="Enter Enrollment" value="@(Model.Enrollment ?? "")" asp-for="Enrollment" aria-describedby="basic-addon1" name="Enrollment" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="Enrollment" class="text-danger"></span>
@@ -92,9 +92,9 @@
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark " id="basic-addon2"><i class="feather icon-credit-card"></i></span>
+                                                                    <span class="input-group-text   " id="basic-addon2"><i class="feather icon-credit-card"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="Cnic" placeholder="Enter Cnic" value="@(Model.Cnic ?? "")" asp-for="Cnic" aria-describedby="basic-addon1" name="Cnic" required>
+                                                                <input type="text" class="form-control  " id="Cnic" placeholder="Enter Cnic" value="@(Model.Cnic ?? "")" asp-for="Cnic" aria-describedby="basic-addon1" name="Cnic" required>
 
                                                             </div>
                                                             <span asp-validation-for="Cnic" class="text-danger"></span>
@@ -104,7 +104,7 @@
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark" id="basic-addon3"><i class="fa fa-home"></i></span>
+                                                                    <span class="input-group-text  " id="basic-addon3"><i class="fa fa-home"></i></span>
                                                                 </div>
                                                                 @{
                                                                     var department = new List<SelectListItem>
@@ -116,7 +116,7 @@
                                                                 }
 
 
-                                                                @Html.DropDownList("Department", department, new { @class = "form-control border border-dark" })
+                                                                @Html.DropDownList("Department", department, new { @class = "form-control  " })
 
                                                             </div>
                                                             <span asp-validation-for="Department" class="text-danger"></span>
@@ -126,11 +126,11 @@
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark" id="basic-addon2">
+                                                                    <span class="input-group-text  " id="basic-addon2">
                                                                         <i class="feather icon-settings"></i>
                                                                     </span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="Role" placeholder="Enter Role" value="@Model.Role" asp-for="Role" readonly aria-describedby="basic-addon1" name="Role" required>
+                                                                <input type="text" class="form-control  " id="Role" placeholder="Enter Role" value="@Model.Role" asp-for="Role" readonly aria-describedby="basic-addon1" name="Role" required>
 
                                                             </div>
                                                             <span asp-validation-for="Role" class="text-danger"></span>
@@ -143,9 +143,9 @@
                                                             <div class="input-group">
 
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark   " id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                    <span class="input-group-text     " id="basic-addon1"><i class="feather icon-mail"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="email" placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
+                                                                <input type="text" class="form-control  " id="email" placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
 
 
                                                             </div>
@@ -158,11 +158,11 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text border border-dark" id="basic-addon2">
+                                                                        <span class="input-group-text  " id="basic-addon2">
                                                                             <i class="feather icon-hash"></i>
                                                                         </span>
                                                                     </div>
-                                                                    <input type="text" class="form-control border border-dark" id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo" aria-describedby="basic-addon1" name="regNo" required>
+                                                                    <input type="text" class="form-control  " id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo" aria-describedby="basic-addon1" name="regNo" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="regNo" class="text-danger"></span>
@@ -177,7 +177,7 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text border border-dark" id="basic-addon2">
+                                                                        <span class="input-group-text  " id="basic-addon2">
                                                                             <i class="feather icon-list"></i>
                                                                         </span>
                                                                     </div>
@@ -202,7 +202,7 @@
                                                                 };
                                                                     }
 
-                                                                    @Html.DropDownList("Designation", designations, new { @class = "form-control border border-dark" })
+                                                                    @Html.DropDownList("Designation", designations, new { @class = "form-control  " })
 
                                                                 </div>
                                                                 <span asp-validation-for="Designation" class="text-danger"></span>
@@ -213,11 +213,11 @@
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark id="basic-addon2">
+                                                                    <span class="input-group-text   id="basic-addon2">
                                                                         <i class="feather icon-phone"></i>
                                                                     </span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="Telephone" placeholder="Enter Telephone" value="@(Model.Telephone ?? "")" asp-for="Telephone" aria-describedby="basic-addon1" name="Telephone" required>
+                                                                <input type="text" class="form-control  " id="Telephone" placeholder="Enter Telephone" value="@(Model.Telephone ?? "")" asp-for="Telephone" aria-describedby="basic-addon1" name="Telephone" required>
 
                                                             </div>
                                                             <span asp-validation-for="Telephone" class="text-danger"></span>
@@ -227,9 +227,9 @@
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text border border-dark" id="basic-addon3"><i class="feather icon-map-pin"></i></span>
+                                                                    <span class="input-group-text  " id="basic-addon3"><i class="feather icon-map-pin"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control border border-dark" id="Address" placeholder="Enter Address" value="@(Model.Address ?? "")" asp-for="Address" aria-describedby="basic-addon1" name="Address" required>
+                                                                <input type="text" class="form-control  " id="Address" placeholder="Enter Address" value="@(Model.Address ?? "")" asp-for="Address" aria-describedby="basic-addon1" name="Address" required>
 
                                                             </div>
                                                             <span asp-validation-for="Address" class="text-danger"></span>
@@ -241,9 +241,9 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text border border-dark" id="basic-addon3"><i class="feather icon-paperclip"></i></span>
+                                                                        <span class="input-group-text  " id="basic-addon3"><i class="feather icon-paperclip"></i></span>
                                                                     </div>
-                                                                    <input type="text" class="form-control border border-dark" id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
+                                                                    <input type="text" class="form-control  " id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="semester" class="text-danger"></span>
@@ -261,7 +261,7 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text border border-dark" id="basic-addon2">
+                                                                        <span class="input-group-text  " id="basic-addon2">
                                                                             <i class="feather icon-list"></i>
                                                                         </span>
                                                                     </div>
@@ -281,7 +281,7 @@
                                                                 };
                                                                     }
 
-                                                                    @Html.DropDownList("areaofintrest", areaOfInterests, new { @class = "form-control areaofintrest border border-dark" })
+                                                                    @Html.DropDownList("areaofintrest", areaOfInterests, new { @class = "form-control areaofintrest  " })
                                                                 </div>
                                                                 <span asp-validation-for="areaofintrest" class="text-danger"></span>
                                                             </fieldset>

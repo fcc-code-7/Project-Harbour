@@ -28,14 +28,31 @@
                                         </div>
 
                                     </div>
-                                    @if (Model.roomInCharges.Any())
+                                    @if (!Model.roomInCharges.Any())
                                     {
+                                        <button type="button" class=" btn btn-sm AddButton text-white add" id="AddRoomIncharge">Add</button>
+                                        <button type="button" class="btn btn-sm  assign text-white AssignButton" id="AssignIncharge">Assign</button>
+                                        <button type="button" class="btn btn-sm DownloadButton text-white view" id="DownloadIncharge">Download</button>
+                                        <div class="container">
+                                            <div class="row justify-content-center align-items-center" style="min-height: 68vh;">
+                                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                    <!-- Trash Icon -->
+                                                    <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                    <!-- Text Below the Icon -->
+                                                    <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Incharge Exist!</p>
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                       
 
+                                    }
+                                    else
+                                    {
                                         <div class="mx-1">
-                                            <button type="button" class=" btn btn-sm btn-primary add" id="AddRoomIncharge">Add</button>
-                                            <button type="button" class="btn btn-sm btn-warning assign text-white" id="AssignIncharge">Assign</button>
-                                            <button type="button" class="btn btn-sm btn-success view" id="DownloadIncharge">Download</button>
+                                            <button type="button" class=" btn btn-sm AddButton text-white add" id="AddRoomIncharge">Add</button>
+                                            <button type="button" class="btn btn-sm  assign text-white AssignButton" id="AssignIncharge">Assign</button>
+                                            <button type="button" class="btn btn-sm DownloadButton text-white view" id="DownloadIncharge">Download</button>
                                         </div>
                                         <div class="scrollable-div overflow-auto p-1 mt-2">
                                             <div class="row" id="RoomContainer">
@@ -88,25 +105,7 @@
 
                                             </div>
                                         </div>
-
-                                    }
-                                    else
-                                    {
-                                        <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                            <div class="row justify-content-center align-items-center w-100">
-                                                <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="card">
-                                                        <div class="card-header d-flex justify-content-center align-items-center">
-                                                            <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Incharge Exists</h5>
-                                                        </div>
-                                                        <div class="card-body text-center mb-3">
-                                                            <p>It looks like there are currently no Room Incharges available.</p>
-                                                            <button class="btn btn-sm btn-primary" id="AddRoomIncharge">Add New Incharge</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        
                                     }
                                 </div>
                             </div>
@@ -423,7 +422,7 @@
         word-wrap: break-word !important;
         background-color: #ffffff !important;
         background-clip: border-box !important;
-        border: 1px solid #e6e4e9 !important;
+        border: 1px solid #3b0764 !important;
         border-radius: 8px !important;
     }
 

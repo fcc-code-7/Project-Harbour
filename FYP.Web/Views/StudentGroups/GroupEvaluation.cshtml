@@ -52,7 +52,7 @@
                                                         @if (Model.Groups != null)
                                                         {
                                                             <select class="form-control" id="GroupSelect">
-                                                                <option selected>Select Group</option>
+                                                                <option value="" selected>Select Group</option>
                                                                 @foreach (var item in Model.Groups)
                                                                 {
                                                                     if (Model.GroupId != null && Model.GroupId == item.ID.ToString())
@@ -384,7 +384,52 @@
 <!-- END: Content-->
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+@if (ViewBag.success == "Assigned")
+{
+    <script>
+        Swal.fire({
+            title: '<strong>Evaluation Marked!</strong>',  // HTML-formatted title with additional text
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
 
+    </script>
+}@if (ViewBag.success == "Updated")
+{
+    <script>
+        Swal.fire({
+            title: '<strong>Evaluation Updated!</strong>',  // HTML-formatted title with additional text
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+
+    </script>
+}@if (ViewBag.success == "Failed")
+{
+    <script>
+        Swal.fire({
+            title: '<strong>Evaluation Didnot Marked Successfully!</strong>',  // HTML-formatted title with additional text
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+
+    </script>
+}
 
 @if (Model.GroupId != null && Model.EvalName != null)
 {
@@ -432,52 +477,109 @@
 
 <script>
     $(document).ready(function () {
+        // Function to validate form
+        function validateForm() {
+            let allSelected = true;
+
+            // Dynamically count the number of questions
+            const questionCount = $('[name^="qno"]').map(function () {
+                return $(this).attr('name');
+            }).get().filter((v, i, a) => a.indexOf(v) === i).length;
+
+            // Loop through each question group
+            for (let i = 1; i <= questionCount; i++) {
+                const groupName = `qno${i}`;
+                const groupRadios = $(`input[name="${groupName}"]`);
+                const isChecked = groupRadios.is(':checked');
+
+                // Check if a radio button in the group is selected
+                if (!isChecked) {
+                    allSelected = false;
+
+                    // Highlight the question label in red
+                    groupRadios.closest('.border')
+                        .prev()
+                        .find('p')
+                        .addClass('text-danger');
+                } else {
+                    // Remove danger color if selected
+                    groupRadios.closest('.border')
+                        .prev()
+                        .find('p')
+                        .removeClass('text-danger');
+                }
+            }
+             // Check if the Remarks field is filled
+            const remarks = $('#Remarks').val().trim();
+            if (remarks === '') {
+                allSelected = false;
+
+                // Highlight the Remarks field in red
+                $('#Remarks').addClass('border-danger');
+
+                // Optionally, display a helper text or error message
+                if ($('#remarksError').length === 0) {
+                    $('#Remarks').after('<span id="remarksError" class="text-danger">Remarks are required.</span>');
+                }
+            } else {
+                // Remove the error styling and message if filled
+                $('#Remarks').removeClass('border-danger');
+                $('#remarksError').remove();
+            }
+
+            return allSelected;
+        }
+
+        // Submit button click handler
         $(document).off('click', '#submitEvaluation').on('click', '#submitEvaluation', function (e) {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default button behavior
+
+            // Perform validation
+            if (!validateForm()) {
+                return; // Stop if validation fails
+            }
+
+            // Show loading spinner
             showLoadingSpinner();
 
-            // Manually collect form data
+            // Collect form data
             let formData = {
-                GroupId: $('#GroupSelect').val(), // Assuming you have a select dropdown for GroupId
-                EvalName: $('#EvalName').val(), // Assuming a select or input for EvalName
-                qno1: $('input[name="qno1"]:checked').val(), // Get selected value for qno1
-                qno2: $('input[name="qno2"]:checked').val(), // Get selected value for qno2
-                qno3: $('input[name="qno3"]:checked').val(), // Get selected value for qno3
-                qno4: $('input[name="qno4"]:checked').val(), // Get selected value for qno4
-                qno5: $('input[name="qno5"]:checked').val(), // Get selected value for qno5
-                qno6: $('input[name="qno6"]:checked').val(), // Get selected value for qno6
-                qno7: $('input[name="qno7"]:checked').val(), // Get selected value for qno7
-                qno8: $('input[name="qno8"]:checked').val(), // Get selected value for qno8
-                Remarks: $('#Remarks').val(), // Get Remarks textarea value
+                GroupId: $('#GroupSelect').val(),
+                EvalName: $('#EvalName').val(),
+                qno1: $('input[name="qno1"]:checked').val(),
+                qno2: $('input[name="qno2"]:checked').val(),
+                qno3: $('input[name="qno3"]:checked').val(),
+                qno4: $('input[name="qno4"]:checked').val(),
+                qno5: $('input[name="qno5"]:checked').val(),
+                qno6: $('input[name="qno6"]:checked').val(),
+                qno7: $('input[name="qno7"]:checked').val(),
+                qno8: $('input[name="qno8"]:checked').val(),
+                Remarks: $('#Remarks').val(),
             };
 
-            
-
-            // Make AJAX POST request
+            // Send AJAX POST request
             $.ajax({
-                url: '/studentgroups/AssignEvaluationMarks', // Replace with your action method URL
+                url: '/studentgroups/AssignEvaluationMarks',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function (response) {
                     hideLoadingSpinner();
                     $("#MainContainer").html(response);
-
-                  
                 },
                 error: function (xhr, status, error) {
+                    hideLoadingSpinner();
                     alert('An error occurred while submitting the form.');
                     console.error(xhr.responseText);
                 }
             });
         });
 
-        // Helper function to calculate Total Marks
+        // Helper function for total marks calculation
         function calculateTotalMarks() {
-            // Implement your total marks calculation logic based on the answers selected
             let total = 0;
             for (let i = 1; i <= 8; i++) {
-                let value = parseInt($(`input[name="qno${i}"]:checked`).val());
+                let value = parseFloat($(`input[name="qno${i}"]:checked`).val());
                 if (!isNaN(value)) {
                     total += value;
                 }
@@ -485,12 +587,12 @@
             return total;
         }
 
+        // Handle group select change
         $(document).off('change', '#GroupSelect').on('change', '#GroupSelect', function (e) {
             e.preventDefault();
 
             showLoadingSpinner();
             var Id = $(this).val();
-
 
             $.ajax({
                 url: "/studentgroups/GroupEvaluation",
@@ -499,10 +601,9 @@
                 success: function (response) {
                     hideLoadingSpinner();
                     $("#MainContainer").html(response);
-
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    hideLoadingSpinner(); // Hide the loading spinner
+                    hideLoadingSpinner();
                     console.error("Error fetching rooms:", textStatus, errorThrown);
                     alert("An error occurred while fetching the rooms. Please try again.");
                 }

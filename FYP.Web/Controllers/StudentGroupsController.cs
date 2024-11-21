@@ -56,10 +56,18 @@ namespace FYP.Web.Controllers
             var studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
             if (istrue != "True")
             {
-                var fetchLastBatch = studentGroups.LastOrDefault().Batch;
+                if (studentGroups.Any())
+                {
+                    var fetchLastBatch = studentGroups.LastOrDefault().Batch;
 
-                model.Batch = fetchLastBatch;
-                return RedirectToAction("StudentGroupbyBatch", "StudentGroups", new { batch = fetchLastBatch });
+                if (fetchLastBatch != null)
+                {
+
+                    model.Batch = fetchLastBatch;
+                    return RedirectToAction("StudentGroupbyBatch", "StudentGroups", new { batch = fetchLastBatch });
+                }
+                }
+
             }
             var distinctBatches = studentGroups.Select(x => x.Batch).Distinct().ToList();
             var distinctYears = studentGroups.Select(x => x.Year).Distinct().ToList();
@@ -81,9 +89,9 @@ namespace FYP.Web.Controllers
                 SupervisorID = x.SupervisorID,
                 Year = x.Year,
                 projectname = project.Where(y => y.projectGroup == x.Name).Select(y => y.Title).FirstOrDefault(),
-                LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Email,
-                member1 = _userService.GetByIdAsync(x.student2ID).Result.Email,
-                Member2 = _userService.GetByIdAsync(x.student3ID).Result.Email,
+                LeaderName = _userService.GetByIdAsync(x.student1LID).Result?.Email,
+                member1 = _userService.GetByIdAsync(x.student2ID).Result?.Email,
+                Member2 = _userService.GetByIdAsync(x.student3ID).Result?.Email ?? "Not Exist",
                 supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result.Name
             }
             ).ToList();
@@ -94,7 +102,7 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
         public async Task<IActionResult> StudentGroupbyBatch(string batch)
-        {
+            {
             if (batch == "All Groups")
             {
                 return RedirectToAction("StudentGroups", "StudentGroups", new { istrue = "True" });
@@ -124,13 +132,15 @@ namespace FYP.Web.Controllers
                     Year = x.Year,
                     projectname = project.Where(y => y.projectGroup == x.Name).Select(y => y.Title).FirstOrDefault(),
                     LeaderName = _userService.GetByIdAsync(x.student1LID).Result.Email,
-                    member1 = _userService.GetByIdAsync(x.student2ID).Result.Email,
-                    Member2 = _userService.GetByIdAsync(x.student3ID).Result.Email,
+                    member1 = _userService.GetByIdAsync(x.student2ID).Result?.Email,
+                    Member2 = _userService.GetByIdAsync(x.student3ID).Result?.Email ?? "Not Exist",
                     supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result.Name
                 }
                 ).ToList(),
                 Batches = distinctBatches,
-                Years = distinctYears
+                Years = distinctYears,
+                Batch = batch
+
             };
 
             return PartialView("StudentGroups", model);
@@ -139,118 +149,110 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StudentGroups([FromBody] StudentGroupViewModel model)
         {
-            if (model != null)
+            if (model == null)
             {
-                var student = new AppUser()
+                return Json(new { success = false, message = "Invalid data!" });
+            }
+
+            // Create and process Student 1
+            var student1 = new AppUser
+            {
+                Email = model.student1LEmail,
+                UserName = model.student1LEmail,
+                Designation = "Student",
+                Role = "Student"
+            };
+
+            var result1 = await _userManager.CreateAsync(student1, "Bahria123@@");
+            if (!result1.Succeeded) return Json(new { success = false, message = "Failed to create Student 1!" });
+
+            await _userManager.AddToRoleAsync(student1, Roles.Student.ToString());
+            var studenta = await _userManager.FindByEmailAsync(model.student1LEmail);
+
+            var studentData1 = new Student
+            {
+                studentId = studenta.Id,
+                ENo = null,
+                RegNo = 0,
+                Semester = null
+            };
+
+            // Create and process Student 2
+            var student2 = new AppUser
+            {
+                Email = model.student2Email,
+                UserName = model.student2Email,
+                Designation = "Student",
+                Role = "Student"
+            };
+
+            var result2 = await _userManager.CreateAsync(student2, "Bahria123@@");
+            if (!result2.Succeeded) return Json(new { success = false, message = "Failed to create Student 2!" });
+
+            await _userManager.AddToRoleAsync(student2, Roles.Student.ToString());
+            var studentb = await _userManager.FindByEmailAsync(model.student2Email);
+
+            var studentData2 = new Student
+            {
+                studentId = studentb.Id,
+                ENo = null,
+                RegNo = 0,
+                Semester = null
+            };
+
+            // Create Student Group
+            var userId = _userManager.GetUserId(User);
+            var usergroup = new StudentGroup
+            {
+                student1LID = studenta.Id,
+                student2ID = studentb.Id,
+                SupervisorID = userId,
+                Name = model.Name,
+                companyID = null,
+                CordinatorID = null,
+                CoSupervisorID = null,
+                Batch = model.Batch,
+                Year = model.Year
+            };
+
+            // Optional Student 3
+            if (!string.IsNullOrEmpty(model.student3Email))
+            {
+                var student3 = new AppUser
                 {
-                    Email = model.student1LEmail,
-                    UserName = model.student1LEmail,
+                    Email = model.student3Email,
+                    UserName = model.student3Email,
                     Designation = "Student",
                     Role = "Student"
-
-                };
-                var student2 = new AppUser()
-                {
-                    Email = model.student2Email,
-                    UserName = model.student2Email,
-                    Designation = "Student",
-                    Role = "Student"
-
-
                 };
 
-                var result = await _userManager.CreateAsync(student, "Bahria123@@");
-                var result2 = await _userManager.CreateAsync(student2, "Bahria123@@");
-
-
-                if (result.Succeeded && result2.Succeeded)
+                var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
+                if (result3.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(student, Roles.Student.ToString());
-                    var roleResult2 = await _userManager.AddToRoleAsync(student2, Roles.Student.ToString());
+                    await _userManager.AddToRoleAsync(student3, Roles.Student.ToString());
+                    var studentc = await _userManager.FindByEmailAsync(model.student3Email);
 
-
-                    if (roleResult.Succeeded && roleResult2.Succeeded)
+                    var studentData3 = new Student
                     {
-                        var studenta = await _userManager.FindByEmailAsync(model.student1LEmail);
-                        var studentb = await _userManager.FindByEmailAsync(model.student2Email);
-                        var userId = _userManager.GetUserId(User);
-                        var studentData1 = new Student()
-                        {
-                            studentId = studenta.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
+                        studentId = studentc.Id,
+                        ENo = null,
+                        RegNo = 0,
+                        Semester = null
+                    };
 
-                        };
-                        var studentData2 = new Student()
-                        {
-                            studentId = studentb.Id,
-                            ENo = null,
-                            RegNo = 0,
-                            Semester = null
-
-                        };
-
-
-                        var usergroup = new StudentGroup
-                        {
-                            student1LID = studenta.Id,
-                            student2ID = studentb.Id,
-                            SupervisorID = userId,
-                            Name = model.Name,
-                            companyID = null,
-                            CordinatorID = null,
-                            CoSupervisorID = null,
-
-                            Batch = model.Batch,
-                            Year = model.Year,
-
-                        };
-                        if (model.student3Email != null)
-                        {
-                            var student3 = new AppUser()
-                            {
-                                Email = model.student3Email,
-                                UserName = model.student3Email,
-                                Designation = "Student",
-                                Role = "Student"
-
-
-                            };
-                            var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
-                            if (result3.Succeeded)
-                            {
-                                var roleResult3 = await _userManager.AddToRoleAsync(student3, Roles.Student.ToString());
-                                if (roleResult3.Succeeded)
-                                {
-                                    var studentc = await _userManager.FindByEmailAsync(model.student3Email);
-                                    var studentData3 = new Student()
-                                    {
-                                        studentId = studentc.Id,
-                                        ENo = null,
-                                        RegNo = 0,
-                                        Semester = null
-                                    };
-                                    usergroup.student3ID = studentc.Id;
-                                    await _studentService.AddAsync(studentData3);
-
-                                }
-
-                            }
-                        }
-
-                        await _studentService.AddAsync(studentData1);
-                        await _studentService.AddAsync(studentData2);
-                        await _studentGroupService.AddAsync(usergroup);
-                        return RedirectToAction("StudentGroups", "studentgroups");
-                    }
-
+                    usergroup.student3ID = studentc.Id; // Associate Student 3 with the group
+                    await _studentService.AddAsync(studentData3);
                 }
             }
 
-            // Return an error response
-            return Json(new { success = false, message = "Invalid data!" });
+            // Save all data
+            await _studentService.AddAsync(studentData1);
+            await _studentService.AddAsync(studentData2);
+            await _studentGroupService.AddAsync(usergroup);
+
+            return RedirectToAction("StudentGroups", "studentgroups");
         }
+
 
 
         //EDIT GROUP GET
@@ -1246,7 +1248,7 @@ namespace FYP.Web.Controllers
 
                     // Fetch the existing record based on GroupId and EvalName
                     var existingRecord = evaluationCriteriaList
-                        .FirstOrDefault(e => e.GId == groupId && e.SubmissionDate == currentDate);
+                        .FirstOrDefault(e => e.GId == groupId && e.SubmissionDate == currentDate && e.CommiteeID == currentUserId);
                     if (existingRecord != null)
                     {
                         viewModel.qno1 = existingRecord.Q1Marks;
@@ -1273,7 +1275,7 @@ namespace FYP.Web.Controllers
         {
             // Fetch the record from the database
             var EvaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
-            var record = EvaluationCriteria.FirstOrDefault(e => e.GId == groupId && e.EvalName == evalName);
+            var record = EvaluationCriteria.FirstOrDefault(e => e.GId == groupId && e.EvalName == evalName );
 
             if (record != null && record.SubmissionTime.HasValue)
             {
@@ -1314,10 +1316,12 @@ namespace FYP.Web.Controllers
             viewModel.TotalMarks = totalMarks;
 
             var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
-
+            var currentUserId = _userManager.GetUserId(User);
+            var group = await _studentGroupService.GetAllAsync();
+            var fetchBatch = group.Where(x => x.ID.ToString() == viewModel.GroupId).FirstOrDefault().Batch;
             // Fetch the existing record based on GroupId and EvalName
             var existingRecord = evaluationCriteriaList
-                .FirstOrDefault(e => e.GId == viewModel.GroupId && e.EvalName == viewModel.EvalName);
+                .FirstOrDefault(e => e.GId == viewModel.GroupId && e.EvalName == viewModel.EvalName && e.CommiteeID == currentUserId);
 
             if (existingRecord != null)
             {
@@ -1354,7 +1358,7 @@ namespace FYP.Web.Controllers
                 var newEvaluation = new EvaluationCriteria
                 {
                     GId = viewModel.GroupId,
-                    Batch = viewModel.Batch,
+                    Batch = fetchBatch,
                     EvalName = viewModel.EvalName,
                     Q1Marks = viewModel.qno1,
                     Q2Marks = viewModel.qno2,
@@ -1366,7 +1370,7 @@ namespace FYP.Web.Controllers
                     Q8Marks = viewModel.qno8,
                     Remarks = viewModel.Remarks,
                     TotalMarks = viewModel.TotalMarks,
-                    CommiteeID = viewModel.CommiteeID,
+                    CommiteeID = currentUserId,
                     SubmissionTime = DateTime.UtcNow,
                     SubmissionDate = DateTime.Today
                 };
@@ -1380,6 +1384,77 @@ namespace FYP.Web.Controllers
                 });
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> FilterGroups(string GroupWord, string Batch)
+        {
+            var model = new StudentGroupViewModel();
+            var currentUserId = _userManager.GetUserId(User);  // Get the current user ID
+
+            // Fetch all groups
+            var groups = await _studentGroupService.GetAllAsync();
+
+            // If GroupWord is empty, we only filter by SupervisorID and Batch
+            var filteredGroups = groups
+                .Where(g => g.SupervisorID == currentUserId) // Filter by SupervisorID
+                .Where(g => string.IsNullOrWhiteSpace(GroupWord) || g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) // If GroupWord is not empty, filter by group name
+                .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // If Batch is selected, filter by Batch
+                .ToList();
+
+            // Get project details
+            var project = await _projectService.GetAllAsync();
+
+            var studentGroupViewModels = new List<StudentGroupViewModel>();
+
+            foreach (var g in filteredGroups)
+            {
+                var leaderTask = _userService.GetByIdAsync(g.student1LID);
+                var member1Task = _userService.GetByIdAsync(g.student2ID);
+                var member2Task = _userService.GetByIdAsync(g.student3ID);
+                var supervisorTask = _userManager.FindByIdAsync(g.SupervisorID);
+
+                // Prepare tasks to fetch user details
+                await Task.WhenAll(leaderTask, member1Task, member2Task, supervisorTask);
+
+                var leader = await leaderTask;
+                var member1 = await member1Task;
+                var member2 = await member2Task;
+                var supervisor = await supervisorTask;
+
+                studentGroupViewModels.Add(new StudentGroupViewModel
+                {
+                    GrouID = g.ID.ToString(),
+                    groupId = g.ID.ToString(),
+                    companyID = g.companyID,
+                    Batch = g.Batch,
+                    CordinatorID = g.CordinatorID,
+                    CoSupervisorID = g.CoSupervisorID,
+                    Id = g.ID,
+                    Name = g.Name,
+                    student1LID = g.student1LID,
+                    student2ID = g.student2ID,
+                    student3ID = g.student3ID,
+                    SupervisorID = g.SupervisorID,
+                    Year = g.Year,
+                    projectname = project.Where(p => p.projectGroup == g.Name).Select(p => p.Title).FirstOrDefault(),
+
+                    // Fetching member names
+                    LeaderName = leader?.Email ?? "Not Found",
+                    member1 = member1?.Email ?? "Not Found",
+                    Member2 = member2?.Email ?? "Not Found",
+
+                    // Fetching supervisor name
+                    supervisorname = supervisor?.Name ?? "Not Found"
+                });
+            }
+
+            model.StudentGroups = studentGroupViewModels;
+
+            return Json(model.StudentGroups);
+        }
+
+
 
 
 

@@ -67,9 +67,9 @@ namespace FYP.Web.Controllers
                     CoSupervisorID = x.CoSupervisorID,
                     SupervisorID = x.SupervisorID,
                     supervisorname = _userService.GetAllAsync().Result.Where(y => y.Id == x.SupervisorID).FirstOrDefault().Name,
-                    LeaderName = _userManager.FindByIdAsync(x.student1LID).Result?.Name,
-                    member1 = _userManager.FindByIdAsync(x.student2ID).Result?.Name,
-                    Member2 = _userManager.FindByIdAsync(x.student3ID).Result?.Name,
+                    LeaderName = _userManager.FindByIdAsync(x.student1LID).Result?.Email,
+                    member1 = _userManager.FindByIdAsync(x.student2ID).Result?.Email,
+                    Member2 = _userManager.FindByIdAsync(x.student3ID).Result?.Email,
                 }).ToList();
             }
             if (distinctBatches != null)
@@ -80,19 +80,8 @@ namespace FYP.Web.Controllers
             {
                 model.Years = distinctYears;
             }
-            if (existingFypCommitee!= null)
-            {
-                model.StudentGroups = studentGroup.Select(x => new StudentGroupViewModel
-                {
-                   Member1Name = _userManager.FindByIdAsync(existingFypCommitee
-                .Where(y => y.groupID == x.ID.ToString())
-                .FirstOrDefault()?.Member1ID).Result?.Name ?? "Not Assigned",
-
-                    Member2Name = _userManager.FindByIdAsync(existingFypCommitee
-                .Where(y => y.groupID == x.ID.ToString())
-                .FirstOrDefault()?.Member2ID).Result?.Name ?? "Not Assigned",
-                }).ToList();
-            }
+            
+            
             return PartialView(model);
         }
         public async Task<IActionResult> Projects()

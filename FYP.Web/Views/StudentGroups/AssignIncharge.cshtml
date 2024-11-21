@@ -19,36 +19,33 @@
                             <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
 
                                 <!-- Column 1: -->
-                                <div class="scrollable-div overflow-auto p-1" style="min-height:100px;">
+
+                                <div class="" style="min-height:100px;" id="container">
+                                    <!-- Left content (div1) -->
                                     <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                        <div class="text-2xl font-bold ">
-                                            <h1 class="d-flex align-items-center justify-content-start justify-content-center-sm justify-content-center-md">
-                                                <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
-                                                <span class="mx-2">Assign/View</span>
+                                        <div class=" text-2xl font-bold">
+                                            <h1>
+                                                Assign/View
                                             </h1>
-
                                         </div>
-
 
                                     </div>
+
+                                </div>
+
                                     @if (Model == null)
                                     {
-                                         
-                                            <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                                <div class="row justify-content-center align-items-center w-100">
-                                                    <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                        <div class="card">
-                                                            <div class="card-header d-flex justify-content-center align-items-center">
-                                                                <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Batch Exists</h5>
-                                                            </div>
-                                                            <div class="card-body text-center mb-3">
-                                                                <p>It looks like there are currently no Batch Exist. Come Back Later</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                        </div>
 
+                                    <div class="container">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                <!-- Trash Icon -->
+                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                <!-- Text Below the Icon -->
+                                                <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Batch Exist!</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     }
                                     else
@@ -270,17 +267,14 @@
                                             }
                                         }
                                     }else{
-                                            <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                                <div class="row justify-content-center align-items-center w-100">
-                                                    <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                        <div class="card">
-                                                            <div class="card-header d-flex justify-content-center align-items-center">
-                                                                <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Batch Exists</h5>
-                                                            </div>
-                                                            <div class="card-body text-center mb-3">
-                                                                <p>It looks like there are currently no Batch Exist. Come Back Later</p>
-                                                            </div>
-                                                        </div>
+
+                                            <div class="container">
+                                                <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                        <!-- Trash Icon -->
+                                                        <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                        <!-- Text Below the Icon -->
+                                                        <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Batch Exist!</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -308,7 +302,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this Room Incharge?
+                    Are you sure you want to delete this Group?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -423,7 +417,7 @@
         word-wrap: break-word !important;
         background-color: #ffffff !important;
         background-clip: border-box !important;
-        border: 1px solid #e6e4e9 !important;
+        border: 1px solid #3b0764 !important;
         border-radius: 8px !important;
     }
 
