@@ -12,32 +12,32 @@ namespace FYP.Web.ViewModels
     {
         public string? GrouID { get; set; }
         public Guid Id;
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Name is required")]
-        [StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
-        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Use letters only please")]
+
         [MaxLength(50) , MinLength(5)]
         public string Name { get; set; }
+        public string ActiveState { get; set; }
         public string student1LID { get; set; }
-        //[DataType(DataType.EmailAddress)]
-        //[Required(ErrorMessage = "Email is required")]
-        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string student1LEmail { get; set; }
         public string student2ID { get; set; }
-        //[DataType(DataType.EmailAddress)]
-        //[Required(ErrorMessage = "Email is required")]
-        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string student2Email { get; set; }
-        public string student3ID { get; set; }
-        //[DataType(DataType.EmailAddress)]
-        //[Required(ErrorMessage = "Email is required")]
-        //[EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Required(ErrorMessage = "Leader's Enrollment No is required.")]
+        [StringLength(13, MinimumLength = 13, ErrorMessage = "Enrollment number must be 13 characters long.")]
+        public string student1LEmail { get; set; }
 
+        [Required(ErrorMessage = "Member1 Enrollment No is required.")]
+        [StringLength(13, MinimumLength = 13, ErrorMessage = "Enrollment number must be 13 characters long.")]
+        public string student2Email { get; set; }
+
+        [StringLength(13, MinimumLength = 13, ErrorMessage = "Enrollment number must be 13 characters long.")]
         public string student3Email { get; set; }
+        public string student3ID { get; set; }
+
+
         public string Batch { get; set; }
         public string Year { get; set; }
         public string groupId { get; set; }
         public string SupervisorID { get; set; }
+        public string ExternalId { get; set; }
+        public string ExternalEmail { get; set; }
+        public string ProjectName { get; set; }
         public string CoSupervisorID { get; set; }
         public string companyID { get; set; }
         public string CordinatorID { get; set; }
@@ -294,6 +294,7 @@ namespace FYP.Web.ViewModels
         public Guid Id { get; set; }
         public string ProId { get; set; }
         public string code { get; set; }
+
         public string Title { get; set; }
         public string ProjectCategory { get; set; }
         public string projectGroup { get; set; }
@@ -350,6 +351,7 @@ namespace FYP.Web.ViewModels
         public Guid EvaluationID { get; set; }
         public string? PBatch { get; set; }
         public string? PID { get; set; }
+        public string? success { get; set; }
         public int Marks { get; set; }
 
         public DateTime LastDate { get; set; }
@@ -366,6 +368,33 @@ namespace FYP.Web.ViewModels
 
 
 
+    }
+
+    public class NotificationsViewModel
+    {
+        public Guid Id;
+        public string? UserId { get; set; }
+        public string? Batch { get; set; }
+        public string? Message { get; set; }
+        public string? Subject { get; set; }
+        public string? SenderId { get; set; }
+
+        public List<string> students { get; set; }
+        public List<string> supervisor { get; set; }
+    }
+    public class ExternalEvaluation
+    {
+        public Guid Id;
+        public List<StudentGroupViewModel> studentGroups { get; set; }
+        public List<StudentGroupViewModel> ExternalGroups { get; set; }
+        public List<ProjectViewModel> projects { get; set; }
+        public List<string> Batches { get; set; }
+        public string Email { get; set; }
+        public string isBlock { get; set; }
+        public string ExternalId { get; set; }
+        public string Group { get; set; }
+        public string successmodel { get; set; }
+        public string Batch { get; set; }
     }
     public class AppUserViewModel
     {

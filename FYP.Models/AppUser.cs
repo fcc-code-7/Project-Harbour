@@ -14,6 +14,7 @@ namespace FYP.Entities
 
         public string? Docs { get; set; }
         public string? areaofintrest { get; set; }
+        public string? ActiveState { get; set; }
         public DateOnly DateofCreation { get; set; }
     }
 }

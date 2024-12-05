@@ -16,6 +16,7 @@ namespace FYP.Entities
         public string? Year { get; set; }
         public string? SupervisorID { get; set; }
         public string? CoSupervisorID { get; set; }
+        public string? ExternalId { get; set; }
         public string? companyID { get; set; }
         public string? CordinatorID { get; set; }
         public bool changeSupervisorForm { get; set; }

@@ -21,8 +21,11 @@ namespace FYP.Web.Controllers
         private readonly IWeeklyLogsService _weeklyLogsService;
         private readonly IEvaluationService _evaluationService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEvaluationCriteriaService _evaluationCriteriaService;
 
-        public ProjectController(IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+
+
+        public ProjectController(IEvaluationCriteriaService evaluationCriteriaService,IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -34,14 +37,20 @@ namespace FYP.Web.Controllers
             _companyService = companyService;
             _evaluationService = evaluationService;
             _weeklyLogsService = weeklyLogsService;
+            _evaluationCriteriaService = evaluationCriteriaService;
+
         }
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Projects()
+        public async Task<IActionResult> Projects(string ViewValue)
         {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
             var loggedInUser = _userManager.GetUserId(User);
             var allGroups = _studentGroupService.GetAllAsync().Result;
             var userGroup = allGroups
@@ -56,11 +65,16 @@ namespace FYP.Web.Controllers
             var projects = _projectService.GetAllAsync().Result
                 .Where(x => x.groupId == userGroup.ID.ToString())
                 .ToList();
+            if (!projects.Any())
+            {
+                return RedirectToAction("Create", "Project");
+            }
             var supervisorId = userGroup.SupervisorID;
             var model = new ProjectViewModel
             {
                 projects = projects.Select(x => new ProjectViewModel
                 {
+                    
                     code = x.code,
                     Specialization = x.Specialization,
                     Status = x.Status,
@@ -88,6 +102,22 @@ namespace FYP.Web.Controllers
             {
                 supervisorId = userGroup.SupervisorID;
                 var groupLeader = userGroup.student1LID;
+                // Fetch all evaluation criteria from the service
+                var fetchEvaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+
+                if (fetchEvaluationCriteria != null)
+                {
+                    // Get the current date
+                    var currentDate = DateTime.Now;
+
+                    // Filter evaluations for the specific group (by GId) and check if one day has passed since submission
+                    var groupEvaluations = fetchEvaluationCriteria
+                        .Where(x => x.GId == userGroup.ID.ToString()
+                                    && x.SubmissionDate.HasValue
+                                    && (currentDate - x.SubmissionDate.Value).TotalDays > 1) // Ensure one day has passed
+                        .ToList();
+
+                }
 
                 model.supervisorname = _userManager.FindByIdAsync(supervisorId).Result?.Name;
                 model.groupname = userGroup.Name;
@@ -95,7 +125,6 @@ namespace FYP.Web.Controllers
 
             return PartialView(model);
         }
-        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var project = await _projectService.GetAllAsync();
@@ -250,12 +279,14 @@ namespace FYP.Web.Controllers
 
             return PartialView(model);
         }
-
-        public async Task<IActionResult> Edit(string id)
+        [HttpGet]
+        public async Task<IActionResult> EditProjects(string id)
         {
             // Retrieve the project with the specified ID
-            var project = await _projectService.GetByIdAsync(id);
-            var company = await _companyService.GetByIdAsync(project.companyID);
+            var fetchproject = await _projectService.GetAllAsync();
+            var project = fetchproject.Where(x=>x.ID.ToString() == id).FirstOrDefault();
+            var Fetchcompany = await _companyService.GetAllAsync();
+            var company = Fetchcompany.Where(x=>x.ID.ToString() == project.companyID).FirstOrDefault();
             if (project == null)
             {
                 return NotFound();
@@ -277,6 +308,7 @@ namespace FYP.Web.Controllers
                 objectives = project.objectives,
                 Others = project.Others,
                 Id = project.ID,
+                ProId = project.ID.ToString(),
                 Title = project.Title,
                 Tools = project.Tools,
                 ProjectCategory = project.ProjectCategory,
@@ -291,9 +323,7 @@ namespace FYP.Web.Controllers
 
             };
 
-            // Additional data for students
-            if (User.IsInRole("Student"))
-            {
+           
                 var studentGroup = group.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault();
                 if (studentGroup != null)
                 {
@@ -304,75 +334,78 @@ namespace FYP.Web.Controllers
                     model.supervisorname = (await _userManager.FindByIdAsync(getSupervisor)).Name;
                     model.groupname = group.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
                 }
-            }
-            return View(model);
+            
+            return PartialView(model);
         }
-
 
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ProjectViewModel model)
+        public async Task<IActionResult> EditProjects([FromBody] ProjectViewModel model)
         {
-            if (model.companyName != null)
-            {
-                var company = new Company()
-                {
-                    Name = model.companyName,
-                    MentorEmail = model.mentoremail,
-                    MentorName = model.companyMentor,
-                    MentorTelephone = model.mentorcontact
-                };
+                       // Retrieve the existing project by ID
+            var fetchProjects = await _projectService.GetAllAsync();
+            var existingProject = fetchProjects.FirstOrDefault(x => x.ID.ToString() == model.ProId);
 
-                await _companyService.AddAsync(company);
+            if (existingProject == null)
+            {
+                return RedirectToAction("Projects", "Project", new { ViewValue = "NotFound" });
             }
-            var companyId = _companyService.GetAllAsync().Result.Where(x => x.Name == model.companyName).FirstOrDefault().ID;
-            var group = _studentGroupService.GetAllAsync().Result.Where(x => x.Name == model.groupname).FirstOrDefault().ID;
 
-            var project = new Project()
+            // Retrieve the company related to the project
+            var fetchCompanies = await _companyService.GetAllAsync();
+            var existingCompany = fetchCompanies.FirstOrDefault(x => x.ID.ToString() == model.companyID);
+
+            if (existingCompany == null)
             {
-                code = model.code,
-                companyID = companyId.ToString(),
-                ExpectedResults = model.ExpectedResults,
-                objectives = model.objectives,
-                ProjectCategory = model.ProjectCategory,
-                Others = model.Others,
-                projectGroup = model.projectGroup,
-                Specialization = model.Specialization,
-                Tools = model.Tools,
-                Summary = model.Summary,
-                Title = model.Title,
-                groupId = group.ToString(),
-                batch = model.batch.ToString(),
-                TotalMarks = 0,
-                changeTitleFormStatus = model.changeTitleFormStatus,
-            };
-            if (model.Others == "")
-            {
-                project.Others = "N/A";
+                return RedirectToAction("Projects", "Project", new { ViewValue = "NotFound" });
             }
-            else
-            {
-                project.Others = model.Others;
-            }
-            var result = _projectService.AddAsync(project);
 
-            if (result != null)
-            {
-                return RedirectToAction("Projects", "Project");
-            }
-            return Json(new { success = false, message = "Invalid data!" });
+            // Update the project fields with the data from the model
+            existingProject.Specialization = model.Specialization;
+            existingProject.Status = null;
+            existingProject.Summary = model.Summary;
+            existingProject.ExpectedResults = model.ExpectedResults;
+            existingProject.objectives = model.objectives;
+            existingProject.Others = model.Others;
+            existingProject.Title = model.Title;
+            existingProject.Tools = model.Tools;
+            existingProject.ProjectCategory = model.ProjectCategory;
+            existingProject.projectGroup = model.projectGroup;
+            existingProject.changeTitleFormStatus = model.changeTitleFormStatus;
+            existingProject.SupervsiorApproved = null;
 
+            // Update the company fields
+            existingCompany.Name = model.companyName;
+            existingCompany.MentorName = model.companyMentor;
+            existingCompany.MentorTelephone = model.mentorcontact;
+            existingCompany.MentorEmail = model.mentoremail;
 
+            // Save the updated project
+            await _projectService.UpdateAsync(existingProject);
+
+            // Save the updated company (if needed)
+            await _companyService.UpdateAsync(existingCompany);
+
+            return RedirectToAction("Projects", "Project", new { ViewValue = "Updated" });
         }
 
-        public async Task<IActionResult> ProjectList()
+
+        public async Task<IActionResult> ProjectList(string Id)
         {
-            if (User.IsInRole("Student"))
-            {
-                var LoggedInUser = _userManager.GetUserId(User);
-                var groupId = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().ID;
-                var projects = await _projectService.GetAllAsync();
-                var project = projects.FirstOrDefault(x => x.groupId == groupId.ToString());
+             var LoggedInUser = _userManager.GetUserId(User);
+                Project project = null;  // Declare project variable here
+
+                if (Id == null)
+                {
+                    var groupId = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().ID;
+                    var projects = await _projectService.GetAllAsync();
+                     project = projects.FirstOrDefault(x => x.groupId == groupId.ToString());
+                }
+                else
+                {
+                    var projects = await _projectService.GetAllAsync();
+                     project = projects.FirstOrDefault(x => x.ID.ToString() == Id);
+                }
 
 
                 if (project == null)
@@ -412,8 +445,7 @@ namespace FYP.Web.Controllers
                 };
 
                 return PartialView(model);
-            }
-            return NotFound();
+           
         }
         [HttpPost]
         public async Task<IActionResult> Submissions([FromBody] ProjectViewModel model)

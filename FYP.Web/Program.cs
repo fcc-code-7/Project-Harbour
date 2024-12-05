@@ -43,6 +43,8 @@ builder.Services.AddScoped<IProposalDefenseRepository, ProposalDefenseRepository
 builder.Services.AddScoped<IProposalDefenseService, ProposalDefenseService>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
 builder.Services.AddScoped<IProjectCategoryRepository, ProjectCategoryRepository>();
 builder.Services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
 builder.Services.AddScoped<IFYPCommitteRepository, FYPCommitteRepository>();

@@ -56,6 +56,24 @@
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        /* For Chrome, Safari, Edge, and Opera */
+        ::-webkit-scrollbar {
+            width: 6px; /* Set the width of the scrollbar */
+            height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Background of the scrollbar track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+            border-radius: 10px; /* Rounded corners for the scrollbar */
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+            }
         .mainDivGradient {
             /* background: linear-gradient(90deg, #f6d5f7, #fbe9d7) !important; */
             background : #ffffff !important;
@@ -72,6 +90,10 @@
         }
         .AssignButton {
             background: #f59e0b !important;
+        }
+
+        .NewBTN {
+            background: #22d3ee !important;
         }
          .DownloadButton {
             background: #047857 !important;
@@ -304,19 +326,19 @@
                             {
                                 <li class="nav-item" id="ProjectsSup">
                                     <a >
-                                        <i class="fa fa-calendar-check-o" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                        <i class="fa fa-calendar-check-o" ></i>
                                         <span class="menu-item" data-i18n="Projects">Projects</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="groups">
                                     <a>
-                                        <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                        <i class="fa fa-users"> </i>
                                         <span class="menu-item" data-i18n="Groups">Groups</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="evaluationExam">
                                     <a>
-                                        <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                        <i class="fa fa-users"></i>
                                         <span class="menu-item" data-i18n="Evaluation">Evaluation</span>
                                     </a>
                                 </li>
@@ -344,22 +366,34 @@
                             }
                             else if (User.IsInRole("Cordinator"))
                             {
-                                <li class="nav-item" id="cordgroups">
+                                <li class="nav-item" id="groups">
                                     <a>
                                         <i class="fa fa-users" ></i>
                                         <span class="menu-item" data-i18n="Groups">Groups</span>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="cordProject">
+                                <li class="nav-item" id="ProjectsSup">
                                     <a>
                                         <i class="feather icon-edit"></i>
                                         <span class="menu-item" data-i18n="Projects">Projects</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="EvaluationDates">
+                                    <a>
+                                        <i class="feather icon-edit"></i>
+                                        <span class="menu-item" data-i18n="EvaluationDates">EvalDate</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="Evaluators">
                                     <a>
                                         <i class="feather icon-calendar"></i>
                                         <span class="menu-item" data-i18n="Evaluators">Evaluators</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Externals">
+                                    <a>
+                                        <i class="feather icon-calendar"></i>
+                                        <span class="menu-item" data-i18n="Externals">Externals</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -377,6 +411,15 @@
                                     </ul>
                                 </li>
 
+                            }
+                            else if (User.IsInRole("External"))
+                            {
+                                <li class="nav-item" id="GroupsEvaluation">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="GroupsEvaluation">Groups</span>
+                                    </a>
+                                </li>
                             }
                             <li class="nav-item" id="messages">
                                 <a >
@@ -412,11 +455,9 @@
     <script src="~/app-assets/js/scripts/modal/components-modal.js"></script>
     <script src="~/app-assets/js/scripts/ui/scrollable.js"></script>
     <!-- BEGIN: Page JS-->
-    <script src=".~/app-assets/js/scripts/extensions/sweet-alerts.js"></script>
     <!-- END: Page JS-->
     <!-- BEGIN: Page Vendor JS-->
     <script src="~/app-assets/js/core/libraries/bootstrap.min.js"></script>
-    <script src="~/app-assets/vendors/js/extensions/sweetalert2.all.min.js"></script>
     <script src="~/app-assets/vendors/js/extensions/polyfill.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -544,7 +585,26 @@
 
                 loadSection("/studentGroups/RoomIncharges", "#MainContainer");
             });
-        }); $("#evaluationExam").click(function () {
+        }); 
+        $("#evaluationExam").click(function () {
+            loadAdminIndex(function () {
+
+                loadSection("/studentGroups/GroupEvaluation", "#MainContainer");
+            });
+        });
+        $("#EvaluationDates").click(function () {
+            loadAdminIndex(function () {
+
+                loadSection("/cordinator/Evaluation", "#MainContainer");
+            });
+        });
+        $("#Externals").click(function () {
+            loadAdminIndex(function () {
+
+                loadSection("/cordinator/ExternalsAccount", "#MainContainer");
+            });
+        });
+        $("#GroupsEvaluation").click(function () {
             loadAdminIndex(function () {
 
                 loadSection("/studentGroups/GroupEvaluation", "#MainContainer");

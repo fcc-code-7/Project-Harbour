@@ -54,6 +54,10 @@ namespace FYP.Web.Controllers
                     {
                         return RedirectToAction("Index", "Student");
                     }
+                    else if (roles.Contains("External"))
+                    {
+                        return RedirectToAction("Index", "Student");
+                    }
                     else
                     {
                         ModelState.AddModelError("", "Invalid user role.");
@@ -93,7 +97,8 @@ namespace FYP.Web.Controllers
                 Name = model.Name,
                 Department = model.Department,
                 DateofCreation = DateOnly.FromDateTime(DateTime.Now),
-                
+                ActiveState = "Active",
+
 
             };
             if (model.Role == "Supervisor")
@@ -137,11 +142,11 @@ namespace FYP.Web.Controllers
             }
             else
             {
-                model.Role = "Internal/External";
+                model.Role = "External";
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, Roles.Internal.ToString());
+                    await _userManager.AddToRoleAsync(user, Roles.External.ToString());
 
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Login", "Account");

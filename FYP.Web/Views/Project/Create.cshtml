@@ -415,13 +415,14 @@
                 ExpectedResults: $("#ExpectedResults").val(),
                 batch: $("#batch").val(),
             };
-
+            console.log(formData);
             $.ajax({
                 type: "POST",
-                url: "/project/create",
+                url: "/studentgroups/CreateProject",
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=utf-8",  // Sending JSON
                 success: function (response) {
+                    
                     $("#MainContainer").html(response);
                 },
                 error: function (xhr) {

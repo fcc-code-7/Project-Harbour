@@ -1,19 +1,7 @@
 ﻿@model FYP.Web.ViewModels.ProjectViewModel
 @{
     ViewData["Title"] = "Projects";
-    var month = DateTime.Now.Month;
-    var year = DateTime.Now.Year;
-    var batch = "";
-    if (month > 2 && month < 6)
-    {
-        batch = "Fall " + (year + 1);
-    }
-    else
-    {
-        batch = "Spring " + year;
-
-    }
-
+   
 
 }
 
@@ -36,7 +24,7 @@
                             <div class="" style="min-height:100px">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
                                     <div class="p-8 ml-7 text-2xl font-bold">
-                                        <h1>Create Project</h1>
+                                        <h1>Edit</h1>
                                     </div>
 
                                 </div>
@@ -53,6 +41,8 @@
                                                                     <span class="input-group-text " id="basic-addon1"><i class="feather icon-user"></i></span>
                                                                 </div>
                                                                 <input type="text" class="form-control" id="code" placeholder="Enter code" value="@Model.code" asp-for="code" aria-describedby="basic-addon1" name="code" readonly required>
+                                                                <input type="text" class="form-control hidden" id="ProId" value="@Model.ProId" asp-for="ProId" aria-describedby="basic-addon1" name="ProId" readonly required>
+                                                                <input type="text" class="form-control hidden" id="companyID" value="@Model.companyID" asp-for="companyID" aria-describedby="basic-addon1" name="companyID" readonly required>
 
 
                                                             </div>
@@ -148,7 +138,7 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text " id="basic-addon3"><i class="feather icon-phone"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="batch" placeholder="Enter batch" value="@batch" asp-for="batch" aria-describedby="basic-addon1" name="batch" readonly required>
+                                                                <input type="text" class="form-control" id="batch" placeholder="Enter batch" value="@Model.batch" asp-for="batch" aria-describedby="basic-addon1" name="batch" readonly required>
 
                                                             </div>
                                                             <span asp-validation-for="batch" class="text-danger"></span>
@@ -393,19 +383,19 @@
 </style>
 <script>
     $(document).ready(function () {
-        $("#previousbtn").click(function () {
-            $.ajax({
-                url: '/project/projects',
-                type: "GET",
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function () {
+        // $("#previousbtn").click(function () {
+        //     $.ajax({
+        //         url: '/project/projects',
+        //         type: "GET",
+        //         success: function (response) {
+        //             $("#MainContainer").html(response);
+        //         },
+        //         error: function () {
 
-                }
-            });
+        //         }
+        //     });
 
-        });
+        // });
         $("#ProjectCategory").change(function () {
             var categoryval = $(this).val();
             if (categoryval === "others") {
@@ -418,8 +408,10 @@
         });
 
         $("#formsubmit").click(function (e) {
-            e.preventDefault();  // Prevent the default form submission
+            e.preventDefault();  // Prevent default form submission
             var formData = {
+                ProId: $("#ProId").val(),
+                companyID: $("#companyID").val(),
                 code: $("#code").val(),
                 supervisorname: $("#supervisorname").val(),
                 projectGroup: $("#projectGroup").val(),
@@ -441,18 +433,19 @@
 
             $.ajax({
                 type: "POST",
-                url: "/project/create",
+                url: "/project/EditProjects",
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=utf-8",  // Sending JSON
                 success: function (response) {
                     $("#MainContainer").html(response);
                 },
                 error: function (xhr) {
-                    // Handle the error
+                    // Handle error
                     console.log("Error: " + xhr.status + " - " + xhr.statusText);
                 }
             });
         });
+
 
     });
 </script>

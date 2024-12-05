@@ -27,33 +27,31 @@
         </div>
         <div class="content-body">
             <!-- Section 1 -->
-            <div class="mb-2 ">
-                <div class="p-6 bg-white text-black rounded-lg customheightcard" style="position:center">
+            <!-- Section 1 -->
+            <div class="">
+                <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
                     <!-- Column 1: -->
+                    <div class="" style="min-height:100px;">
+                        <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                            <div class=" text-2xl font-bold">
+                                <h1>
+                                    Projects
+                                </h1>
+                            </div>
 
-                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                        <div class="p-8 ml-7 text-2xl font-bold ">
-                            <h1>Projects</h1>
                         </div>
-
-                    </div>
-
-
                     @if (Model.projects == null || !Model.projects.Any())
                     {
-                        <div class="container mt-0 md:mt-5 lg:mt-5">
-                            <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
-                                <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                    <div class="card">
-                                        <div class="card-header text-center">
-                                            <h5 class="card-title">No Project Exists</h5>
-                                        </div>
-                                        <div class="card-body text-center mb-3">
-                                            <p>It looks like there are currently no projects available.</p>
-                                            <button class="btn btn-sm btn-primary ProjectCreate" id="btnClick">Create New Project</button>
-                                        </div>
+                        <button class="btn btn-sm btn-primary ProjectCreate" id="btnClick">Create New Project</button>
+                        <div class="container">
+                                <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+                                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                    <!-- Trash Icon -->
+                                    <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                    <!-- Text Below the Icon -->
+                                    <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Project Exist!</p>
 
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -64,57 +62,100 @@
 
                         @foreach (var item in Model.projects)
                         {
-                            <div class="row justify-content-center align-items-center " style="min-height: 50vh;">
+                            <div class="row justify-content-center align-items-center " style="min-height: 68vh;">
                                 <div class="col-12 col-md-6 col-sm-12 col-lg-6 ">
                                     <div class="card p-0">
-                                        <div class="card-header no-border">
-                                            <h5 class="card-title">@item.code</h5>
+                                            <div class="card-header no-border ">
+                                                <h5 class=" fs-5 fs-md-4 fs-lg-3">@item.code</h5>
+
+                                                @if (@item.Status == "Approved")
+                                            {
+                                                    <span title="Project Approved!" class="bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        Approved
+                                                    </span>
+                                            }
+                                            @if (@item.Status == "NotApproved")
+                                            {
+                                                    <span title="Cordinator didnt Approve the Project! Change it." class="bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                        <i class="fas fa-times-circle"></i>
+                                                        Not Approved
+                                                    </span>
+
+
+                                            }
+                                            @if (@item.Status == null)
+                                            {
+                                                    <span title="Cordinator didnt Approve yet!" class="bg-yellow-100 mx-1 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 justify-center">
+                                                        <i class="fas fa-hourglass-half"></i>
+                                                        Pending
+                                                    </span>
+
+
+                                            }
                                         </div>
-                                        <div class="card-body pt-0 ">
+                                        <div class=" card-body pt-0 " style="overflow-x: auto;">
                                             <div class="widget-49">
                                                 <div class="widget-49-title-wrapper">
-                                                    <div class="widget-49-date-warning">
-                                                        <span class="widget-49-date-day">@(counter = counter + 1)</span>
+                                                    <div style="background-color:aqua;" class="widget-49-date-warning">
+                                                        <span  class="widget-49-date-day">@(counter = counter + 1)</span>
+                                                       
                                                     </div>
                                                     <div class="widget-49-meeting-info">
-                                                        <span class="widget-49-pro-title">@item.Title</span>
-                                                        <span class="widget-49-meeting-time">Batch:@item.batch</span>
+                                                            <span class="widget-49-pro-title"><b>@item.Title</b></span>
+                                                        <span class="" style="color:#16a34a;">@item.batch</span>
                                                     </div>
                                                 </div>
-                                                <ol class="widget-49-meeting-points">
-                                                    <li class="widget-49-meeting-item"><span>Group:<span class="badge  badge-primary">@item.groupname</span></span></li>
-
-                                                    @if (@item.Status == "Approved")
-                                                    {
-                                                        <li class="widget-49-meeting-item">
-                                                            <span>
-                                                                Status:<span class="text-success">
-                                                                    Approved
-                                                                </span>
+                                                <table style="border-spacing: 0;">
+                                                    <tr>
+                                                        <td style="padding: 0; margin: 0;">
+                                                            <span class="text-black fw-bold">Group:</span>
+                                                            <u>   <span style="margin-left:1.9rem;" class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 ">@item.groupname</span></u>
+                                                        </td>
+                                                       @*  <td style="padding: 0; margin: 0;">
+                                                            <span style="margin-left:6rem;" class="text-black fw-bold ">Proposal Date:</span>
+                                                            <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300">
+                                                                @(item.Proposaldate != null ? item.Proposaldate.ToString("dd/MM/yy") : "N/A")
                                                             </span>
-                                                        </li>
-
-                                                    }
-                                                    else
-                                                    {
-                                                        <li class="widget-49-meeting-item">
-                                                            <span>
-                                                                Status:<span class="text-danger">
-                                                                    -
-                                                                </span>
+                                                        </td> *@
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 0; margin: 0;">
+                                                            <span class="widget-49-meeting-item fw-bold">Dept:</span>
+                                                                <u>   <span style="margin-left:2.5rem;" class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 ">@item.projectGroup</span></u>
+                                                        </td>
+                                                        @* <td style="padding: 0; margin: 0;">
+                                                            <span style="margin-left:6rem;" class="widget-49-meeting-item fw-bold ">Mid Date:</span>
+                                                            <span style="margin-left:2.4rem;" class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300">
+                                                                @(item.middate != null ? item.middate.ToString("dd/MM/yy") : "N/A")
                                                             </span>
-                                                        </li>
+                                                        </td> *@
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 0; margin: 0;">
+                                                            <span class="widget-49-meeting-item fw-bold">Supervisor:</span>
+                                                                <u>  <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 ">@item.supervisorname</span></u>
+                                                        </td>
+                                                        @* <td style="padding: 0; margin: 0;">
+                                                            <span style="margin-left:6rem;"  class="widget-49-meeting-item fw-bold ">Final Date:</span>
+                                                            <span style="margin-left:1.9rem;" class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300">
+                                                                <u>  @(item.finaldate != null ? item.finaldate.ToString("dd/MM/yy") : "N/A")</u>
+                                                            </span>
+                                                        </td> *@
+                                                    </tr>
+                                                    
+                                                </table>
 
-                                                    }
-
-
-                                                </ol>
+                                             
+                                              
                                                 <div class="widget-49-meeting-action">
                                                     @if (item.Status == "NotApproved")
                                                     {
-                                                        <a class="btn btn-sm btn-flash-border-warning EditClick" data-id="@item.Id">Edit</a>
+                                                            <a class="btn btn-sm btn-flash-border-warning " id="EditClicks" data-id="@item.ProId">Edit</a>
                                                     }
-                                                        <p class="btn btn-sm btn-flash-border-warning ViewAll" data-id="@item.code">DETAILS</p>
+                                                       
+                                                        <p class="btn btn-sm btn-flash-border-warning " id="Details" data-id="@item.code">DETAILS</p>
+                                                        <p class="btn btn-sm btn-flash-border-warning " id="ChangeTitleForm" data-id="@item.code">DETAILS</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -141,80 +182,83 @@
     <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
     <!-- END: Page JS-->
 }
-<script>
-    $(document).ready(function () {
-        // Event delegation for dynamically loaded elements
-        $(document).on('click', '#btnClick', function () {
-            $.ajax({
-                url: '/Project/Create',
-                type: "GET",
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error: " + status + " - " + error);
-                }
+    <script>
+        $(document).ready(function () {
+            // Event delegation for dynamically loaded elements
+            $(document).on('click', '#btnClick', function (e) {
+                e.preventDefault();  // Prevent default form submission or link navigation
+                $.ajax({
+                    url: '/Project/Create',
+                    type: "GET",
+                    success: function (response) {
+                        $("#MainContainer").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: " + status + " - " + error);
+                    }
+                });
             });
-        });
 
-        $(document).on('click', '.ViewAll', function () {
-            var Code = $(this).data('id');
-            $.ajax({
-                url: '/project/projectdetails',
-                type: "GET",
-                data: { code: Code },
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function () {
-                    // handle error
-                }
+            $(document).on('click', '#Details', function () {
+                var Code = $(this).data('id');
+                $.ajax({
+                    url: '/project/projectdetails',
+                    type: "GET",
+                    data: { code: Code },
+                    success: function (response) {
+                        $("#MainContainer").html(response);
+                    },
+                    error: function () {
+                        console.log("Error loading project details.");
+                    }
+                });
             });
-        });
-        $(document).on('click', '.Submission', function () {
-            $.ajax({
-                url: '/project/projectlist',
-                type: "GET",
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error: " + status + " - " + error);
-                }
-            });
-        });
 
-        $(document).on('click', '.EditClick', function () {
-            var ID = $(this).data('id');
-            $.ajax({
-                url: '/project/edit',
-                type: "GET",
-                data: { id: ID },
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error: " + status + " - " + error);
-                }
+            $(document).on('click', '.Submission', function () {
+                $.ajax({
+                    url: '/project/projectlist',
+                    type: "GET",
+                    success: function (response) {
+                        $("#MainContainer").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: " + status + " - " + error);
+                    }
+                });
+            });
+
+            // Edit Project
+            $(document).on('click', '#EditClicks', function () {
+                var ID = $(this).data('id');
+                $.ajax({
+                    url: '/project/EditProjects',
+                    type: "GET",
+                    data: { id: ID },
+                    success: function (response) {
+                        $("#MainContainer").html("");
+                        $("#MainContainer").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: " + status + " - " + error);
+                    }
+                });
+            });
+
+            $(document).on('click', '#ChangeTitleForm', function () {
+                $.ajax({
+                    url: '/project/projectlist',
+                    type: "GET",
+                    success: function (response) {
+                        $("#MainContainer").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: " + status + " - " + error);
+                    }
+                });
             });
         });
-
-        $(document).on('click', '#ChangeTitleForm', function () {
-            $.ajax({
-                url: '/project/projectlist',
-                type: "GET",
-                success: function (response) {
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error: " + status + " - " + error);
-                }
-            });
-        });
-    });
-
-</script>
-<style>
+    </script>
+    <style>
 
     body {
         overflow: hidden;
@@ -253,7 +297,7 @@
         word-wrap: break-word !important;
         background-color: #ffffff !important;
         background-clip: border-box !important;
-        border: 1px solid #e6e4e9 !important;
+        border: 1px solid #3b0764 !important;
         border-radius: 8px !important;
     }
 
@@ -384,7 +428,7 @@
             align-items: center !important;
             justify-content: center !important;
             flex-direction: column !important;
-            background-color: floralwhite !important;
+            background-color: #fef3c7 !important;
             width: 4rem !important;
             height: 4rem !important;
             border-radius: 50% !important;

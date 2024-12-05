@@ -29,5 +29,6 @@ namespace FYP.Db
         public DbSet<RoomInCharge> RoomInCharge { get; set; }
         public DbSet<ChangeTitleForm> changeTitleForms { get; set; }
         public DbSet<ChangeSupervisorForm> changeSupervisorForms { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
     }
 }

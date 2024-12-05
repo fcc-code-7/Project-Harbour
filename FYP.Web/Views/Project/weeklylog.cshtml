@@ -15,15 +15,21 @@
                 <section class="users-list-wrapper">
                     <div class="users-list-filter px-1">
                         <!-- Section 1 -->
-                        <div class="mb-2">
-                            <div class="p-6 bg-white text-black rounded-lg">
+                         <div class=" ">
+                            <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
                                 <!-- Column 1: -->
 
-                                <div class="w-full flex sm:flex-col lg:flex-row gap-4">
-                                    <div class="p-8 text-2xl font-bold">
-                                        <h1>Weekly Logs</h1>
+                                <div class="" style="min-height:100px;" id="container">
+                                    <!-- Left content (div1) -->
+                                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                        <div class=" text-2xl font-bold">
+                                            <h1>
+                                                Weekl Logs
+                                            </h1>
+                                        </div>
+
                                     </div>
-                                    
+                                   
                                 </div>
                                 @if (Model.CurrentProject != null)
                                 {
@@ -192,40 +198,32 @@
                                     }
                                     else
                                     {
-                                        <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                            <div class="row justify-content-center align-items-center w-100">
-                                                <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                    <div class="card">
-                                                        <div class="card-header d-flex justify-content-center">
-                                                            <h5 class="card-title "><i class="feather icon-alert-triangle text-danger"></i> Not Approved</h5>
-                                                        </div>
-                                                        <div class="card-body text-center mb-3">
-                                                            <p>It looks like your project not <span class="text-danger"> Approved </span> yet!</p>
-                                                        </div>
-                                                    </div>
+                                       <div class="container">
+                                            <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                    <!-- Warning Icon -->
+                                                    <i class="fa fa-exclamation-triangle " style="font-size: 10rem; display: block; color:#fbbf24"></i>
+                                                    <!-- Text Below the Icon -->
+                                                    <p class="text-warning fw-bold text-center colorChange" style="font-size: 1.5rem;">Your Project needs Approval!</p>
                                                 </div>
                                             </div>
                                         </div>
+
+
                                     }
                                 }
                                 else
                                 {
-                                    <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
-                                        <div class="row justify-content-center align-items-center w-100">
-                                            <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                                <div class="card">
-                                                    <div class="card-header text-center">
-                                                        <h5 class="card-title">No Project Exists</h5>
-                                                    </div>
-                                                    <div class="card-body text-center mb-3">
-                                                        <p>It looks like there are currently no projects available.</p>
-                                                        <button class="btn btn-sm btn-primary ProjectCreate" id="btnsClick">Create New Project</button>
-                                                    </div>
-                                                </div>
+                                    <div class="container">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                <!-- Trash Icon -->
+                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                <!-- Text Below the Icon -->
+                                                <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Project Exist!</p>
                                             </div>
                                         </div>
                                     </div>
-
                                 }
                             </div>
                         </div>

@@ -30,12 +30,16 @@ namespace FYP.Web.Controllers
         private readonly IRoomService _roomService;
         private readonly IRoomInChargeService _roomInChargeService;
         private readonly IEvaluationService _evaluationService;
+        private readonly ICompanyService _companyService;
+
         private readonly IEvaluationCriteriaService _evaluationCriteriaService;
 
-        public StudentGroupsController(IEvaluationCriteriaService evaluationCriteriaService ,IRoomAllotmentService roomAllotmentService, IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public StudentGroupsController(ICompanyService companyService, IEvaluationCriteriaService evaluationCriteriaService, IRoomAllotmentService roomAllotmentService, IEvaluationService evaluationService, IRoomInChargeService roomInChargeService, IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
+            _companyService = companyService;
+
             _projectService = projectService;
             _proposalDefenseService = proposalDefense;
             _studentService = studentService;
@@ -48,24 +52,40 @@ namespace FYP.Web.Controllers
             _evaluationService = evaluationService;
             _evaluationCriteriaService = evaluationCriteriaService;
         }
-        public async Task<IActionResult> StudentGroups(string istrue)
+        public async Task<IActionResult> StudentGroups(string istrue, string ViewValue)
         {
+            if (User.IsInRole("Supervisor"))
+            {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
+            }
+            var studentGroups = new List<StudentGroup>();
             var model = new StudentGroupViewModel();
+            if (User.IsInRole("Supervisor"))
+            {
             var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             var Groups = await _studentGroupService.GetAllAsync();
-            var studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
+             studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
+            }
+            if (User.IsInRole("Cordinator"))
+            {
+                var Groups = await _studentGroupService.GetAllAsync();
+                studentGroups = Groups.ToList();
+            }
             if (istrue != "True")
             {
                 if (studentGroups.Any())
                 {
                     var fetchLastBatch = studentGroups.LastOrDefault().Batch;
 
-                if (fetchLastBatch != null)
-                {
+                    if (fetchLastBatch != null)
+                    {
 
-                    model.Batch = fetchLastBatch;
-                    return RedirectToAction("StudentGroupbyBatch", "StudentGroups", new { batch = fetchLastBatch });
-                }
+                        model.Batch = fetchLastBatch;
+                        return RedirectToAction("StudentGroupbyBatch", "StudentGroups", new { batch = fetchLastBatch, Value = ViewValue });
+                    }
                 }
 
             }
@@ -101,17 +121,37 @@ namespace FYP.Web.Controllers
 
             return PartialView(model);
         }
-        public async Task<IActionResult> StudentGroupbyBatch(string batch)
+        public async Task<IActionResult> StudentGroupbyBatch(string batch, string Value)
+        {
+            if (User.IsInRole("Supervisor"))
             {
+            if (Value != null)
+            {
+                ViewBag.success = Value;
+            }
+
+            }
             if (batch == "All Groups")
             {
                 return RedirectToAction("StudentGroups", "StudentGroups", new { istrue = "True" });
             }
-            var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
+            var studentGroups = new List<StudentGroup>();
+            var distinctBatches = new List<string>();
+            var distinctYears = new List<string>();
             var Groups = await _studentGroupService.GetAllAsync();
-            var studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id && x.Batch == batch).ToList();
-            var distinctBatches = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Batch).Distinct().ToList();
-            var distinctYears = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Year).Distinct().ToList();
+            var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
+            if (User.IsInRole("Supervisor"))
+            {
+                studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id && x.Batch == batch).ToList();
+                 distinctBatches = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Batch).Distinct().ToList();
+                 distinctYears = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Year).Distinct().ToList();
+            }
+            if (User.IsInRole("Cordinator"))
+            {
+                studentGroups = Groups.Where(x =>  x.Batch == batch).ToList();
+                 distinctBatches = Groups.Select(x => x.Batch).Distinct().ToList();
+                 distinctYears = Groups.Select(x => x.Year).Distinct().ToList();
+            }
             var project = await _projectService.GetAllAsync();
             var model = new StudentGroupViewModel()
             {
@@ -149,6 +189,82 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StudentGroups([FromBody] StudentGroupViewModel model)
         {
+            var Users = await _userService.GetAllAsync();
+            if (model.student1LEmail == model.student2Email || model.student1LEmail == model.student3Email || model.student2Email == model.student3Email)
+            {
+                return RedirectToAction("Create", "supervisor", new { batch = model.Batch, ViewValue = "Same" , stu1 = model.student1LEmail , stu2 = model.student2Email , stu3 = model.student3Email, groupName = model.Name });
+
+            }
+            if (Users.Any())
+            {
+                // Optimize lookup using HashSet for faster lookups
+                var userEmails = Users.Select(x => x.Email).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                // Initialize registeredMembers list and string variables for emails
+                var registeredMembers = new List<string>();
+
+                // Initialize stu1, stu2, stu3 as the current emails
+                string stu1 = model.student1LEmail;
+                string stu2 = model.student2Email;
+                string stu3 = model.student3Email;
+
+                // Check if the Leader (stu1) is registered
+                if (userEmails.Contains(model.student1LEmail))
+                {
+                    registeredMembers.Add($"Leader ({model.student1LEmail})");
+                    stu1 = null; // Set to null if Leader is already registered
+                }
+                else
+                {
+                    stu1 = model.student1LEmail; // Keep the original email if not registered
+                }
+
+                // Check if Member 1 (stu2) is registered
+                if (userEmails.Contains(model.student2Email))
+                {
+                    registeredMembers.Add($"Member 1 ({model.student2Email})");
+                    stu2 = null; // Set to null if Member 1 is already registered
+                }
+                else
+                {
+                    stu2 = model.student2Email; // Keep the original email if not registered
+                }
+
+                // Check if Member 2 (stu3) is registered
+                if (!string.IsNullOrEmpty(model.student3Email) && userEmails.Contains(model.student3Email))
+                {
+                    registeredMembers.Add($"Member 2 ({model.student3Email})");
+                    stu3 = null; // Set to null if Member 2 is already registered
+                }
+                else
+                {
+                    stu3 = model.student3Email; // Keep the original email if not registered
+                }
+
+                // If any registered members exist, construct the message and proceed
+                if (registeredMembers.Any())
+                {
+                    var viewValue = registeredMembers.Count == 3 ? "Registered1" : "Registered2";
+                    var registeredMessage = string.Join(", ", registeredMembers);
+
+                    // Pass the message to the view and all email values, including nulls for registered members
+                    var parameters = new Dictionary<string, object>
+        {
+            { "ViewValue", viewValue },
+            { "groupName", model.Name },
+            { "batch", model.Batch },
+            { "registeredMessage", registeredMessage },
+            { "stu1", stu1 },
+            { "stu2", stu2 },
+            { "stu3", stu3 }
+        };
+
+                    return RedirectToAction("Create", "supervisor", parameters);
+                }
+            }
+
+            // Proceed if no duplicates
+
             if (model == null)
             {
                 return Json(new { success = false, message = "Invalid data!" });
@@ -160,7 +276,8 @@ namespace FYP.Web.Controllers
                 Email = model.student1LEmail,
                 UserName = model.student1LEmail,
                 Designation = "Student",
-                Role = "Student"
+                Role = "Student",
+                ActiveState = "Active",
             };
 
             var result1 = await _userManager.CreateAsync(student1, "Bahria123@@");
@@ -183,7 +300,8 @@ namespace FYP.Web.Controllers
                 Email = model.student2Email,
                 UserName = model.student2Email,
                 Designation = "Student",
-                Role = "Student"
+                Role = "Student",
+                ActiveState = "Active",
             };
 
             var result2 = await _userManager.CreateAsync(student2, "Bahria123@@");
@@ -223,7 +341,8 @@ namespace FYP.Web.Controllers
                     Email = model.student3Email,
                     UserName = model.student3Email,
                     Designation = "Student",
-                    Role = "Student"
+                    Role = "Student",
+                    ActiveState = "Active",
                 };
 
                 var result3 = await _userManager.CreateAsync(student3, "Bahria123@@");
@@ -250,15 +369,56 @@ namespace FYP.Web.Controllers
             await _studentService.AddAsync(studentData2);
             await _studentGroupService.AddAsync(usergroup);
 
-            return RedirectToAction("StudentGroups", "studentgroups");
+            return RedirectToAction("StudentGroups", "studentgroups", new { batch = model.Batch, ViewValue = "Added" });
         }
 
 
 
         //EDIT GROUP GET
         [HttpGet]
-        public async Task<IActionResult> EditGroup(string id)
+        public async Task<IActionResult> EditGroup(string id, string registeredMessage, string ViewValue, string groupName, string stu1, string stu2, string stu3, string batch)
         {
+            if (ViewValue != null)
+            {
+                // Set the success message in ViewBag
+                ViewBag.success = ViewValue;
+
+                // Ensure the registered message is initialized properly
+                var registeredParts = new List<string>();
+
+                // Check if the email is registered (not null) and build the message
+                if (string.IsNullOrEmpty(stu1))
+                    registeredParts.Add($"Leader");
+                if (string.IsNullOrEmpty(stu2))
+                    registeredParts.Add($"Member 1");
+                if (string.IsNullOrEmpty(stu3))
+                    registeredParts.Add($"Member 2");
+
+                // Join the parts into a single message
+                ViewBag.registeredMessage = string.Join(", ", registeredParts);
+
+                // Initialize the model
+                var modelNew = new StudentGroupViewModel
+                {
+                    Name = groupName,
+                    Batch = batch,
+                    student1LEmail = stu1,
+                    student2Email = stu2,
+                    student3Email = stu3
+                };
+
+                // Clear the appropriate email field if it's null (unregistered)
+                if (stu1 == null)
+                    modelNew.student1LEmail = ""; // Clear if null
+                if (stu2 == null)
+                    modelNew.student2Email = ""; // Clear if null
+                if (stu3 == null)
+                    modelNew.student3Email = ""; // Clear if null
+
+                // Return the partial view with the model
+                return PartialView(modelNew);
+            }
+
             // Fetch the group and related student data by ID
             var group = _studentGroupService.GetAllAsync().Result.Where(x => x.ID.ToString() == id).FirstOrDefault();
             if (group == null)
@@ -285,6 +445,79 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> EditGroup([FromBody] StudentGroupViewModel model)
         {
+            var Users = await _userService.GetAllAsync();
+            if (model.student1LEmail == model.student2Email || model.student1LEmail == model.student3Email || model.student2Email == model.student3Email)
+            {
+                return RedirectToAction("editgroup", "studentgroups", new { batch = model.Batch, ViewValue = "Same", stu1 = model.student1LEmail, stu2 = model.student2Email, stu3 = model.student3Email, groupName = model.Name });
+
+            }
+            if (Users.Any())
+            {
+                // Optimize lookup using HashSet for faster lookups
+                var userEmails = Users.Select(x => x.Email).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                // Initialize registeredMembers list and string variables for emails
+                var registeredMembers = new List<string>();
+
+                // Initialize stu1, stu2, stu3 as the current emails
+                string stu1 = model.student1LEmail;
+                string stu2 = model.student2Email;
+                string stu3 = model.student3Email;
+
+                // Check if the Leader (stu1) is registered
+                if (userEmails.Contains(model.student1LEmail))
+                {
+                    registeredMembers.Add($"Leader ({model.student1LEmail})");
+                    stu1 = null; // Set to null if Leader is already registered
+                }
+                else
+                {
+                    stu1 = model.student1LEmail; // Keep the original email if not registered
+                }
+
+                // Check if Member 1 (stu2) is registered
+                if (userEmails.Contains(model.student2Email))
+                {
+                    registeredMembers.Add($"Member 1 ({model.student2Email})");
+                    stu2 = null; // Set to null if Member 1 is already registered
+                }
+                else
+                {
+                    stu2 = model.student2Email; // Keep the original email if not registered
+                }
+
+                // Check if Member 2 (stu3) is registered
+                if (!string.IsNullOrEmpty(model.student3Email) && userEmails.Contains(model.student3Email))
+                {
+                    registeredMembers.Add($"Member 2 ({model.student3Email})");
+                    stu3 = null; // Set to null if Member 2 is already registered
+                }
+                else
+                {
+                    stu3 = model.student3Email; // Keep the original email if not registered
+                }
+
+                // If any registered members exist, construct the message and proceed
+                if (registeredMembers.Any())
+                {
+                    var viewValue = registeredMembers.Count == 3 ? "Registered1" : "Registered2";
+                    var registeredMessage = string.Join(", ", registeredMembers);
+
+                    // Pass the message to the view and all email values, including nulls for registered members
+                    var parameters = new Dictionary<string, object>
+        {
+            { "ViewValue", viewValue },
+            { "groupName", model.Name },
+            { "batch", model.Batch },
+            { "registeredMessage", registeredMessage },
+            { "stu1", stu1 },
+            { "stu2", stu2 },
+            { "stu3", stu3 }
+        };
+
+                    return RedirectToAction("editgroup", "studentgroups", parameters);
+                }
+            }
 
             var group = _studentGroupService.GetAllAsync().Result.Where(x => x.ID.ToString() == model.groupId).FirstOrDefault();
             if (group == null)
@@ -320,7 +553,7 @@ namespace FYP.Web.Controllers
             var result = _studentGroupService.UpdateAsync(group);
             if (result != null)
             {
-                return RedirectToAction("StudentGroups", "studentgroups");
+                return RedirectToAction("StudentGroups", "studentgroups", new { batch = group.Batch, ViewValue = "Updated" });
 
             }
             return Json(new { success = false, message = "Invalid data!" });
@@ -906,7 +1139,7 @@ namespace FYP.Web.Controllers
             var fetchRoomIncharge = RoomIncharge.FirstOrDefault(x => x.ID == incharge.Id);
             var fetchExistingRoomIncharge = RoomIncharge.FirstOrDefault(x => x.Email == incharge.RoomInChargeEmail);
             var model = new FYPCommitteViewModel();
-            if (incharge.RoomInChargeEmail==null && incharge.RoomInChargeName == null || incharge.RoomInChargeEmail == null || incharge.RoomInChargeName == null)
+            if (incharge.RoomInChargeEmail == null && incharge.RoomInChargeName == null || incharge.RoomInChargeEmail == null || incharge.RoomInChargeName == null)
             {
                 return RedirectToAction("RoomIncharges", "StudentGroups", new { ViewValue = "Null" });
 
@@ -1207,7 +1440,7 @@ namespace FYP.Web.Controllers
             return Json(new { success = true });
         }
 
-        public async Task<IActionResult> GroupEvaluation(string groupId ,  string ViewValue , string EvalName)
+        public async Task<IActionResult> GroupEvaluation(string groupId, string ViewValue, string EvalName)
         {
             if (ViewValue != null)
             {
@@ -1218,17 +1451,17 @@ namespace FYP.Web.Controllers
             var committees = await _fYPCommitteService.GetAllAsync();
             // Filter committees based on AppointedDate and logged-in user
             var filteredCommittees = committees.Where
-                                                           (c=>c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
+                                                           (c => c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
             var viewModel = new EvaluationMarksViewModel();
 
-                var groups = await _studentGroupService.GetAllAsync();
+            var groups = await _studentGroupService.GetAllAsync();
             if (filteredCommittees != null)
             {
                 var filteredGroupIds = filteredCommittees.Select(c => c.groupID).Distinct().ToList();
                 var filteredGroups = groups.Where(g => filteredGroupIds.Contains(g.ID.ToString())).ToList();
                 viewModel.Groups = filteredGroups;
             }
-            if (groupId !=null)
+            if (groupId != null)
             {
                 var evaluations = await _evaluationService.GetAllAsync();
                 var filteredEvaluations = filteredCommittees
@@ -1239,10 +1472,10 @@ namespace FYP.Web.Controllers
 
                 var fetchGroup = groups.Where(x => x.ID.ToString() == groupId).FirstOrDefault();
                 var userGet = await _userService.GetAllAsync();
-                viewModel.stu1 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student1LID).FirstOrDefault().Name;
-                viewModel.stu2 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student2ID).FirstOrDefault().Name;
-                viewModel.stu3 = userGet.Where(x=>x.Id.ToString() == fetchGroup.student3ID).FirstOrDefault().Name;
-                if (groupId != null )
+                viewModel.stu1 = userGet.Where(x => x.Id.ToString() == fetchGroup.student1LID).FirstOrDefault().Name;
+                viewModel.stu2 = userGet.Where(x => x.Id.ToString() == fetchGroup.student2ID).FirstOrDefault().Name;
+                viewModel.stu3 = userGet.Where(x => x.Id.ToString() == fetchGroup.student3ID).FirstOrDefault().Name;
+                if (groupId != null)
                 {
                     var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
 
@@ -1275,7 +1508,7 @@ namespace FYP.Web.Controllers
         {
             // Fetch the record from the database
             var EvaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
-            var record = EvaluationCriteria.FirstOrDefault(e => e.GId == groupId && e.EvalName == evalName );
+            var record = EvaluationCriteria.FirstOrDefault(e => e.GId == groupId && e.EvalName == evalName);
 
             if (record != null && record.SubmissionTime.HasValue)
             {
@@ -1299,7 +1532,7 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignEvaluationMarks([FromBody] EvaluationMarksViewModel viewModel)
         {
-           
+
 
             // Store the question marks in an array and calculate TotalMarks
             var questionMarks = new string[] { viewModel.qno1, viewModel.qno2, viewModel.qno3,
@@ -1385,24 +1618,59 @@ namespace FYP.Web.Controllers
             }
         }
 
-
         [HttpPost]
         public async Task<IActionResult> FilterGroups(string GroupWord, string Batch)
         {
             var model = new StudentGroupViewModel();
-            var currentUserId = _userManager.GetUserId(User);  // Get the current user ID
-
-            // Fetch all groups
+            var filteredGroups = new List<StudentGroup>();
             var groups = await _studentGroupService.GetAllAsync();
 
-            // If GroupWord is empty, we only filter by SupervisorID and Batch
-            var filteredGroups = groups
-                .Where(g => g.SupervisorID == currentUserId) // Filter by SupervisorID
-                .Where(g => string.IsNullOrWhiteSpace(GroupWord) || g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) // If GroupWord is not empty, filter by group name
-                .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // If Batch is selected, filter by Batch
-                .ToList();
+            // Determine if GroupWord starts with an alphabet or a number
+            bool startsWithAlphabet = !string.IsNullOrWhiteSpace(GroupWord) && char.IsLetter(GroupWord[0]);
 
-            // Get project details
+            // Fetch all user details upfront for filtering by names
+            var allUsers = await _userService.GetAllAsync();
+
+            if (User.IsInRole("Supervisor"))
+            {
+                var currentUserId = _userManager.GetUserId(User);
+
+                // Filter groups
+                filteredGroups = groups
+                    .Where(g => g.SupervisorID == currentUserId) // Filter by supervisor ID
+                    .Where(g =>
+                        string.IsNullOrWhiteSpace(GroupWord) ||
+                        (startsWithAlphabet
+                            ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
+                            : // Search by LeaderName, Member1, or Member2 resolved from their IDs
+                              allUsers.Any(u =>
+                                  (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                                  (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                                  (u.Id == g.student3ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase))))
+                    )
+                    .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // Filter by Batch
+                    .ToList();
+            }
+
+            if (User.IsInRole("Cordinator"))
+            {
+                // Filter groups
+                filteredGroups = groups
+                    .Where(g =>
+                        string.IsNullOrWhiteSpace(GroupWord) ||
+                        (startsWithAlphabet
+                            ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
+                            : // Search by LeaderName, Member1, or Member2 resolved from their IDs
+                              allUsers.Any(u =>
+                                  (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                                  (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                                  (u.Id == g.student3ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase))))
+                    )
+                    .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // Filter by Batch
+                    .ToList();
+            }
+
+            // Fetch project details
             var project = await _projectService.GetAllAsync();
 
             var studentGroupViewModels = new List<StudentGroupViewModel>();
@@ -1414,7 +1682,6 @@ namespace FYP.Web.Controllers
                 var member2Task = _userService.GetByIdAsync(g.student3ID);
                 var supervisorTask = _userManager.FindByIdAsync(g.SupervisorID);
 
-                // Prepare tasks to fetch user details
                 await Task.WhenAll(leaderTask, member1Task, member2Task, supervisorTask);
 
                 var leader = await leaderTask;
@@ -1439,12 +1706,9 @@ namespace FYP.Web.Controllers
                     Year = g.Year,
                     projectname = project.Where(p => p.projectGroup == g.Name).Select(p => p.Title).FirstOrDefault(),
 
-                    // Fetching member names
                     LeaderName = leader?.Email ?? "Not Found",
                     member1 = member1?.Email ?? "Not Found",
                     Member2 = member2?.Email ?? "Not Found",
-
-                    // Fetching supervisor name
                     supervisorname = supervisor?.Name ?? "Not Found"
                 });
             }
@@ -1457,8 +1721,90 @@ namespace FYP.Web.Controllers
 
 
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteGroup(string id)
+        {
+            var group = await _studentGroupService.GetAllAsync();
+            var getGroup = group.FirstOrDefault(x => x.ID.ToString() == id);
+            if (getGroup.student1LID != null)
+            {
+                _userService.DeleteAsync(getGroup.student1LID);
+            }
+            if (getGroup.student2ID != null)
+            {
+                _userService.DeleteAsync(getGroup.student2ID);
+            }
+            if (getGroup.student3ID != null)
+            {
+                _userService.DeleteAsync(getGroup.student3ID);
+            }
+            var result = _studentGroupService.DeleteAsync(id);
+            if (result.IsCompletedSuccessfully)
+            {
+                return RedirectToAction("studentgroups", "StudentGroups", new { ViewValue = "Deleted" });
+            }
+            else
+            {
+                return RedirectToAction("studentgroups", "StudentGroups", new { ViewValue = "Failed" });
+            }
+        }
+
+        //Project
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProject([FromBody] ProjectViewModel model)
+        {
+            if (model.companyName != null)
+            {
+                var company = new Company()
+                {
+                    Name = model.companyName,
+                    MentorEmail = model.mentoremail,
+                    MentorName = model.companyMentor,
+                    MentorTelephone = model.mentorcontact
+                };
+
+                await _companyService.AddAsync(company);
+            }
+            var companyId = _companyService.GetAllAsync().Result.Where(x => x.Name == model.companyName).FirstOrDefault().ID;
+            var group = _studentGroupService.GetAllAsync().Result.Where(x => x.Name == model.groupname).FirstOrDefault().ID;
+
+            var project = new Project()
+            {
+                code = model.code,
+                companyID = companyId.ToString(),
+                ExpectedResults = model.ExpectedResults,
+                objectives = model.objectives,
+                ProjectCategory = model.ProjectCategory,
+                Others = model.Others,
+                projectGroup = model.projectGroup,
+                Specialization = model.Specialization,
+                Tools = model.Tools,
+                Summary = model.Summary,
+                Title = model.Title,
+                groupId = group.ToString(),
+                batch = model.batch.ToString(),
+                TotalMarks = 0,
+                changeTitleFormStatus = model.changeTitleFormStatus,
+            };
+            if (model.Others == "")
+            {
+                project.Others = "N/A";
+            }
+            else
+            {
+                project.Others = model.Others;
+            }
+            var result = _projectService.AddAsync(project);
+
+            if (result != null)
+            {
+                return RedirectToAction("Projects", "Project");
+            }
+            return Json(new { success = false, message = "Invalid data!" });
 
 
+        }
         public async Task<IActionResult> DownloadExcel(string Batch, string Evaluation)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;

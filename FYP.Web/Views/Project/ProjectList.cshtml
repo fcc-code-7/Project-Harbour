@@ -28,45 +28,56 @@
         <div class="content-body">
             <!-- Section 1 -->
 
-            <div class="mb-2 ">
-                <div class="p-6 bg-white text-black rounded-lg customheightcard" >
+            <div class=" ">
+                <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
                     <!-- Column 1: -->
 
-                    <div class="w-full flex sm:flex-col lg:flex-row gap-4">
-                        <div class="p-8 text-2xl font-bold">
-                            <h1>Submissions</h1>
+                    <div class="" style="min-height:100px;" id="container">
+                        <!-- Left content (div1) -->
+                        <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                            <div class=" text-2xl font-bold">
+                                <h1>
+                                    Submissions
+                                </h1>
+                            </div>
+
                         </div>
-                        
+
                     </div>
-                        @if (Model.CurrentProject != null)
+                    @if (Model.CurrentProject != null)
+                    {
+
+
+                        @if (Model.Proposal != null && Model.final != null && Model.mid != null && Model.Status == "Approved")
                         {
+                            <div class="container ">
 
-
-                            @if (Model.Proposal != null && Model.final != null && Model.mid != null && Model.Status == "Approved")
-                            {
-                                <div class="container my-5">
-
-                                    <input type="hidden" value="@Model.code" id="code" />
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle text-center w-100">
-                                            <thead>
-                                                <tr>
-                                                    <th>Type</th>
-                                                    <th>Remarks</th>
-                                                    <th>Total Marks</th>
-                                                    <th>Submission</th>
-                                                    <th>Delete</th>
-                                                    <th>Last Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if (Model.Proposal != null && Model.Proposalmarks != null && Model.Proposaldate != null)
+                                <input type="hidden" value="@Model.code" id="code" />
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle text-center w-100 table-bordered-custom">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Remarks</th>
+                                                <th>Total Marks</th>
+                                                <th>Submission</th>
+                                                @if (User.IsInRole("Student"))
                                                 {
-                                                    <tr>
-                                                        <td>Proposal</td>
-                                                        <td>@Model.Proposal</td>
-                                                        <td>@Model.Proposalmarks</td>
-                                                        <td>
+                                                    <th>Delete</th>
+                                                }
+                                                <th>Last Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Proposal != null && Model.Proposalmarks != null && Model.Proposaldate != null)
+                                            {
+                                                <tr>
+                                                    <td>Proposal</td>
+                                                    <td>@Model.Proposal</td>
+                                                    <td>@Model.Proposalmarks</td>
+                                                    <td>
+                                                        @if (User.IsInRole("Student"))
+                                                        {
                                                             @if (string.IsNullOrEmpty(Model.PropPPT))
                                                             {
                                                                 <label for="ProposalpptUpload" class="btn btn-sm btn-danger" id="PropPPTLabel">PPT</label>
@@ -88,43 +99,65 @@
                                                                 <a href="@Model.PropReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
 
                                                             }
-
-                                                        </td>
-                                                        <td>
-                                                            @if (!string.IsNullOrEmpty(Model.PropPPT) || !string.IsNullOrEmpty(Model.PropReport))
+                                                        }
+                                                        @if (User.IsInRole("Supervisor"))
+                                                        {
+                                                            @if (string.IsNullOrEmpty(Model.PropPPT) && string.IsNullOrEmpty(Model.PropReport))
                                                             {
-                                                                <span>
-                                                                    @if (!string.IsNullOrEmpty(Model.PropPPT))
-                                                                    {
-                                                                        <button type="button" class="btn btn-sm PropdeletePPTUpload bgdelete " data-id="@Model.PropPPT">Delete PPT</button>
-
-                                                                    }
-                                                                    @if (!string.IsNullOrEmpty(Model.PropReport))
-                                                                    {
-                                                                        <button type="button" class="btn btn-sm ProdeleteReportUpload bgdelete" data-id="@Model.PropReport">Delete Report</button>
-
-                                                                    }
-
-                                                                </span>
+                                                                                                                                                                                                                                                              <p style="color:#dc2626">Not Uploaded</p>
                                                             }
                                                             else
                                                             {
-                                                                <span style="font-size:25px"> - </span>
+                                                                <a href="@Model.PropPPT" download="Proposal" class="btn bg btn-sm "><i class="fa fa-download"></i> PPT</a>
                                                             }
-                                                        </td>
+                                                            @if (!string.IsNullOrEmpty(Model.PropReport))
+                                                            {
+                                                                <a href="@Model.PropReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
+                                                            }
+                                                        }
 
-                                                        <td>
-                                                            <span class="badge bg-success rounded-pill">@Model.Proposaldate.ToString("dd/MM/yyyy")</span>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                                @if (Model.mid != null && Model.midmarks != null && Model.middate != null)
-                                                {
-                                                    <tr>
-                                                        <td>Mid</td>
-                                                        <td>@Model.mid</td>
-                                                        <td>@Model.midmarks</td>
-                                                        <td>
+
+                                                    </td>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                        
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(Model.PropPPT) || !string.IsNullOrEmpty(Model.PropReport))
+                                                        {
+                                                            <span>
+                                                                @if (!string.IsNullOrEmpty(Model.PropPPT))
+                                                                {
+                                                                    <button type="button" class="btn btn-sm PropdeletePPTUpload bgdelete " data-id="@Model.PropPPT">Delete PPT</button>
+
+                                                                }
+                                                                @if (!string.IsNullOrEmpty(Model.PropReport))
+                                                                {
+                                                                    <button type="button" class="btn btn-sm ProdeleteReportUpload bgdelete" data-id="@Model.PropReport">Delete Report</button>
+
+                                                                }
+
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="font-size:25px"> - </span>
+                                                        }
+                                                    </td>
+                                                    }
+                                                    <td>
+                                                        <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.Proposaldate.ToString("dd/MM/yyyy")</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.mid != null && Model.midmarks != null && Model.middate != null)
+                                            {
+                                                <tr>
+                                                    <td>Mid</td>
+                                                    <td>@Model.mid</td>
+                                                    <td>@Model.midmarks</td>
+                                                    <td>
+                                                        @if (User.IsInRole("Student"))
+                                                        {
                                                             @if (string.IsNullOrEmpty(Model.MidPPT))
                                                             {
                                                                 <label for="MidpptUpload" class="btn btn-sm btn-danger" id="MidPPTLabel">PPT</label>
@@ -146,42 +179,64 @@
                                                             {
                                                                 <a href="@Model.MidReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
                                                             }
-                                                        </td>
-                                                        <td>
-                                                            @if (!string.IsNullOrEmpty(Model.MidPPT) || !string.IsNullOrEmpty(Model.MidReport))
+                                                        }
+                                                        @if (User.IsInRole("Supervisor"))
+                                                        {
+                                                            @if (string.IsNullOrEmpty(Model.MidPPT) && string.IsNullOrEmpty(Model.MidReport))
                                                             {
-                                                                <span>
-                                                                    @if (!string.IsNullOrEmpty(Model.MidPPT))
-                                                                    {
-                                                                        <button type="button" class="btn btn-sm bgdelete MiddeletePPTUpload" data-id="@Model.MidPPT">Delete PPT</button>
-
-                                                                    }
-                                                                    @if (!string.IsNullOrEmpty(Model.MidReport))
-                                                                    {
-                                                                        <button type="button" class="btn btn-sm bgdelete MiddeleteReportUpload" data-id="@Model.MidReport">Delete Report</button>
-
-                                                                    }
-
-                                                                </span>
+                                                                                                                                                                                            <p style="color:#dc2626">Not Uploaded</p>
                                                             }
                                                             else
                                                             {
-                                                                <span style="font-size:25px"> - </span>
+                                                                <a href="@Model.MidPPT" download="Proposal" class="btn bg btn-sm "><i class="fa fa-download"></i> PPT</a>
                                                             }
-                                                        </td>
+                                                            @if (!string.IsNullOrEmpty(Model.MidReport))
+                                                            {
+                                                                <a href="@Model.MidReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
+                                                            }
+                                                        }
 
-                                                        <td>
-                                                            <span class="badge bg-success rounded-pill">@Model.middate.ToString("dd/MM/yyyy")</span>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                                @if (Model.final != null && Model.finalmarks != null && Model.finaldate != null)
-                                                {
-                                                    <tr>
-                                                        <td>Final</td>
-                                                        <td>@Model.final</td>
-                                                        <td>@Model.finalmarks</td>
-                                                        <td>
+                                                    </td>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(Model.MidPPT) || !string.IsNullOrEmpty(Model.MidReport))
+                                                        {
+                                                            <span>
+                                                                @if (!string.IsNullOrEmpty(Model.MidPPT))
+                                                                {
+                                                                    <button type="button" class="btn btn-sm bgdelete MiddeletePPTUpload" data-id="@Model.MidPPT">Delete PPT</button>
+
+                                                                }
+                                                                @if (!string.IsNullOrEmpty(Model.MidReport))
+                                                                {
+                                                                    <button type="button" class="btn btn-sm bgdelete MiddeleteReportUpload" data-id="@Model.MidReport">Delete Report</button>
+
+                                                                }
+
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="font-size:25px"> - </span>
+                                                        }
+                                                    </td>
+                                                    }
+                                                    <td>
+                                                                                                                <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.middate.ToString("dd/MM/yyyy")</span>
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.final != null && Model.finalmarks != null && Model.finaldate != null)
+                                            {
+                                                <tr>
+                                                    <td>Final</td>
+                                                    <td>@Model.final</td>
+                                                    <td>@Model.finalmarks</td>
+                                                    <td>
+                                                        @if (User.IsInRole("Student"))
+                                                        {
                                                             @if (string.IsNullOrEmpty(Model.FinalDocs))
                                                             {
                                                                 <label for="FinalfileUpload" class="btn btn-sm btn-primary" id="FinalLabel">ZIP</label>
@@ -193,77 +248,86 @@
                                                                 <a href="@Model.FinalDocs" download="Final" class="btn bg btn-sm"><i class="fa fa-download"></i> ZIP</a>
 
                                                             }
-                                                        </td>
-                                                        <td>
-                                                            @if (!string.IsNullOrEmpty(Model.FinalDocs))
+                                                        }
+                                                        @if (User.IsInRole("Supervisor"))
+                                                        {
+                                                            @if (string.IsNullOrEmpty(Model.FinalDocs))
                                                             {
-                                                                <span>
-                                                                    @if (!string.IsNullOrEmpty(Model.FinalDocs))
-                                                                    {
-                                                                        <button type="button" class="btn btn-sm FinaldeleteUpload bgdelete" data-id="@Model.FinalDocs">Delete ZIP</button>
-
-                                                                    }
-                                                                </span>
+                                                                                                                                                                                                                                                              <p style="color:#dc2626">Not Uploaded</p>
                                                             }
                                                             else
                                                             {
-                                                                <span style="font-size:25px"> - </span>
+                                                                <a href="@Model.FinalDocs" download="Proposal" class="btn bg btn-sm "><i class="fa fa-download"></i> PPT</a>
                                                             }
-                                                        <td>
-                                                            <span class="badge bg-success rounded-pill">@Model.finaldate.ToString("dd/MM/yyyy")</span>
+
+                                                        }
+                                                    </td>
+                                                    @if (User.IsInRole("Student"))
+                                                    {
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(Model.FinalDocs))
+                                                        {
+                                                            <span>
+                                                                @if (!string.IsNullOrEmpty(Model.FinalDocs))
+                                                                {
+                                                                    <button type="button" class="btn btn-sm FinaldeleteUpload bgdelete" data-id="@Model.FinalDocs">Delete ZIP</button>
+
+                                                                }
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="font-size:25px"> - </span>
+                                                        }
                                                         </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
+                                                    }
+                                                    <td>
+                                                        <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.finaldate.ToString("dd/MM/yyyy")</span>
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
 
 
-                                    </div>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
-                                    <div class="row justify-content-center align-items-center w-100">
-                                        <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                            <div class="card">
-                                                <div class="card-header d-flex justify-content-center">
-                                                    <h5 class="card-title "><i class="feather icon-alert-triangle text-danger"></i> Not Approved</h5>
-                                                </div>
-                                                <div class="card-body text-center mb-3">
-                                                    <p>It looks like your project not <span class="text-danger"> Approved </span> yet!</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+                            </div>
                         }
                         else
                         {
-                            <div class="container d-flex justify-content-center align-items-center" style="min-height: 58vh;">
-                                <div class="row justify-content-center align-items-center w-100">
-                                    <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header text-center">
-                                                <h5 class="card-title">No Project Exists</h5>
-                                            </div>
-                                            <div class="card-body text-center mb-3">
-                                                <p>It looks like there are currently no projects available.</p>
-                                                <button class="btn btn-sm btn-primary ProjectCreate" id="btnClick">Create New Project</button>
-                                            </div>
-                                        </div>
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                        <!-- Warning Icon -->
+                                        <i class="fa fa-exclamation-triangle " style="font-size: 10rem; display: block; color:#fbbf24"></i>
+                                        <!-- Text Below the Icon -->
+                                        <p class="text-warning fw-bold text-center colorChange" style="font-size: 1.5rem;">Your Project needs Approval!</p>
                                     </div>
                                 </div>
                             </div>
-
                         }
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="container">
+                            <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                    <!-- Trash Icon -->
+                                    <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                    <!-- Text Below the Icon -->
+                                    <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Project Exist!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
                 </div>
             </div>
-
         </div>
+
     </div>
+</div>
 
 <div class="modal" id="Uploadmodal" tafeather icon-downloadndex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -602,5 +666,13 @@
     body {
         overflow: hidden;
     }
+
+    .table-bordered-custom {
+        border: 2px solid #3b0764;
+    }
+
+        @* .table-bordered-custom th, .table-bordered-custom td {
+            border: 1px solid #3b0764;
+        } *@
 
 </style>

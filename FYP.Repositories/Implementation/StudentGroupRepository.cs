@@ -43,10 +43,11 @@ namespace FYP.Repositories.Implementation
 
         public async Task DeleteAsync(string id)
         {
-            var studentGroup = await GetByIdAsync(id);
-            if (studentGroup != null)
+            var group = await GetAllAsync();
+            var Groups = group.Where(x => x.ID.ToString() == id).FirstOrDefault();
+            if (Groups != null)
             {
-                _context.StudentGroups.Remove(studentGroup);
+                _context.StudentGroups.Remove(Groups);
                 await _context.SaveChangesAsync();
             }
         }

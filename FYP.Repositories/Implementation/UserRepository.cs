@@ -32,12 +32,14 @@ namespace FYP.Repositories.Implementation
 
         public async Task DeleteAsync(string id)
         {
-            var Users = await GetByIdAsync(id);
-            if (Users != null)
+            var user = await GetAllAsync();
+            var User = user.Where(x => x.Id.ToString() == id).FirstOrDefault();
+            if (User != null)
             {
-                _context.Users.Remove(Users);
+                _context.Users.Remove(User);
                 await _context.SaveChangesAsync();
             }
+           
         }
     }
 

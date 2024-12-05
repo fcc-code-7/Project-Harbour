@@ -27,15 +27,14 @@
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
                     <div class=" ">
-                        <div class="p-3 bg-white text-black rounded-lg customheightcard ">
-                            
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
                             <!-- Column 1: -->
-                            <div class="" style="min-height:100px">
+                            <div class="" style="min-height:100px;">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
                                     <div class=" text-2xl font-bold">
                                         <h1>
-                                            <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
-                                            Create Groups
+                                            New Group
                                         </h1>
                                     </div>
 
@@ -43,26 +42,32 @@
                                 <form class="form" id="submitform">
                                     <div class="modal-body">
                                         <div class="form-body">
-                                            <div class="row d-flex justify-content-center">
-                                                <div class="col-md-6 ">
+                                            <div class="row ">
+                                                <div class="col-12 col-md-12 col-sm-12 col-lg-12 ">
                                                     <div class="form-group">
+                                                        <label>Batch</label>
+
                                                         <input type="text" id="Batch" class="form-control name" placeholder="Batch" value="@batch" asp-for="Batch" name="Name" readonly>
-                                                        <span asp-validation-for="Batch" class="text-danger"></span>
                                                     </div>
                                                     <input type="hidden" name="Year" id="Year" value="@year"/>
                                                     <div class="form-group">
+                                                        <label>Group Name</label>
+
                                                         <input type="text" id="groupName" class="form-control name" placeholder="Group Name" asp-for="Name" name="Name" value="@Model.Name" readonly required>
                                                         <span asp-validation-for="Name" class="text-danger"></span>
 
                                                     </div>
                                                     <div class="form-group">
+                                                        <label>Leader Enrollment No.</label>
+
                                                         <fieldset>
                                                             <div class="input-group">
 
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text email1" id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                    <span class="input-group-text email1" id="basic-addon1"><i class="feather icon-user"></i></span>
+
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu1" placeholder="Leader's Enrollment No" asp-for="student1LEmail" aria-describedby="basic-addon1" name="student1LEmail" required >
+                                                                <input type="text" class="form-control student-input" id="stu1" placeholder="Leader's Enrollment No" value="@Model.student1LEmail" asp-for="student1LEmail" aria-describedby="basic-addon1" name="student1LEmail" required>
 
 
                                                             </div>
@@ -70,28 +75,32 @@
                                                         </fieldset>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label>Member1 Enrollment No.</label>
+
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text email2" id="basic-addon2"><i class="feather icon-mail"></i></span>
+                                                                    <span class="input-group-text email2" id="basic-addon2"><i class="feather icon-user"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu2" placeholder="Member2 Enrollment No" aria-describedby="basic-addon2" asp-for="student2Email" name="student2Email" required >
+                                                                <input type="text" class="form-control student-input" id="stu2" placeholder="Member2 Enrollment No" aria-describedby="basic-addon2" value="@Model.student2Email" asp-for="student2Email" name="student2Email" required>
 
                                                             </div>
                                                             <span asp-validation-for="student2Email" class="text-danger"></span>
                                                         </fieldset>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label>Member2 Enrollment No.(Optional)</label>
+
                                                         <fieldset>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
-                                                                    <span class="input-group-text email3" id="basic-addon3"><i class="feather icon-mail"></i></span>
+                                                                    <span class="input-group-text email3" id="basic-addon3"><i class="feather icon-user"></i></span>
                                                                 </div>
-                                                                <input type="text" class="form-control" id="stu3" placeholder="Member3 Enrollment No" asp-for="student3Email" aria-describedby="basic-addon3" name="student3Email" required >
+                                                                <input type="text" class="form-control student-input" id="stu3" placeholder="Member3 Enrollment No" value="@Model.student3Email" asp-for="student3Email" aria-describedby="basic-addon3" name="student3Email" required>
 
                                                             </div>
-                                                            <span asp-validation-for="student3Email" class="text-danger"></span>
-                                                        </fieldset>
+@*                                                             <span asp-validation-for="student3Email" class="text-danger"></span>
+ *@                                                        </fieldset>
                                                     </div>
 
                                                 </div>
@@ -119,8 +128,47 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-
+@if (ViewBag.success != null && ViewBag.registeredMessage != null)
+{
+    <script>
+        Swal.fire({
+            title: 'Registration Conflict!',             // Main title
+            html: '<span class="text-danger">@ViewBag.registeredMessage<br />  Already Registered!</span>', // Message styled with danger color
+            icon: 'warning',                             // Warning icon for alerts
+            confirmButtonText: 'OK',                     // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger'          // Bootstrap class for the button
+            },
+            showCancelButton: false,                     // Hides the cancel button
+            buttonsStyling: false                        // Disables default button styling
+        });
+    </script>
+}
+@if (ViewBag.success == "Same")
+{
+    <script>
+        Swal.fire({
+            title: 'Duplicate!',           
+            html: '<span class="text-danger">You Entered Same Enrollment in the Fields!</span>', // Message styled with danger color
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
 <style>
+    .is-invalid {
+        border-color: red;
+    }
+
+    .text-danger {
+        color: red;
+    }
+
     .arrow-container {
         position: relative;
         margin-bottom: 20px; /* Adjust as needed */
@@ -198,55 +246,90 @@
             });
 
         });
+        $('.student-input').on('input', function () {
+            let value = $(this).val().replace(/\D/g, ''); // Remove all non-digit characters
 
-        // var $groupNameInput = $("#groupName");
-        // var $stu1 = $("#stu1");
-        // var $stu2 = $("#stu2");
-        // var $stu3 = $("#stu3");
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '-' + value.substring(2);
+            }
+            if (value.length > 9) {
+                value = value.substring(0, 9) + '-' + value.substring(9);
+            }
 
-        // $groupNameInput.on("input", function () {
-        //     var groupNameVal = $groupNameInput.val().trim();
+            // Trim the value if it exceeds the expected format length (13 characters, including dashes)
+            if (value.length > 13) {
+                value = value.substring(0, 13);
+            }
 
-        //     if (groupNameVal.length > 0) {
-        //         // Enable the email fields
-        //         $stu1.prop("readonly", false);
-        //         $stu2.prop("readonly", false);
-        //         $stu3.prop("readonly", false);
-        //     } else {
-        //         // Disable the email fields
-        //         $stu1.prop("readonly", true);
-        //         $stu2.prop("readonly", true);
-        //         $stu3.prop("readonly", true);
-        //     }
-        // });
-        $("#formsubmit").click(function (e) {
-            $('#employeeModal').modal('hide');
-            e.preventDefault();  // Prevent the default form submission
-            var formData = {
-                Name: $("#groupName").val(),
-                student1LEmail: $("#stu1").val(),
-                student2Email: $("#stu2").val(),
-                student3Email: $("#stu3").val(),
-                Batch: $("#Batch").val(),
-                Year: $("#Year").val(),
-            };
-            $.ajax({
-                type: "POST",
-                url: "/studentgroups/StudentGroups",
-                data: JSON.stringify(formData),
-                contentType: "application/json; charset=utf-8",  // Sending JSON
-                success: function (response) {
+            $(this).val(value);
+        });
 
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr) {
-                    // Handle the error
-                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
+        $("#submitform").submit(function (e) {
+            // Prevent form submission
+            e.preventDefault();
+
+            // Reset previous validation states
+            $(".form-control").removeClass("is-invalid");
+            $(".input-group-text").removeClass("text-danger");
+
+            let isValid = true;
+
+         
+
+            if ($("#stu1").val().trim() === "" ) {
+                $("#stu1").addClass("is-invalid");
+                $(".input-group-text.email1").addClass("text-danger");
+                isValid = false;
+            }
+
+            if ($("#stu2").val().trim() === "" ) {
+                $("#stu2").addClass("is-invalid");
+                $(".input-group-text.email2").addClass("text-danger");
+                isValid = false;
+            }
+
+     
+
+            // Ensure input fields do not exceed 13 characters
+            $("#stu1, #stu2, #stu3").each(function () {
+                if ($(this).val().length > 13) {
+                    $(this).addClass("is-invalid");
+                    isValid = false;
                 }
             });
+
+            // If the form is valid, proceed with the AJAX request
+            if (isValid) {
+                const formData = {
+                    Name: $("#groupName").val(),
+                    student1LEmail: $("#stu1").val(),
+                    student2Email: $("#stu2").val(),
+                    student3Email: $("#stu3").val(),
+                    Batch: $("#Batch").val(),
+                    Year: $("#Year").val(),
+                };
+
+                // Perform the AJAX request
+                $.ajax({
+                    type: "POST",
+                    url: "/studentgroups/StudentGroups",
+                    data: JSON.stringify(formData),
+                    contentType: "application/json; charset=utf-8",  // Sending JSON
+                    success: function (response) {
+                        // Update the main container with the response
+                        $("#MainContainer").html(response);
+                    },
+                    error: function (xhr) {
+                        // Handle error
+                        console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                    }
+                });
+            }
         });
 
     });
 
 </script>
 
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

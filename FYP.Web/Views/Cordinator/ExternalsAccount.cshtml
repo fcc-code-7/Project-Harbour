@@ -1,0 +1,601 @@
+﻿@model FYP.Web.ViewModels.ExternalEvaluation
+
+
+@{
+    int counter = 0;
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class=" ">
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px;">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            External
+                                        </h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12">
+                                                    <!-- Batch Dropdown -->
+                                                    <div class="form-group">
+                                                        <label for="PBatch">Batch</label>
+                                                        <select class="form-control" id="PBatch" name="PBatch" asp-for="Batch">
+                                                            <option value="">Select Batch</option>
+                                                            @if (Model?.Batches != null && Model.Batches.Any())
+                                                            {
+                                                                foreach (var item in Model.Batches)
+                                                                {
+                                                                    if (Model.Batch != null)
+                                                                    {
+                                                                        if (item == Model.Batch)
+                                                                        {
+                                                                            <option value="@item" selected>
+                                                                                @item
+                                                                            </option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@item">
+                                                                                @item
+                                                                            </option>
+                                                                        }
+
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item">
+                                                                            @item
+                                                                        </option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+                                                        <span asp-validation-for="Batches" class="text-danger"></span>
+                                                    </div>
+
+                                                    <!-- Group Dropdown -->
+                                                    <div class="form-group">
+                                                        <label for="Group">Group</label>
+                                                        <select class="form-control Group" id="group" name="group" asp-for="Group">
+                                                            <option value="">Select Group</option>
+                                                            @if (Model?.studentGroups != null && Model.studentGroups.Any())
+                                                            {
+                                                                foreach (var item in Model.studentGroups)
+                                                                {
+                                                                    if (Model.Group != null)
+                                                                    {
+                                                                        if (item.Id.ToString() == Model.Group)
+                                                                        {
+                                                                            <option value="@item.Id.ToString()" selected>
+                                                                                @item.Name
+                                                                            </option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@item.Id.ToString()">
+                                                                                @item.Name
+                                                                            </option>
+                                                                        }
+
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item.Id.ToString()">
+                                                                            @item.Name
+                                                                        </option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+                                                        <span asp-validation-for="studentGroups" class="text-danger"></span>
+                                                    </div>
+
+                                                    <!-- Email Input -->
+                                                    <div class="form-group">
+                                                        <label for="email">Email</label>
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text" id="basic-addon3">
+                                                                        <i class="feather icon-mail"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="email" class="form-control" value="@Model?.Email" id="email"
+                                                                       aria-describedby="basic-addon3" name="email" required />
+                                                            </div>
+                                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-primary" id="formsubmits">Save</button>
+                                    </div>
+                                </form>
+                                <label>Alloted Externals:</label>
+
+                                @if (Model.ExternalGroups == null || Model.ExternalGroups.Count == 0)
+                                {
+
+                                    <div class="container">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 68vh;">
+                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                <!-- Trash Icon -->
+                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                <!-- Text Below the Icon -->
+                                                <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No External Alloted!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                }
+                                else
+                                {
+                                    <div class=" p-1 mt-2">
+                                        <div class="row" id="RoomContainer">
+
+                                            @foreach (var item in Model.ExternalGroups)
+                                            {
+                                                <div class="col-12 col-md-6 col-sm-12 col-lg-4">
+                                                    <div class="card p-0">
+                                                        <div class="card-header no-border">
+                                                            <div class="widget-49-date-warning">
+                                                                <span class="badge bg-warning rounded-circle text-dark d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                    @(counter = counter + 1)
+                                                                </span>
+                                                            </div>
+
+                                                            @*                                                                 <h5 class="card-title">@item.Name</h5>
+                                                    *@       <div class="ml-auto mx-1">
+                                                                @if (item.ActiveState != "Active")
+                                                                {
+                                                                <button type="button" class="btn btn-sm btn-primary " id="EditExternal" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Edit</button>
+                                                                    <button type="button" class="btn btn-sm btn-success   text-white" id="ActiveAccount" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Active</button>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button type="button" class="btn btn-sm btn-danger  text-white" id="BlockAccount" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Block</button>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body pt-0 ">
+                                                            <div class="widget-49">
+                                                                <div class="table-responsive">
+                                                                    <table class="">
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Group:</td>
+                                                                            <td>
+                                                                                <span class="inline-flex mx-2 items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                                                                                   <b> @item.Name </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Project:</td>
+                                                                            <td>
+                                                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                                                    <b>@item.projectname </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Email:</td>
+                                                                            <td>
+                                                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                                                    <b>  @item.ExternalEmail </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">State:</td>
+                                                                            @if (@item.ActiveState == "Active")
+                                                                            {
+                                                                                <td>
+                                                                                    <span title="Project Approved!" class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                                        <i class="fas fa-check-circle"></i>
+                                                                                        Active
+                                                                                    </span>
+                                                                                </td>
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td>
+                                                                                    <span title="Cordinator didnt Approve the Project! Change it." class="bg-red-100 mx-2 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                                        <i class="fas fa-times-circle"></i>
+                                                                                        Blocked
+                                                                                    </span>
+                                                                                </td>
+
+                                                                            }
+
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+@* EDIT MODAL *@
+<div class="modal fade " id="modalExternalEdit" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">EDIT EXTERNAL</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <div class="modal-body">
+                    <div class="form-body">
+                        <div class="row ">
+                            <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+
+                                <!-- Email Input -->
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <fieldset>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon3">
+                                                    <i class="feather icon-mail"></i>
+                                                </span>
+                                            </div>
+                                            <input type="email" class="form-control" id="Modalemail"
+                                                   aria-describedby="basic-addon3" name="email" required />
+                                        </div>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalEditCloseExternal">Close</button>
+                <button type="button" class="btn btn-primary" id="editExternals">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Block Modal -->
+<div class="modal fade" id="deleteExternal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Block External</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to Block this External?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalExternalCancel" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="modalBlockExternalConfirm">Block</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Active Modal -->
+<div class="modal fade" id="modalActiveExternal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Active External</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to Active this External?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalExternalActiveExternalCancel" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="modalActiveExternalConfirm">Active</button>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.successmodel == "Added")
+{
+    <script>
+        Swal.fire({
+            title: 'Successfully Added!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+@if (Model.successmodel == "Existed")
+{
+    <script>
+        Swal.fire({
+            title: 'Already Existed!',        // Title of the modal
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+
+<style>
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+
+    .noborder {
+        border-color: white !important;
+    }
+
+
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #3b0764 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+        $("#previousbtn").click(function () {
+            $.ajax({
+                url: '/cordinator/projects',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);  // Ensure the response is valid HTML
+                },
+                error: function () {
+                    console.log("Error fetching projects.");
+                }
+            });
+        });
+        var Id = "";
+        var Email = "";
+        var Batch = "";
+        $(document).off('click', '#EditExternal').on('click', '#EditExternal', function (e) {
+            e.preventDefault();
+            Id = $(this).data("id");
+            Email = $(this).data("email");
+            Batch = $(this).data("batch");
+            $("#Modalemail").val(Email);
+            $('#modalExternalEdit').modal('show');
+        });
+        $(document).on('click', '#BlockAccount', function (e) {
+            e.preventDefault();
+            Id = $(this).data("id");
+            Email = $(this).data("email");
+            Batch = $(this).data("batch");
+            $('#deleteExternal').modal('show');
+        });
+        $(document).on('click', '#ActiveAccount', function (e) {
+            e.preventDefault();
+            Id = $(this).data("id");
+            Email = $(this).data("email");
+            Batch = $(this).data("batch");
+            $('#modalActiveExternal').modal('show');
+        });
+        $(document).off('click', '#modalActiveExternalConfirm').on('click', '#modalActiveExternalConfirm', function (e) {
+            e.preventDefault();
+            $('#deleteExternal').modal('hide');
+            $('.modal-backdrop').remove();
+            showLoadingSpinner();
+            var mail = $("#Modalemail").val();
+            $.ajax({
+                url: "/cordinator/EditExternalsAccount",
+                type: "POST",
+                data: { ExternalId: Id, isBlock: "makeActive", Batch: Batch },
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $("#MainContainer").empty();
+                    $("#MainContainer").html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    console.error("Error fetching rooms:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the rooms. Please try again.");
+                }
+            });
+        });
+        $(document).off('click', '#modalBlockExternalConfirm').on('click', '#modalBlockExternalConfirm', function (e) {
+            e.preventDefault();
+            $('#deleteExternal').modal('hide');
+            $('.modal-backdrop').remove();
+            showLoadingSpinner();
+            var mail = $("#Modalemail").val();
+            $.ajax({
+                url: "/cordinator/EditExternalsAccount",
+                type: "POST",
+                data: { ExternalId: Id, isBlock: "True", Batch: Batch },
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $("#MainContainer").empty();
+                    $("#MainContainer").html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    console.error("Error fetching rooms:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the rooms. Please try again.");
+                }
+            });
+        });
+        $(document).off('click', '#editExternals').on('click', '#editExternals', function (e) {
+            e.preventDefault();
+            $('#modalExternalEdit').modal('hide');
+            $('.modal-backdrop').remove();
+            showLoadingSpinner();
+            var mail = $("#Modalemail").val();
+            $.ajax({
+                url: "/cordinator/EditExternalsAccount",
+                type: "POST",
+                data: { ExternalId: Id, isBlock: "False", Email: mail, Batch: Batch },
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $("#MainContainer").empty();
+                    $("#MainContainer").html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    console.error("Error fetching rooms:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the rooms. Please try again.");
+                }
+            });
+        });
+        $(document).off('change', '#PBatch').on('change', '#PBatch', function (e) {
+            if (e.originalEvent) {
+               
+                var Batch = $(this).val();
+                if (Batch) {
+                    $.ajax({
+                        url: '/cordinator/ExternalsAccount',
+                        type: 'GET',
+                        data: { batch: Batch },
+                        success: function (response) {
+                            $("#MainContainer").html(response);
+                        },
+                        error: function (xhr) {
+                            console.error("Error: ", xhr.responseText);
+                            alert("Failed to update the project status.");
+                        }
+                    });
+                } else {
+                    alert("Please select a valid batch.");
+                }
+            }
+        });
+
+        $(document).off('click', '#formsubmits').on('click', '#formsubmits', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Create a FormData object
+            var formData = new FormData();
+            formData.append("Batch", $("#PBatch").val());
+            formData.append("Group", $("#group").val());
+            formData.append("Email", $("#email").val());
+
+            $.ajax({
+                url: '/Cordinator/ExternalsAccount', // Controller action URL
+                type: 'POST',
+                processData: false, // Prevent automatic data processing
+                contentType: false, // Set content type to false for FormData
+                data: formData, // Pass FormData object
+                success: function (response) {
+                    $("#MainContainer").html(response); // Update container
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error Details:", {
+                        status: xhr.status, // HTTP status code
+                        statusText: xhr.statusText, // HTTP status text
+                        responseText: xhr.responseText // Response body
+                    });
+                    alert("Failed to update the project status.");
+                }
+            });
+
+        });
+
+    });
+
+</script>
+

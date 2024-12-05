@@ -2,6 +2,7 @@
 
 
 @{
+    var dateOnly = Model.LastDate.Date;
 
 }
 
@@ -16,15 +17,14 @@
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
                     <div class=" ">
-                        <div class="p-3 bg-white text-black rounded-lg " style="min-height:80vh">
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
 
                             <!-- Column 1: -->
-                            <div class="" style="min-height:100px">
+                            <div class="" style="min-height:100px;">
                                 <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
                                     <div class=" text-2xl font-bold">
                                         <h1>
-                                            <i class="feather icon-arrow-left btn p-0 m-0" id="previousbtn" style="font-size:30px"></i>
-                                            Evaluation
+                                            EvalDate
                                         </h1>
                                     </div>
 
@@ -33,40 +33,96 @@
                                     <div class="modal-body">
                                         <div class="form-body">
                                             <div class="row d-flex justify-content-center">
-                                                <div class="col-md-6 ">
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+
                                                     <div class="form-group">
-                                                        <input type="text" id="EvaluationName" class="form-control EvaluationName" placeholder="Batch" value="@Model.EvaluationName" asp-for="EvaluationName" name="EvaluationName" readonly>
+                                                        <label>Evaluation Name</label>
+                                                        <select class="form-control EvaluationName" id="EvaluationName" name="EvaluationName" asp-for="EvaluationName">
+                                                            <option value="Proposal">
+                                                                Proposal
+                                                            </option>
+                                                            <option value="Mid">
+                                                                Mid
+                                                            </option>
+                                                            <option value="Final">
+                                                                Final
+                                                            </option>
+                                                        </select>
                                                         <span asp-validation-for="EvaluationName" class="text-danger"></span>
                                                     </div>
-                                                    <div class="form-group">
-                                                        @Html.DropDownListFor(model => model.PBatch,
-                                                                 new SelectList(Model.batches, Model.PBatch),
-                                                                 "Select Batch",
-                                                                 new { @class = "form-control", id = "PBatch" })
-                                                        <span asp-validation-for="PBatch" class="text-danger"></span>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <fieldset>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text date" id="basic-addon3"><i class="feather icon-calendar"></i></span>
+                                                    @if (Model != null && Model.batches != null && Model.batches.Any())
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Batch</label>
+                                                            <select class="form-control PBatch" id="PBatch" name="PBatch" asp-for="PBatch">
+
+                                                                <option value="">Select Batch</option>
+                                                                @foreach (var item in Model.batches)
+                                                                {
+                                                                    if (Model.PBatch == item)
+                                                                    {
+                                                                        <option value="@item" selected>@item</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item">@item</option>
+
+                                                                    }
+                                                                }
+                                                            </select>
+
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Batch</label>
+                                                            <select class="form-control PBatch" id="PBatch" name="PBatch" asp-for="PBatch">
+
+                                                                <option value="">Select Batch</option>
+
+                                                            </select>
+
+                                                        </div>
+                                                    }
+                                                    @if (Model != null && Model.LastDate != null)
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Alloted Date</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text date" id="basic-addon3"><i class="feather icon-calendar"></i></span>
+                                                                    </div>
+                                                                    <input type="date" class="form-control" value="@Model.LastDate.ToString("yyyy-MM-dd")"
+                                                                           id="LastDate" aria-describedby="basic-addon3" name="LastDate" required />
                                                                 </div>
-                                                                @Html.TextBoxFor(model => model.LastDate, new { @class = "form-control", type = "date", id = "LastDate", aria_describedby = "basic-addon3", required = "required" })
-                                                            </div>
-                                                            <span asp-validation-for="LastDate" class="text-danger"></span>
-                                                        </fieldset>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <fieldset>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text marks" id="basic-addon4"><i class="feather icon-star"></i></span>
+                                                                <span asp-validation-for="LastDate" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Alloted Date</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text date" id="basic-addon3"><i class="feather icon-calendar"></i></span>
+                                                                    </div>
+                                                                    <input type="date" class="form-control" value="@{
+                                                                    DateOnly.FromDateTime(DateTime.Now);
+}"
+                                                                           id="LastDate" aria-describedby="basic-addon3" name="LastDate" required />
                                                                 </div>
-                                                                @Html.TextBoxFor(model => model.Marks, new { @class = "form-control", type = "number", id = "Marks", placeholder = "Marks", aria_describedby = "basic-addon4", required = "required" })
-                                                            </div>
-                                                            <span asp-validation-for="Marks" class="text-danger"></span>
-                                                        </fieldset>
-                                                    </div>
+                                                                <span asp-validation-for="LastDate" class="text-danger"></span>
+                                                            </fieldset>
+                                                        </div>
+                                                    }
+
 
                                                 </div>
                                             </div>
@@ -93,6 +149,36 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
+@if (Model.success == "Added")
+{
+    <script>
+        Swal.fire({
+            title: 'Successfully Added!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+@if (Model.success == "Updated")
+{
+    <script>
+        Swal.fire({
+            title: 'Successfully Updated!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
 
 <style>
     .arrow-container {
@@ -163,72 +249,124 @@
                 url: '/cordinator/projects',
                 type: "GET",
                 success: function (response) {
-                    $("#MainContainer").html(response);
+                    $("#MainContainer").html(response);  // Ensure the response is valid HTML
                 },
                 error: function () {
-
+                    console.log("Error fetching projects.");
                 }
             });
-
         });
-        $("#PBatch").change(function () {
-            var selectedBatch = $(this).val();
-            var evaluationName = $("#EvaluationName").val();  // Assuming EvaluationName is also part of the form
+
+        $(document).on('change', '#PBatch, #EvaluationName', function () {
+            var selectedBatch = $("#PBatch").val();
+            var evaluationName = $("#EvaluationName").val();
 
             if (selectedBatch && evaluationName) {
                 $.ajax({
-                    url: '/cordinator/GetEvaluationData',  // Adjust the URL if needed
+                    url: '/cordinator/GetEvaluationData',
                     type: "GET",
                     data: { batch: selectedBatch, evaluationName: evaluationName },
                     success: function (response) {
+                        console.log(response);  // Log the entire response
                         if (response.success) {
-                            // Convert date from dd/MM/yyyy to yyyy-MM-dd
-                            var dateParts = response.lastDate.split('/');
-                            var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+                            // Check if the date contains either '/' or '-'
+                            var dateParts = response.lastDate.split(/[-/]/); // Split by either '-' or '/'
 
-                            $("#Marks").val(response.marks);
-                            $("#LastDate").val(formattedDate);
+                            if (dateParts.length === 3) {  // Ensure the date has 3 parts
+                                var formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]; // Reformat to yyyy-MM-dd
+                                $("#Marks").val(response.marks);
+                                $("#LastDate").val(formattedDate);
+                            } else {
+                                console.log("Invalid date format:", response.lastDate);
+                            }
                         } else {
                             $("#Marks").val('');
                             $("#LastDate").val('');
                             console.log("No existing data found for the selected batch and evaluation name.");
                         }
                     },
-                    error: function (xhr) {
+
+
+                    error: function (xhr, status, error) {
                         console.log("Error fetching evaluation data: " + xhr.status + " - " + xhr.statusText);
                     }
                 });
             }
         });
 
-        $("#formsubmit").click(function (e) {
+        $(document).off('click', '#formsubmit').on('click', '#formsubmit', function (e) {
             e.preventDefault();  // Prevent the default form submission
-            var formData = {
-                PBatch: $("#PBatch").val(),
-                Marks: $("#Marks").val(),
-                LastDate: $("#LastDate").val(),
-                EvaluationName: $("#EvaluationName").val(),
-                EvaluationID: $("#EvaluationID").val(),
-             
-            };
-            $.ajax({
-                type: "POST",
-                url: "/cordinator/Evaluation",
-                data: JSON.stringify(formData),
-                contentType: "application/json; charset=utf-8",  // Sending JSON
-                success: function (response) {
 
-                    $("#MainContainer").html(response);
-                },
-                error: function (xhr) {
-                    // Handle the error
-                    console.log("Error: " + xhr.status + " - " + xhr.statusText);
-                }
-            });
+            // Get the form field values
+            var selectedBatch = $("#PBatch").val();
+            var evaluationName = $("#EvaluationName").val();
+            var lastDate = $("#LastDate").val();
+            var marks = $("#Marks").val(); // If you want to check Marks too
+
+            // Clear previous error messages
+            $(".error-message").remove();
+
+            // Check if any required field is empty
+            var isValid = true;
+            if (!evaluationName) {
+                isValid = false;
+                $("#EvaluationName").after('<span class="error-message" style="color: red;">This field is required</span>');
+            }
+            if (!selectedBatch) {
+                isValid = false;
+                $("#PBatch").after('<span class="error-message" style="color: red;">This field is required</span>');
+            }
+            if (!lastDate) {
+                isValid = false;
+                $("#LastDate").after('<span class="error-message" style="color: red;">This field is required</span>');
+            }
+
+
+            // Get the current values from the model (for update comparison)
+            var currentEvaluationName = "@Model.EvaluationName"; // Assuming this is the current value in the model
+            var currentPBatch = "@Model.PBatch"; // Current batch value
+            var currentLastDate = "@Model.LastDate.ToString("yyyy-MM-dd")"; // Current date value in yyyy-MM-dd format
+
+            // Check if the form is attempting to update with the same values
+            if (evaluationName === currentEvaluationName && selectedBatch === currentPBatch && lastDate === currentLastDate) {
+                isValid = false;
+                Swal.fire({
+                    title: 'No Changes Detected!',        // Title of the modal
+                    icon: 'warning',                // Warning icon for alerts
+                    confirmButtonText: 'OK',        // Text on the confirm button
+                    customClass: {
+                        confirmButton: 'btn btn-warning',  // Bootstrap class for the button
+                    },
+                    showCancelButton: false,        // Hides the cancel button
+                    buttonsStyling: false,          // Disables default button styling
+                });
+            }
+
+            // If all validations pass, submit the form data
+            if (isValid) {
+                var formData = {
+                    PBatch: selectedBatch,
+                    Marks: marks,
+                    LastDate: lastDate,
+                    EvaluationName: evaluationName,
+                    EvaluationID: $("#EvaluationID").val(), // Assuming this is used for the update
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/cordinator/Evaluation",
+                    data: JSON.stringify(formData),
+                    contentType: "application/json; charset=utf-8",  // Sending JSON
+                    success: function (response) {
+                        $("#MainContainer").html(response);  // Update content on success
+                    },
+                    error: function (xhr) {
+                        console.log("Error: " + xhr.status + " - " + xhr.statusText);
+                    }
+                });
+            }
         });
-
     });
 
 </script>
-
 

@@ -15,121 +15,274 @@
 }
 <!-- BEGIN: Content-->
 <div id="ChangeDiv">
-<div class="app-content content">
-    <div class="content-overlay"></div>
-    <div class="content-wrapper">
-        <div class="content-header row">
-        </div>
-        <div class="content-body ">
-            <!-- Section 1 -->
-            <div class="mb-2 ">
-                <div class="p-6 bg-white text-black rounded-lg customheightcard">
-                    <!-- Column 1: -->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body">
+                <section class="users-list-wrapper">
+                    <div class="users-list-filter px-1">
+                        <!-- Section 1 -->
+                        <div class="">
+                            <div class="p-3 bg-white text-black rounded-lg" style="height:80vh; min-height:80vh">
 
-                    <div class="w-full flex justify-between items-center" id="container">
-                        <!-- Left content (div1) -->
-                        <div class="p-8 ml-7 text-2xl font-bold" id="div1">
-                            <h1>Projects</h1>
-                        </div>
-
-                        <!-- Right content (div2) -->
-                        <div class="search-container" id="div2">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Select Batch
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    @foreach (var item in Model.batches)
-                                    {
-                                        <a class="dropdown-item batchChange" data-id="@item">@item</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="container mt-0 md:mt-5 lg:mt-5 ">
-                        <div class="row d-flex justify-content-center">
-                            @if (Model.projects == null || !Model.projects.Any())
-                            {
-                                <div class="container mt-0 md:mt-5 lg:mt-5">
-                                    <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
-                                        <div class="col-12 col-md-6 col-sm-12 col-lg-6">
-                                            <div class="card">
-                                                    <div class="card-header d-flex justify-content-center align-items-center">
-                                                        <h5 class="card-title"><i class="feather icon-alert-triangle text-danger mx-1"></i>No Project Exists</h5>
-                                                    </div>
-                                                <div class="card-body text-center mb-4">
-                                                    <p>It looks like there are currently no projects available.</p>
-                                                </div>
-                                            </div>
+                                <!-- Column 1: -->
+                                <div class="mb-1">
+                                    <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4">
+                                        <div class="text-2xl font-bold">
+                                            <h1>Projects</h1>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                            else
-                            {
 
-                                @foreach (var item in Model.projects)
+                                <!-- Common Block for Empty Projects -->
+                                @if (Model.projects == null || !Model.projects.Any())
                                 {
-                                    <div class="col-12 col-md-6 col-sm-12 col-lg-5">
-                                        <div class="card card-margin ProjectDetails" data-id="@item.code" >
-                                            <div class="card-header no-border">
-                                                <h5 class="card-title">@item.code</h5>
+                                    <div class="container">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem;"></i>
+                                                <p class="text-secondary fw-bold text-center text-danger" style="font-size: 1.5rem;">No Project Exist!</p>
                                             </div>
-                                            <div class="card-body pt-0">
-                                                <div class="widget-49">
-                                                    <div class="widget-49-title-wrapper">
-                                                        <div class="widget-49-date-warning">
-                                                            <span class="widget-49-date-day">@(counter = counter + 1)</span>
-                                                        </div>
-                                                        <div class="widget-49-meeting-info">
-                                                            <span class="widget-49-pro-title">@item.Title</span>
-                                                            <span class="widget-49-meeting-time">@item.ProjectCategory</span>
-                                                        </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- Batch Selection -->
+                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-1 order-md-1 order-lg-1">
+                                        <div class="form-group">
+                                            <label>Batch</label>
+                                            <fieldset>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon3">
+                                                            <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                        </span>
                                                     </div>
-                                                    <ol class="widget-49-meeting-points">
-                                                        <li class="widget-49-meeting-item"><span>Group: @item.projectGroup</span></li>
-                                                
-                                               
-                                                            @if (item.Status == "Approved")
+                                                    <select class="form-control" id="BatchSelect">
+                                                        <option value="" selected>Select Batch</option>
+                                                        @foreach (var item in Model.batches)
+                                                        {
+                                                            if (Model.batch != null && Model.batch == item)
                                                             {
-                                                            <li class="widget-49-meeting-item text-success"><span>Status: <span class="text-success">Approved</span> </span></li>
 
+                                                                <option value="@item" selected>@item</option>
                                                             }
                                                             else
                                                             {
-                                                            <li class="widget-49-meeting-item text-danger"><span>Status: <span class="text-danger">Not Approved</span></span></li>
-
+                                                                <option value="@item">@item</option>
                                                             }
-                                                        
-                                                    </ol>
-                                                    <div class="widget-49-meeting-action">
-                                                        <a class="btn btn-sm btn-flash-border-warning ProjectDetails" data-id="@item.code">DETAILS</a>
-                                                        @if (item.Status == "Approved")
-                                                        {
-                                                        <a href="#" class="btn btn-sm btn-flash-border-warning Weekly Logs">Weekly Logs</a>
-                                                            <a href="#" class="btn btn-sm btn-flash-border-warning Submissions">Submissions</a>
                                                         }
-                                                    </div>
+                                                    </select>
                                                 </div>
-                                            </div>
+                                                <span asp-validation-for="batches" class="text-danger"></span>
+                                            </fieldset>
                                         </div>
                                     </div>
 
-                                }
+                                    <!-- Project Name Search -->
+                                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-2 order-md-2 order-lg-2 mb-2">
+                                        <div class="form-group">
+                                            <label>Project Name</label>
+                                            <fieldset>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon0">
+                                                            <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="text" class="form-control" placeholder="Enter Project Name to Search" id="ProjectNameCheck" aria-describedby="basic-addon0" required>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
 
-                            }
+                                    <!-- Projects List -->
+                                    <div>
+                                        <label>Projects:</label>
+                                    </div>
+                                    <div class="container mt-0 md:mt-5 lg:mt-5">
+                                        <div class="row d-flex justify-content-center" id="ProjectContainer">
+                                            @foreach (var item in Model.projects)
+                                            {
+                                                <div class="col-12 col-md-12 col-sm-12 col-lg-6">
+                                                    <div class="card p-0">
+                                                        <div class="card-header no-border d-flex align-items-center">
+                                                            <div class="widget-49-date-warning d-flex align-items-center">
+                                                                <span class="badge bg-warning rounded-circle text-dark d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                    @(counter = counter + 1)
+                                                                </span>
+                                                            </div>
+
+                                                            @if (User.IsInRole("Cordinator"))
+                                                            {
+                                                                <h5 class=" esizeSmall fs-md-4 fs-lg-3 mx-1">@item.code</h5>
+                                                            }
+                                                            @if (item.Status == "Approved")
+                                                            {
+                                                                <span title="Project Approved!" class="esizeSmall bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                    <i class="fas fa-check-circle"></i>
+                                                                    Approved
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span title="Cordinator didnt Approve the Project! Change it." class="esizeSmall bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                    <i class="fas fa-times-circle"></i>
+                                                                    Not Approved
+                                                                </span>
+                                                            }
+
+
+
+
+                                                            @if (User.IsInRole("Supervisor"))
+                                                            {
+                                                                <div class="ml-auto">
+                                                                    <a href="javascript:void(0)" class="detailIcon" style="margin-left:1rem;" data-id="@item.code" title="Detail" id="Details">
+                                                                        <i class="fas fa-info-circle text-blue-700 hover:text-blue-500 transition-all"></i>
+                                                                    </a>
+
+                                                                    @if (item.SupervsiorApproved != "Approved")
+                                                                    {
+                                                                        <a href="javascript:void(0)" class="approvedIcon" style="margin-left:1rem;" data-id="@item.Id" data-status="Approved" id="Approve" title="Approve the Project">
+                                                                            <i class="fas fa-check-circle text-green-700 hover:text-green-500 transition-all"></i>
+                                                                        </a>
+                                                                    }
+                                                                </div>
+                                                            }
+
+                                                        </div>
+                                                        <div class="card-body pt-0">
+                                                            <div class="widget-49">
+                                                                <div class="table-responsive" style="overflow-x: auto;">
+                                                                    <table class="  mb-0" style="border-spacing: 0; min-width: 200px;">
+                                                                        @if (User.IsInRole("Supervisor"))
+                                                                        {
+
+                                                                            <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold">Code:</span>
+                                                                                    <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 " style="margin-left:3.3rem;"><b>@item.code</b></span></u>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold"></span>
+                                                                                    Title:
+                                                                                    <u> <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:3.9rem"><b>@item.Title</b></span></u>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                        @if (User.IsInRole("Cordinator"))
+                                                                        {
+                                                                            <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold">Title:</span>
+                                                                                    <u>
+                                                                                        <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500"><b>@item.Title</b></span>
+                                                                                    </u>
+                                                                                </td>
+                                                                            </tr>
+
+                                                                            <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold">Group Name:</span>
+                                                                                    <u>
+                                                                                        <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300"><b>@item.groupname</b></span>
+                                                                                    </u>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                        <tr>
+                                                                            <td class="">
+                                                                                <span class="text-black fw-bold">Department:</span>
+                                                                                <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem"><b>@item.projectGroup</b></span></u>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="">
+                                                                                <span class="text-black fw-bold">Submission:</span>
+                                                                                <u>
+                                                                                    <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem">
+                                                                                        <b>
+                                                                                            @if (item.PropPPT != null && item.PropReport != null)
+                                                                                            {
+                                                                                                <span>Proposal Docs Submitted</span>
+                                                                                                @if (item.PropPPT != null && item.PropReport != null && item.MidPPT != null && item.MidReport != null)
+                                                                                                {
+                                                                                                    <span>,Mid Docs Submitted</span>
+                                                                                                    @if (item.PropPPT != null && item.PropReport != null && item.MidPPT != null && item.MidReport != null && item.FinalDocs != null)
+                                                                                                    {
+                                                                                                        <span>,Final Docs Submitted</span>
+
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <span>N/A</span>
+                                                                                            }
+                                                                                        </b>
+                                                                                    </span>
+                                                                                </u>
+                                                                            </td>
+                                                                        </tr>
+                                                                        @if (User.IsInRole("Supervisor"))
+                                                                        {
+                                                                            <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold">Supervisor Approved:</span>
+                                                                                    <u>
+                                                                                        <span class="text-sm font-medium @((item.SupervsiorApproved == null) ? "text-red-600 dark:text-red-300" : "text-green-600 dark:text-green-300")">
+                                                                                            <b>    @(item.SupervsiorApproved ?? "You didn't approve yet!")</b>
+                                                                                        </span>
+                                                                                    </u>
+                                                                                </td>
+
+                                                                            </tr>
+                                                                        }
+
+
+
+                                                                    </table>
+                                                                </div>
+
+                                                                @if (item.Status == "Approved")
+                                                                {
+                                                                    <div class="d-flex justify-content-end">
+                                                                        <p class="btn btn-sm btn-flash-border-warning Submission" data-id="@item.Id">Submission</p>
+                                                                        <p class="btn btn-sm btn-flash-border-warning " id="Details" data-id="@item.code">Details</p>
+
+                                                                    </div>
+                                                                }
+
+                                                                @if (item.Status != "Approved")
+                                                                {
+                                                                    <div class="d-flex justify-content-end">
+                                                                        <button class="btn btn-sm btn-flash-border-warning Submission" data-id="@item.Id" disabled>Submission</button>
+                                                                        <p class="btn btn-sm btn-flash-border-warning " id="Details" data-id="@item.code">Details</p>
+
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
-
-
-                </div>
+                </section>
             </div>
-
         </div>
     </div>
-</div>
+
 </div>
 <!-- END: Content-->
 @section Scripts {
@@ -141,8 +294,53 @@
     <script src="~/app-assets/js/scripts/cards/card-statistics.js"></script>
     <!-- END: Page JS-->
 }
+@if (ViewBag.success == "Updated")
+{
+    <script>
+        Swal.fire({
+            title: 'Successfully Updated!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+@if (ViewBag.success == "NotFound")
+{
+    <script>
+        Swal.fire({
+            title: 'Project Not Found!',        // Title of the modal
+            icon: 'danger',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+
 <script>
-    $('.ProjectDetails').on('click', function () {
+    $(document).on('click', '.Submission', function () {
+        var id = $(this).data('id');
+        $.ajax({
+            url: '/project/projectlist',
+            data: { Id: id },
+            type: "GET",
+            success: function (response) {
+                $("#MainContainer").html(response);
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: " + status + " - " + error);
+            }
+        });
+    });
+    $(document).off('click', '#Details').on('click', '#Details', function (e) {
         var Code = $(this).data('id');
         $.ajax({
             url: '/project/projectdetails',
@@ -153,6 +351,25 @@
             },
             error: function () {
                 // handle error
+            }
+        });
+    });
+    // Handle click event for the Approved button
+    $(document).on('click', '#Approve', function (e) {
+        var projectId = $(this).data('id');
+        var status = $(this).data("status"); // "true" for Approved
+
+        // Make the AJAX call to change status
+        $.ajax({
+            url: '/project/ChangeSupervisorApprovedStatus', // Action method URL
+            type: 'POST', // HTTP method
+            data: { Id: projectId, status: status }, // Data to be sent
+            success: function (response) {
+                // Handle success, redirect or display a message
+                $("#MainContainer").html(response);
+            },
+            error: function () {
+                alert("Failed to update the project status.");
             }
         });
     });
@@ -170,24 +387,281 @@
 
             }
         });
+    });
+    $(document).on('change', '#ProjectNameCheck, #BatchSelect', function (e) {
+        e.preventDefault();
+
+        showLoadingSpinner();
+        var groupWord = $("#ProjectNameCheck").val();  // Get the group name from the input
+        var batch = $("#BatchSelect").val();  // Get the selected batch
+
+        // Send both GroupWord and Batch to the server
+        $.ajax({
+            url: "/supervisor/FilterProjects", // URL for your controller action
+            type: "POST",
+            data: {
+                ProjectWord: groupWord,
+                Batch: batch
+            },
+            success: function (response) {
+                hideLoadingSpinner();
+
+                // Clear the current group container
+                $("#ProjectContainer").html('');
+
+                var counter = 0;
+                const userRole = "@(User.IsInRole("Cordinator") ? "Cordinator" : (User.IsInRole("Supervisor") ? "Supervisor" : "None"))";
+                if (response.length > 0) {
+                    $.each(response, function (index, item) {
+                        console.log(response);
+                        var supervisorClass = "text-red-600 dark:text-red-300"; // Default class for not approved
+                        var supervisorText = "You didn't approve yet!"; // Default text for not approved
+
+                        if (item.supervsiorApproved !== null && item.supervsiorApproved === "Approved") {
+                            supervisorClass = "text-green-600 dark:text-green-300"; // Class for approved
+                            supervisorText = item.supervsiorApproved; // Set the text to "Approved"
+                        }
+
+                        var projectHtml = `
+                                    <div class="col-12 col-md-12 col-sm-12 col-lg-6">
+                                        <div class="card p-0">
+                                            <div class="card-header no-border d-flex align-items-center">
+                                                <div class="widget-49-date-warning d-flex align-items-center">
+                                                    <span class="badge bg-warning rounded-circle text-dark d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                        ${(counter += 1)}
+                                                    </span>
+                                                </div>
+                                                                                                    ${userRole === "Cordinator" ? `                                                                <h5 class=" esizeSmall fs-md-4 fs-lg-3 mx-1">${item.code}</h5>
+            ` : ""}
+                                                     ${item.status === "Approved"
+                                ? `
+                                                                           <span title="Project Approved!" class="esizeSmall bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+        <i class="fas fa-check-circle"></i>
+        Approved
+    </span>
+                                                                    `
+                                : `
+                                                                            <span title="Not Approved!" class=" esizeSmall bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+         <i class="fas fa-times-circle"></i>
+         Not Approved
+     </span>
+                                                                    `
+                            }
 
 
+                                                                                ${userRole === "Supervisor" ? `
+
+                                                                                                    <div class="ml-auto">
+                        <!-- Details Icon -->
+                        <a href="javascript:void(0)" class="detailIcon" style="margin-left:1rem;" data-id="${item.code}" id="Details" title="Details">
+                            <i class="fas fa-info-circle text-blue-700 hover:text-blue-500 transition-all"></i>
+                        </a>
+                            ${item.supervsiorApproved !== "Approved"
+                                    ? `
+                            <!-- Approve Icon -->
+                            <a href="javascript:void(0)" class="approvedIcon" style="margin-left:1rem;" data-id="${item.id}" data-status="Approved" title="Approve the Project">
+                                <i class="fas fa-check-circle text-green-700 hover:text-green-500 transition-all"></i>
+                            </a>
+                            `
+                                    : ""
+                                }
+                    </div>
+
+
+                                                                                ` : ""}
+
+
+
+
+
+                                            </div>
+                                            <div class="card-body pt-0">
+                                                <div class="widget-49">
+                                                    <div class="table-responsive" style="overflow-x: auto;">
+                                                        <table class="mb-0" style="border-spacing: 0; min-width: 200px;">
+                                                                                                            ${userRole === "Supervisor" ? `
+                                                                                                                <tr>
+        <td>
+            <span class="text-black fw-bold">Code:</span>
+           <u> <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:3.3rem;">
+                <b>${item.code}</b>
+                </span></u>
+        </td>
+    </tr>
+         <tr>
+                                                                    <td>
+                                                                        <span class="text-black fw-bold">Title:</span>
+                                                                            <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:3.9rem;">
+                                                                            <b>${item.title}</b>
+                                                                        </span></u>
+                                                                    </td>
+                                                                </tr>
+                                                                                                            ` : ""}
+
+                                                                                                                ${userRole === "Cordinator" ? `<tr>
+        <td>
+            <span class="text-black fw-bold">Title:</span>
+                <u><span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                <b>${item.title}</b>
+            </span></u>
+        </td>
+    </tr>` : ""}
+
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="text-black fw-bold">Group Name:</span>
+                                                                    <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300">
+                                                                            <b>${item.groupname}</b>
+                                                                        </span></u>
+                                                                </td>
+                                                            </tr>
+                                                                  <tr>
+                                                                                <td class="">
+                                                                                    <span class="text-black fw-bold">Department:</span>
+                                                                                            <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem"><b>${item.projectGroup}</b></span></u>
+                                                                                </td>
+                                                                            </tr>
+                                                                                ${item.PropPPT != null && item.PropReport != null
+                                ? `
+        <tr>
+            <td class="">
+                <span class="text-black fw-bold">Submission:</span>
+                <u>
+                    <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem">
+                        <b>
+                            Proposal Docs Submitted
+                            ${item.MidPPT != null && item.MidReport != null
+                                    ? `, Mid Docs Submitted`
+                                    : ``}
+                            ${item.MidPPT != null && item.MidReport != null && item.FinalDocs != null
+                                    ? `, Final Docs Submitted`
+                                    : ``}
+                        </b>
+                    </span>
+                </u>
+            </td>
+        </tr>
+      `
+                                : `
+        <tr>
+            <td class="">
+                <span class="text-black fw-bold">Submission:</span>
+                <u>
+                    <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem">
+                        <b>N/A</b>
+                    </span>
+                </u>
+            </td>
+        </tr>
+      `
+                            }
+
+                                                        </table>
+
+                                                    </div>
+                                                               ${item.status === "Approved"
+                                ? `
+                                                                          <div class="d-flex justify-content-end">
+        <p class="btn btn-sm btn-flash-border-warning Submission" data-id="${item.Id}">Submission</p>
+        <p class="btn btn-sm btn-flash-border-warning" id="Details" data-id="${item.code}">Details</p>
+
+    </div>
+                                                                        `
+                                : `
+                                                                           <div class="d-flex justify-content-end">
+        <button class="btn btn-sm btn-flash-border-warning Submission" data-id="${item.Id}" disabled>Submission</button>
+        <p class="btn btn-sm btn-flash-border-warning" id="Details" data-id="${item.code}">Details</p>
+
+    </div>
+                                                                        `
+                            }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+
+                        // Append the project card to the container
+                        $("#ProjectContainer").append(projectHtml);
+                    });
+                } else {
+                    // If no projects are found, display a "No Projects Found" message
+                    var noProjectsHtml = `
+                                                    <div class="container">
+                                                        <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                                <p class="text-secondary fw-bold text-center" style="font-size: 1.5rem;">No Projects Found!</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                    $("#ProjectContainer").append(noProjectsHtml);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                hideLoadingSpinner();
+                console.error("Error fetching groups:", textStatus, errorThrown);
+                alert("An error occurred while fetching the groups. Please try again.");
+            }
+        });
     });
 
 
-</script>
-<style>
 
-    body {
-        overflow: hidden;
+
+
+</script>
+
+<style>
+    @@media (max-width: 768px) {
+        /* Styles for small screens (mobile devices) */
+        .esizeSmall {
+            font-size: 9px !important;
+        }
     }
-    .customheightcard {
-        height: 78vh !important
+
+    .DeleteButton {
+        color: #dc2626 !important;
     }
+
+    .AssignButton1 {
+        color: #16a34a !important;
+    }
+
+    .EditButton {
+        color: #0891b2 !important;
+    }
+
+    .DetailsButton {
+        color: #f59e0b !important;
+    }
+
+    /* For Chrome, Safari, Edge, and Opera */
+    ::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
+        height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Background of the scrollbar track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+        border-radius: 10px; /* Rounded corners for the scrollbar */
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+        }
+
 
     .card-margin {
         margin-bottom: 1.875rem !important;
     }
+
+
 
     .card {
         border: 0 !important;
@@ -202,9 +676,11 @@
         word-wrap: break-word !important;
         background-color: #ffffff !important;
         background-clip: border-box !important;
-        border: 1px solid #e6e4e9 !important;
+        border: 1px solid #dc2626 !important;
+        border: 1px solid #3b0764 !important;
         border-radius: 8px !important;
     }
+
 
         .card .card-header.no-border {
             border: 0 !important;
@@ -222,6 +698,7 @@
     .card-header:first-child {
         border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
     }
+
 
     .widget-49 .widget-49-title-wrapper {
         display: flex !important;
