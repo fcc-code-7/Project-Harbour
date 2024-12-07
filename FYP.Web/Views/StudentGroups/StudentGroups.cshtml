@@ -53,7 +53,7 @@
 
                                                         @if (Model.Batches != null)
                                                         {
-                                                            <select class="form-control" id="BatchSelect">
+                                                            <select class="form-control" id="BatchNameSelect">
                                                                 <option value="" selected>Select Batch</option>
                                                                 @foreach (var item in Model.Batches)
                                                                 {
@@ -336,7 +336,7 @@
             });
         });
 
-        $('.changeSupervisor').on('click', function () {
+        $(document).off('click', '.changeSupervisor').on('click', '.changeSupervisor', function (e) {
             var groupId = $(this).data("value");
             $.ajax({
                 url: '/studentgroups/ChangeSupervisor',
@@ -366,7 +366,7 @@
                 });
             });
         var Id = "";
-        $(document).on('click', '.deleteBTN', function (e) {
+        $(document).off('click', '.deleteBTN').on('click', '.deleteBTN', function (e) {
             e.preventDefault();
             Id = $(this).data("id");
             $('#modalGrouo').modal('show');
@@ -394,7 +394,7 @@
         });
 
     @* ChangeSupervisor *@
-            $('.changeSupervisor').on('click', function () {
+            $(document).off('click', '.changeSupervisor').on('click', '.changeSupervisor', function (e) {
                 var groupId = $(this).data("id");
                 $.ajax({
                     url: '/studentgroups/ChangeSupervisor',
@@ -409,12 +409,12 @@
                 });
             });
 
-        $(document).on('change', '#GroupNameCheck, #BatchSelect', function (e) {
+        $(document).on('change', '#GroupNameCheck, #BatchNameSelect', function (e) {
             e.preventDefault();
 
             showLoadingSpinner();
             var groupWord = $("#GroupNameCheck").val();  // Get the group name from the input
-            var batch = $("#BatchSelect").val();  // Get the selected batch
+            var batch = $("#BatchNameSelect").val();  // Get the selected batch
 
             // Send both GroupWord and Batch to the server
             $.ajax({
@@ -527,9 +527,24 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     hideLoadingSpinner();
+
+                    // Log the error details for debugging
                     console.error("Error fetching groups:", textStatus, errorThrown);
-                    alert("An error occurred while fetching the groups. Please try again.");
+                    console.error("Response text:", jqXHR.responseText); // Log the server response
+                    console.error("HTTP status:", jqXHR.status); // Log the HTTP status code
+
+                    // Show a more specific error message to the user
+                    if (jqXHR.status === 0) {
+                        alert("Network error: Please check your internet connection.");
+                    } else if (jqXHR.status === 404) {
+                        alert("Error: The requested resource could not be found.");
+                    } else if (jqXHR.status === 500) {
+                        alert("Server error: Please try again later.");
+                    } else {
+                        alert("An error occurred: " + errorThrown);
+                    }
                 }
+
             });
         });
 

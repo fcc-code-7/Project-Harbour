@@ -1617,12 +1617,10 @@ namespace FYP.Web.Controllers
                 });
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> FilterGroups(string GroupWord, string Batch)
         {
             var model = new StudentGroupViewModel();
-            var filteredGroups = new List<StudentGroup>();
             var groups = await _studentGroupService.GetAllAsync();
 
             // Determine if GroupWord starts with an alphabet or a number
@@ -1631,81 +1629,71 @@ namespace FYP.Web.Controllers
             // Fetch all user details upfront for filtering by names
             var allUsers = await _userService.GetAllAsync();
 
-            if (User.IsInRole("Supervisor"))
-            {
-                var currentUserId = _userManager.GetUserId(User);
-
-                // Filter groups
-                filteredGroups = groups
-                    .Where(g => g.SupervisorID == currentUserId) // Filter by supervisor ID
-                    .Where(g =>
-                        string.IsNullOrWhiteSpace(GroupWord) ||
-                        (startsWithAlphabet
-                            ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
-                            : // Search by LeaderName, Member1, or Member2 resolved from their IDs
-                              allUsers.Any(u =>
-                                  (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
-                                  (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
-                                  (u.Id == g.student3ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase))))
-                    )
-                    .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // Filter by Batch
-                    .ToList();
-            }
-
-            if (User.IsInRole("Cordinator"))
-            {
-                // Filter groups
-                filteredGroups = groups
-                    .Where(g =>
-                        string.IsNullOrWhiteSpace(GroupWord) ||
-                        (startsWithAlphabet
-                            ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
-                            : // Search by LeaderName, Member1, or Member2 resolved from their IDs
-                              allUsers.Any(u =>
-                                  (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
-                                  (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
-                                  (u.Id == g.student3ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase))))
-                    )
-                    .Where(g => string.IsNullOrEmpty(Batch) || g.Batch == Batch) // Filter by Batch
-                    .ToList();
-            }
-
             // Fetch project details
-            var project = await _projectService.GetAllAsync();
+            var projects = await _projectService.GetAllAsync();
 
-            var studentGroupViewModels = new List<StudentGroupViewModel>();
+            // Get the current user ID for Supervisor role filtering
+            var currentUserId = User.IsInRole("Supervisor") ? _userManager.GetUserId(User) : null;
 
-            foreach (var g in filteredGroups)
+            // Consolidated filtering logic
+            var filteredGroups = groups.Where(g =>
             {
-                var leaderTask = _userService.GetByIdAsync(g.student1LID);
-                var member1Task = _userService.GetByIdAsync(g.student2ID);
-                var member2Task = _userService.GetByIdAsync(g.student3ID);
-                var supervisorTask = _userManager.FindByIdAsync(g.SupervisorID);
+                bool matchesGroupWord = string.IsNullOrWhiteSpace(GroupWord) ||
+                    (startsWithAlphabet
+                        ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
+                        : allUsers.Any(u =>
+                            (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                            (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
+                            (u.Id == g.student3ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase))
+                        ));
 
-                await Task.WhenAll(leaderTask, member1Task, member2Task, supervisorTask);
+                bool matchesBatch = string.IsNullOrEmpty(Batch) || g.Batch == Batch;
 
-                var leader = await leaderTask;
-                var member1 = await member1Task;
-                var member2 = await member2Task;
-                var supervisor = await supervisorTask;
+                bool matchesRole = User.IsInRole("Supervisor")
+                    ? g.SupervisorID == currentUserId // Filter by supervisor ID
+                    : true;
 
-                studentGroupViewModels.Add(new StudentGroupViewModel
+                return matchesGroupWord && matchesBatch && matchesRole;
+            }).ToList();
+
+            // Fetch user details and projects in parallel to reduce waiting time
+            var userTasks = filteredGroups.Select(g => new
+            {
+                Group = g,
+                Leader = _userService.GetByIdAsync(g.student1LID),
+                Member1 = _userService.GetByIdAsync(g.student2ID),
+                Member2 = _userService.GetByIdAsync(g.student3ID),
+                Supervisor = _userManager.FindByIdAsync(g.SupervisorID)
+            }).ToList();
+
+            var result = new List<StudentGroupViewModel>();
+
+            foreach (var task in userTasks)
+            {
+                // Wait for all user data to load in parallel for each group
+                var leader = await task.Leader;
+                var member1 = await task.Member1;
+                var member2 = await task.Member2;
+                var supervisor = await task.Supervisor;
+
+                var project = projects.FirstOrDefault(p => p.projectGroup == task.Group.Name);
+
+                result.Add(new StudentGroupViewModel
                 {
-                    GrouID = g.ID.ToString(),
-                    groupId = g.ID.ToString(),
-                    companyID = g.companyID,
-                    Batch = g.Batch,
-                    CordinatorID = g.CordinatorID,
-                    CoSupervisorID = g.CoSupervisorID,
-                    Id = g.ID,
-                    Name = g.Name,
-                    student1LID = g.student1LID,
-                    student2ID = g.student2ID,
-                    student3ID = g.student3ID,
-                    SupervisorID = g.SupervisorID,
-                    Year = g.Year,
-                    projectname = project.Where(p => p.projectGroup == g.Name).Select(p => p.Title).FirstOrDefault(),
-
+                    GrouID = task.Group.ID.ToString(),
+                    groupId = task.Group.ID.ToString(),
+                    companyID = task.Group.companyID,
+                    Batch = task.Group.Batch,
+                    CordinatorID = task.Group.CordinatorID,
+                    CoSupervisorID = task.Group.CoSupervisorID,
+                    Id = task.Group.ID,
+                    Name = task.Group.Name,
+                    student1LID = task.Group.student1LID,
+                    student2ID = task.Group.student2ID,
+                    student3ID = task.Group.student3ID,
+                    SupervisorID = task.Group.SupervisorID,
+                    Year = task.Group.Year,
+                    projectname = project?.Title ?? "Not Found", // Avoid multiple searches
                     LeaderName = leader?.Email ?? "Not Found",
                     member1 = member1?.Email ?? "Not Found",
                     Member2 = member2?.Email ?? "Not Found",
@@ -1713,10 +1701,11 @@ namespace FYP.Web.Controllers
                 });
             }
 
-            model.StudentGroups = studentGroupViewModels;
+            model.StudentGroups = result;
 
             return Json(model.StudentGroups);
         }
+
 
 
 
