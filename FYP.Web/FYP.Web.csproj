@@ -16,6 +16,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="RichTextEditor" Version="8.2.0.9" />
     <PackageReference Include="SqlTableDependency" Version="8.5.8" />
   </ItemGroup>
 

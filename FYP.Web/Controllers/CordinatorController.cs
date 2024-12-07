@@ -1,11 +1,14 @@
 ﻿using FYP.Databases;
 using FYP.Entities;
+using FYP.Models;
 using FYP.Services;
 using FYP.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace FYP.Web.Controllers
 {
@@ -21,8 +24,9 @@ namespace FYP.Web.Controllers
         private readonly IEvaluationService _evaluationService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IFYPCommitteService _fYPCommitteService;
+        private readonly INotificationsService _notificationsService;
 
-        public CordinatorController(IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public CordinatorController(INotificationsService notificationsService,IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -34,6 +38,7 @@ namespace FYP.Web.Controllers
             _companyService = companyService;
             _evaluationService = evaluationService;
             _fYPCommitteService = fYPCommitteService;
+            _notificationsService = notificationsService;
         }
         public IActionResult Index()
         {
@@ -577,29 +582,144 @@ namespace FYP.Web.Controllers
             var groups = await _studentGroupService.GetAllAsync();
             if (groups != null)
             {
-                var filteredGroups = groups.Where(g => g.Batch == Batch).ToList();
+                var filteredGroups = groups.Select(x=>x.Batch).Distinct().ToList();
                 var model = new NotificationsViewModel();
-                if (filteredGroups != null && filteredGroups.Any())
-                {
-                    // Populate the students and supervisors lists in one pass
-                    model.students = filteredGroups
-                        .SelectMany(g => new[] { g.student1LID, g.student2ID, g.student3ID }) // Combine all students
-                        .Where(studentId => !string.IsNullOrEmpty(studentId)) // Filter out null or empty IDs
-                        .Distinct() // Remove duplicates if any
-                        .ToList();
-
-                    model.supervisor = filteredGroups
-                        .Select(g => g.SupervisorID) // Get supervisor IDs
-                        .Where(supervisorId => !string.IsNullOrEmpty(supervisorId)) // Filter out null or empty IDs
-                        .Distinct() // Remove duplicates
-                        .ToList();
-                }
+                model.Batches = filteredGroups;
 
             return PartialView(model);
             }
             return PartialView();
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateNotifications([FromBody] NotificationsViewModel model)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var notification = new Notifications
+            {
+                Subject = model.Subject,
+                Message = model.Message,
+                UserType = model.UserType,
+                Date = DateOnly.FromDateTime(DateTime.Now).ToString(),
+                SenderId = currentUser.Id,
+                Batch = model.Batch
+            };
+            await _notificationsService.AddAsync(notification);
+            return RedirectToAction("Notifications", "Cordinator", new { Batch = model.Batch });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMessageDetails(string id)
+        {
+            var Fetchnotification = await _notificationsService.GetAllAsync();
+            var notification = Fetchnotification.Where(x => x.ID.ToString() == id).FirstOrDefault();
+            var model = new NotificationsViewModel();
+            model.Message = notification.Message;
+            model.Subject = notification.Subject;
+            model.Date = notification.Date;
 
+
+            if (notification == null)
+            {
+                return NotFound();
+            }
+
+            // Return the partial view with the message data
+            return PartialView(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Notifications()
+        {
+            var notifications = await _notificationsService.GetAllAsync();
+            var studentGroups = await _studentGroupService.GetAllAsync(); // Assuming you have a service to fetch student groups
+            var model = new NotificationsViewModel();
+
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get current user ID
+            string userBatch = studentGroups
+                .FirstOrDefault(g => g.student1LID == currentUserId
+                                  || g.student2ID == currentUserId
+                                  || g.student3ID == currentUserId)
+                ?.Batch;
+
+            if (notifications != null && notifications.Any())
+            {
+                if (User.IsInRole("Student") && !string.IsNullOrEmpty(userBatch))
+                {
+                    // Only show messages for the student's batch
+                    var filteredNotifications = notifications
+                        .Where(x => x.Batch == userBatch && x.UserType == "Student")
+                        .OrderByDescending(x => x.Date);
+
+                    model.NotificationsViewModels = filteredNotifications.Select(x => new NotificationsViewModel
+                    {
+                        Id = x.ID,
+                        Subject = x.Subject,
+                        Message = x.Message,
+                        UserType = x.UserType,
+                        Date = x.Date,
+                        SenderId = x.SenderId,
+                        Batch = x.Batch
+                    }).ToList();
+                }
+                else
+                {
+                    // Other roles (e.g., Coordinator or Supervisor)
+                    var filteredNotifications = notifications.OrderByDescending(x => x.Date);
+
+                    model.NotificationsViewModels = filteredNotifications.Select(x => new NotificationsViewModel
+                    {
+                        Id = x.ID,
+                        Subject = x.Subject,
+                        Message = x.Message,
+                        UserType = x.UserType,
+                        Date = x.Date,
+                        SenderId = x.SenderId,
+                        Batch = x.Batch
+                    }).ToList();
+                }
+            }
+
+            return PartialView(model);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMessage(string id)
+        {
+            var notifications = await _notificationsService.GetAllAsync();
+            var fetchNotification = notifications.Where(x => x.ID.ToString() == id).FirstOrDefault();
+            if (fetchNotification != null)
+            {
+                await _notificationsService.DeleteAsync(fetchNotification.ID.ToString());
+                return RedirectToAction("Notifications", "Cordinator");
+            }
+            return NotFound();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMessages(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("Search query cannot be empty.");
+
+            var notifications = await _notificationsService.GetAllAsync();
+
+            var filteredNotifications = notifications
+                .Where(n =>
+                    (n.Message != null && n.Message.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                    (n.Subject != null && n.Subject.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                    (n.Date != null && n.Date.Contains(query, StringComparison.OrdinalIgnoreCase))
+                )
+                .Select(n => new
+                {
+                    Id = n.ID, // Assuming Id exists in the model
+                    n.Subject,
+                    n.Message,
+                    n.Date
+                })
+                .ToList();
+
+            return Ok(filteredNotifications);
+        }
 
     }
 

@@ -1,0 +1,243 @@
+﻿@model FYP.Web.ViewModels.NotificationsViewModel
+
+
+@{
+    int counter = 0;
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class=" ">
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px;">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            Compose
+                                        </h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12">
+                                                    <!-- Batch Dropdown -->
+                                                    <div class="form-group">
+                                                        <label for="PBatch">Batch</label>
+                                                        <select class="form-control" id="BatchName" name="BatchName" asp-for="Batch">
+                                                            <option value="">Select Batch</option>
+                                                            @if (Model?.Batches != null && Model.Batches.Any())
+                                                            {
+                                                                foreach (var item in Model.Batches)
+                                                                {
+                                                                    if (Model.Batch != null)
+                                                                    {
+                                                                        if (item == Model.Batch)
+                                                                        {
+                                                                            <option value="@item" selected>
+                                                                                @item
+                                                                            </option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@item">
+                                                                                @item
+                                                                            </option>
+                                                                        }
+
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item">
+                                                                            @item
+                                                                        </option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+                                                        <span asp-validation-for="Batches" class="text-danger"></span>
+                                                    </div>
+
+                                                    <!-- Group Dropdown -->
+                                                    <div class="form-group">
+                                                        <label for="UserId">To</label>
+                                                        <select class="form-control" id="UserType" name="UserType" asp-for="UserType">
+                                                            <option value="">Select Channel</option>
+                                                            <option value="Student">Student</option>
+                                                            <option value="Supervisor">Supervisor</option>
+                                                            <option value="Website">Website</option>
+                                                        </select>
+                                                        <span asp-validation-for="UserType" class="text-danger"></span>
+                                                    </div>
+
+                                                    <!-- Email Input -->
+                                                    <div class="form-group">
+                                                        <label for="email">Subject</label>
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                               
+                                                                <input type="text" class="form-control" value="@Model?.Subject" id="Subject"
+                                                                       aria-describedby="basic-addon3" name="Subject" required />
+                                                            </div>
+                                                            <span asp-validation-for="Subject" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+                                                    <!-- Body Input -->
+                                                    <div class="form-group">
+                                                        <label for="email">Message</label>
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                
+                                                                <textarea id="Messages" class="form-control" style="height:200px; resize:none" name="Message" asp-for="Message"></textarea>
+
+                                                            </div>
+                                                            <span asp-validation-for="Message" class="text-danger"></span>
+                                                        </fieldset>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-primary" id="MessageSend">Send</button>
+                                    </div>
+                                </form>
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<style>
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+
+    .noborder {
+        border-color: white !important;
+    }
+
+
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #3b0764 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+
+        $("#previousbtn").click(function () {
+            $.ajax({
+                url: '/cordinator/projects',
+                type: "GET",
+                success: function (response) {
+                    $("#MainContainer").html(response);  // Ensure the response is valid HTML
+                },
+                error: function () {
+                    console.log("Error fetching projects.");
+                }
+            });
+        });
+
+        $(document).off('click', '#MessageSend').on('click', '#MessageSend', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Gather form data
+            var formData = {
+                Batch: $("#BatchName").val(),
+                UserType: $("#UserType").val(),
+                Message: $("#Messages").val(),
+                Subject: $("#Subject").val(),
+            };
+
+            // AJAX POST Request
+            $.ajax({
+                url: "/Cordinator/CreateNotifications", // Replace with your controller route
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    $("#MainContainer").html(response);  // Ensure the response is valid HTML
+                },
+                error: function (xhr) {
+                    alert("An error occurred: " + (xhr.responseJSON?.message || "Unknown error"));
+                }
+            });
+        });
+    });
+
+</script>
+

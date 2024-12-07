@@ -1,0 +1,190 @@
+﻿@model FYP.Web.ViewModels.NotificationsViewModel
+
+
+@{
+    int counter = 0;
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class=" ">
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px;">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            Message
+                                        </h1>
+                                    </div>
+
+                                </div>
+
+                                <div class="mb-4 mt-1">
+                                    <div class="card-body">
+                                        <h5 class="mb-1 inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-lg text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500"><b>@Model.Subject</b></h5>
+                                  <br />
+                                        <p style="white-space: pre-wrap; word-wrap: break-word;">
+                                            @Model.Message
+                                        </p>                        
+                                        <p class="text-muted d-flex justify-content-end">Date: @Model.Date</p>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+@* @if (Model.successmodel == "Added")
+{
+    <script>
+        Swal.fire({
+            title: 'Successfully Added!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+@if (Model.successmodel == "Existed")
+{
+    <script>
+        Swal.fire({
+            title: 'Already Existed!',        // Title of the modal
+            icon: 'warning',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+} *@
+
+<style>
+    /* Default styles for larger screens */
+    .table-responsive {
+        max-height: 340px !important; /* Set a maximum height for the table container */
+        overflow-y: auto !important; /* Enable vertical scrolling when content overflows */
+    }
+
+    .table thead {
+        position: sticky !important;
+        top: 0 !important; /* Stick the header to the top of the container */
+        background-color: #fff !important; /* Optional: Set a background color to make the header stand out */
+        z-index: 1 !important; /* Ensure the header stays above the table body */
+    }
+
+    .table td, .table th {
+        white-space: nowrap !important; /* Prevent text from wrapping inside cells */
+        text-overflow: ellipsis !important; /* Add ellipsis for overflowing text */
+        overflow: hidden !important;
+    }
+
+    /* For small screens (max-width 768px or adjust based on your needs) */
+    @@media (max-width: 768px) {
+        .table-responsive {
+            max-height: 500px !important; /* Set a maximum height for the table container */
+            overflow-y: auto !important; /* Enable vertical scrolling when content overflows */
+        }
+
+        .table thead {
+            position: sticky !important;
+            top: 0 !important; /* Stick the header to the top of the container */
+            background-color: #fff !important; /* Optional: Set a background color to make the header stand out */
+            z-index: 1 !important; /* Ensure the header stays above the table body */
+        }
+
+        .table td, .table th {
+            white-space: nowrap !important; /* Prevent text from wrapping inside cells */
+            text-overflow: ellipsis !important; /* Add ellipsis for overflowing text */
+            overflow: hidden !important;
+        }
+    }
+
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+
+    .noborder {
+        border-color: white !important;
+    }
+
+
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #3b0764 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+

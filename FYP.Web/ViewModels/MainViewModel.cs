@@ -380,7 +380,12 @@ namespace FYP.Web.ViewModels
         public string? SenderId { get; set; }
 
         public List<string> students { get; set; }
+        public string? Date { get; set; }
+        public string? UserType { get; set; }
+
+        public List<NotificationsViewModel> NotificationsViewModels { get; set; }
         public List<string> supervisor { get; set; }
+        public List<string> Batches { get; set; }
     }
     public class ExternalEvaluation
     {
