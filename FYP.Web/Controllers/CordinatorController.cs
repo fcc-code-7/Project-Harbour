@@ -274,6 +274,7 @@ namespace FYP.Web.Controllers
 
         public async Task<IActionResult> Evaluation(string Etype, int marks, string batch, string ViewValue)
         {
+            
             var group = await _studentGroupService.GetAllAsync();
 
             if (group != null && group.Any()) // Check if group is not null and has data
@@ -294,7 +295,16 @@ namespace FYP.Web.Controllers
                     PBatch = existingEvaluations?.PBatch ?? "", // Default value
                     LastDate = existingEvaluations?.LastDate ?? DateTime.Now, // Default value
                 };
-
+                var Evaluation = await _evaluationService.GetAllAsync();
+                if (Evaluation != null)
+                {
+                    model.EvaluationList = Evaluation.Select(x => new EvaluationViewModel
+                    {
+                        EvaluationName = x.EvaluationName,
+                        PBatch = x.PBatch,
+                        LastDate = x.LastDate
+                    }).ToList();
+                }
                 if (ViewValue != null)
                 {
                     model.success = ViewValue;
@@ -312,6 +322,12 @@ namespace FYP.Web.Controllers
                         model.PBatch = existingEvaluation.PBatch;
                         model.LastDate = existingEvaluation.LastDate;
                     }
+                    model.EvaluationList = Evaluation.Where(x=>x.PBatch == batch).Select(x => new EvaluationViewModel
+                    {
+                        EvaluationName = x.EvaluationName,
+                        PBatch = x.PBatch,
+                        LastDate = x.LastDate
+                    }).ToList();
                 }
 
                 return PartialView(model);
@@ -324,7 +340,7 @@ namespace FYP.Web.Controllers
                 PBatch = null,
                 LastDate = DateTime.Now
             };
-
+            
             return PartialView(emptyModel);
         }
 

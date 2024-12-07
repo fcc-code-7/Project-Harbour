@@ -359,6 +359,7 @@ namespace FYP.Web.ViewModels
         public string? EvaluationName { get; set; }
         public List<string> batches { get; set; }
         public List<string> EvalType { get; set; }
+        public List<EvaluationViewModel> EvaluationList { get; set; }
         public List<EvaluationViewModel> evaluations { get; set; }
         public string? PropDocs { get; set; }
         public string? MidDocs { get; set; }

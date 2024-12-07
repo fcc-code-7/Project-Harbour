@@ -175,7 +175,7 @@
                                                     *@       <div class="ml-auto mx-1">
                                                                 @if (item.ActiveState != "Active")
                                                                 {
-                                                                <button type="button" class="btn btn-sm btn-primary " id="EditExternal" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Edit</button>
+                                                                    <button type="button" class="btn btn-sm btn-primary " id="EditExternal" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Edit</button>
                                                                     <button type="button" class="btn btn-sm btn-success   text-white" id="ActiveAccount" data-id="@item.ExternalId" data-email="@item.ExternalEmail" data-batch="@item.Batch">Active</button>
 
                                                                 }
@@ -193,7 +193,7 @@
                                                                             <td class="text-black fw-bold">Group:</td>
                                                                             <td>
                                                                                 <span class="inline-flex mx-2 items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
-                                                                                   <b> @item.Name </b>
+                                                                                    <b> @item.Name </b>
                                                                                 </span>
                                                                             </td>
                                                                         </tr>
@@ -544,7 +544,7 @@
         });
         $(document).off('change', '#PBatch').on('change', '#PBatch', function (e) {
             if (e.originalEvent) {
-               
+
                 var Batch = $(this).val();
                 if (Batch) {
                     $.ajax({
