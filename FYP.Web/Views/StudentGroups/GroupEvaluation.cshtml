@@ -208,6 +208,15 @@
                                                               placeholder="Enter Remarks">@Model.Remarks</textarea>
                                                 </div>
 
+                                                <div class="w-100 mt-2">
+                                                    <label>Marks:</label>
+                                                    <input type="number" name="PMarks" id="PMarks" class="form-control"
+                                                           value="@Model.StudentsProposalMarks"
+                                                           placeholder="Enter Marks"
+                                                           min="0" max="10" step="1" oninput="validateMarks(this)">
+                                                </div>
+
+
                                                 <!-- Submit Button -->
                                                 <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
                                                     <div class="flex justify-center">
@@ -296,6 +305,36 @@
                                                     <textarea name="Remarks" id="Remarks" class="form-control" style="resize:none; height:150px;"
                                                               placeholder="Enter Remarks">@Model.Remarks</textarea>
                                                 </div>
+                                                <div class="row w-100 mt-2">
+                                                    <!-- Student 1 Marks -->
+                                                    <div class="col-md-4">
+                                                        <label for="PMidMarks1">Student 1 Marks:</label>
+                                                        <input type="number" name="PMidMarks1" id="PMidMarks1" class="form-control"
+                                                               value="@Model.Student1MidMarks"
+                                                               placeholder="Enter Marks"
+                                                               min="0" max="20" step="1" oninput="validateMidMarks(this)">
+                                                    </div>
+
+                                                    <!-- Student 2 Marks -->
+                                                    <div class="col-md-4">
+                                                        <label for="PMidMarks2">Student 2 Marks:</label>
+                                                        <input type="number" name="PMidMarks2" id="PMidMarks2" class="form-control"
+                                                               value="@Model.Student2MidMarks"
+                                                               placeholder="Enter Marks"
+                                                               min="0" max="20" step="1" oninput="validateMidMarks(this)">
+                                                    </div>
+                                                    @if (Model.stu3 != "Don't exist")
+                                                    {
+                                                        <!-- Student 3 Marks -->
+                                                        <div class="col-md-4">
+                                                            <label for="PMidMarks3">Student 3 Marks:</label>
+                                                            <input type="number" name="PMidMarks3" id="PMidMarks3" class="form-control"
+                                                            value="@Model.Student3MidMarks"
+                                                            placeholder="Enter Marks"
+                                                            min="0" max="20" step="1" oninput="validateMidMarks(this)">
+                                                        </div>
+                                                    }
+                                                </div>
 
                                                 <!-- Submit Button -->
                                                 <div class="col-12 col-lg-12 col-md-12 col-sm-12 mt-2">
@@ -336,7 +375,8 @@
                                                         <input type="radio" name="qno2" value="2" @(Model.qno2 == "2" ? "checked" : "") /> Poor
                                                     </div>
                                                 </div>
-
+                                                @if (Model.stu3 != "Don't exist")
+                                                {
                                                 <!-- 3rd Student -->
                                                 <div class="border border-2 border-dark w-100 mt-2" style="border-radius: 12px 12px 0px 0px;">
                                                     <p class="fw-bold fs-4 px-2 py-2">3<sup>rd</sup> Student - @Model.stu3</p>
@@ -350,12 +390,43 @@
                                                         <input type="radio" name="qno3" value="2" @(Model.qno3 == "2" ? "checked" : "") /> Poor
                                                     </div>
                                                 </div>
-
+                                                }
                                                 <!-- Remarks -->
                                                 <div class="w-100 mt-2">
                                                     <label>Remarks:</label>
                                                     <textarea name="Remarks" id="Remarks" class="form-control" style="resize:none; height:150px;"
                                                               placeholder="Enter Remarks">@Model.Remarks</textarea>
+                                                </div>
+                                                <div class="row w-100 mt-2">
+                                                    <!-- Student 1 Marks -->
+                                                    <div class="col-md-4">
+                                                        <label for="PFinalMarks1">Student 1 Marks:</label>
+                                                        <input type="number" name="PFinalMarks1" id="PFinalMarks1" class="form-control"
+                                                               value="@Model.Student1FinalMarks"
+                                                               placeholder="Enter Marks"
+                                                               min="0" max="40" step="1" oninput="validateFinalMarks(this)">
+                                                    </div>
+
+                                                    <!-- Student 2 Marks -->
+                                                    <div class="col-md-4">
+                                                        <label for="PFinalMarks2">Student 2 Marks:</label>
+                                                        <input type="number" name="PFinalMarks2" id="PFinalMarks2" class="form-control"
+                                                               value="@Model.Student2FinalMarks"
+                                                               placeholder="Enter Marks"
+                                                               min="0" max="40" step="1" oninput="validateFinalMarks(this)">
+                                                    </div>
+
+                                                    @if (Model.stu3 != "Don't exist")
+                                                    {
+                                                        <!-- Student 3 Marks -->
+                                                        <div class="col-md-4">
+                                                            <label for="PFinalMarks3">Student 3 Marks:</label>
+                                                            <input type="number" name="PFinalMarks3" id="PFinalMarks3" class="form-control"
+                                                                   value="@Model.Student3FinalMarks"
+                                                                   placeholder="Enter Marks"
+                                                                   min="0" max="40" step="1" oninput="validateFinalMarks(this)">
+                                                        </div>
+                                                    }
                                                 </div>
 
                                                 <!-- Submit Button -->
@@ -477,6 +548,18 @@
 
 
 <script>
+    function validateMarks(input) {
+        if (input.value < 0) input.value = 0; // Prevent negative values
+        if (input.value > 10) input.value = 10; // Prevent values greater than 10
+    }
+    function validateMidMarks(input) {
+        if (input.value < 0) input.value = 0; // Prevent negative values
+        if (input.value > 20) input.value = 20; // Prevent values greater than 10
+    }
+    function validateMidMarks(input) {
+        if (input.value < 0) input.value = 0; // Prevent negative values
+        if (input.value > 40) input.value = 40; // Prevent values greater than 10
+    }
     $(document).ready(function () {
         // Function to validate form
         function validateForm() {
@@ -556,6 +639,14 @@
                 qno7: $('input[name="qno7"]:checked').val(),
                 qno8: $('input[name="qno8"]:checked').val(),
                 Remarks: $('#Remarks').val(),
+                StudentsProposalMarks: $('#PMarks').val(),
+                Student1MidMarks: $('#PMidMarks1').val(),
+                Student2MidMarks: $('#PMidMarks2').val(),
+                Student3MidMarks: $('#PMidMarks3').val(),
+                Student1FinalMarks: $('#PFinalMarks1').val(),
+                Student2FinalMarks: $('#PFinalMarks2').val(),
+                Student3FinalMarks: $('#PFinalMarks3').val(),
+
             };
 
             // Send AJAX POST request

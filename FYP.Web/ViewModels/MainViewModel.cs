@@ -45,7 +45,22 @@ namespace FYP.Web.ViewModels
         public string LeaderName { get; set; }
         public string member1 { get; set; }
         public string Member2 { get; set; }
+        public string LeaderEnrollement { get; set; }
+        public string member1Enrollment { get; set; }
+        public string Member2Enrollment { get; set; }
+        public int? StudentsProposalMarks { get; set; }
+        public int? Student1MidMarks { get; set; }
+        public int? Student2MidMarks { get; set; }
+        public int? Student3MidMarks { get; set; }
+        public int? Student1FinalMarks { get; set; }
+        public int? Student2FinalMarks { get; set; }
+        public int? Student3FinalMarks { get; set; }
+        public string? ProposalRemarks { get; set; }
+        public string? MidRemarks { get; set; }
+        public string? FinalRemarks { get; set; }
         public string supervisorname { get; set; }
+        public int? CordinatorMarks { get; set; }
+        public int? SupervisorMarks { get; set; }
 
         public List<string> Batches { get; set; }
         public List<string> Years { get; set; }
@@ -81,7 +96,14 @@ namespace FYP.Web.ViewModels
         public string? stu1 { get; set; }
         public string? stu2 { get; set; }
         public string? stu3 { get; set; }
-        public decimal TotalMarks { get; set; }
+        public int? StudentsProposalMarks { get; set; }
+        public int? Student1MidMarks { get; set; }
+        public int? Student2MidMarks { get; set; }
+        public int? Student3MidMarks { get; set; }
+        public int? Student1FinalMarks { get; set; }
+        public int? Student2FinalMarks { get; set; }
+        public int? Student3FinalMarks { get; set; }
+        public int TotalMarks { get; set; }
         public List<string> Batchs { get; set; }
         public List<StudentGroup> Groups { get; set; }
         public List<string> Evaluations { get; set; }
@@ -144,8 +166,11 @@ namespace FYP.Web.ViewModels
     }
     public class FYPCommitteViewModel
     {
+        public Dictionary<string, int> SupervisorCount { get; set; }
+
         public Guid Id { get; set; }
         [Required(ErrorMessage = "Room Incharge Email is required")]
+
         public string? RoomInChargeEmail { get; set; }
         [Required(ErrorMessage = "Room Incharge Name is required")]
         public string? RoomInChargeName { get; set; }

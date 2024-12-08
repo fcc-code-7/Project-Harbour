@@ -25,8 +25,9 @@ namespace FYP.Web.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IFYPCommitteService _fYPCommitteService;
         private readonly INotificationsService _notificationsService;
+        private readonly IEvaluationCriteriaService _evaluationCriteriaService;
 
-        public CordinatorController(INotificationsService notificationsService,IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public CordinatorController(IEvaluationCriteriaService evaluationCriteriaService,INotificationsService notificationsService, IFYPCommitteService fYPCommitteService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -39,6 +40,7 @@ namespace FYP.Web.Controllers
             _evaluationService = evaluationService;
             _fYPCommitteService = fYPCommitteService;
             _notificationsService = notificationsService;
+            _evaluationCriteriaService = evaluationCriteriaService;
         }
         public IActionResult Index()
         {
@@ -274,7 +276,7 @@ namespace FYP.Web.Controllers
 
         public async Task<IActionResult> Evaluation(string Etype, int marks, string batch, string ViewValue)
         {
-            
+
             var group = await _studentGroupService.GetAllAsync();
 
             if (group != null && group.Any()) // Check if group is not null and has data
@@ -322,7 +324,7 @@ namespace FYP.Web.Controllers
                         model.PBatch = existingEvaluation.PBatch;
                         model.LastDate = existingEvaluation.LastDate;
                     }
-                    model.EvaluationList = Evaluation.Where(x=>x.PBatch == batch).Select(x => new EvaluationViewModel
+                    model.EvaluationList = Evaluation.Where(x => x.PBatch == batch).Select(x => new EvaluationViewModel
                     {
                         EvaluationName = x.EvaluationName,
                         PBatch = x.PBatch,
@@ -334,13 +336,14 @@ namespace FYP.Web.Controllers
             }
 
             // Return empty model if no group found
+            
             var emptyModel = new EvaluationViewModel
             {
                 batches = null,
                 PBatch = null,
                 LastDate = DateTime.Now
             };
-            
+
             return PartialView(emptyModel);
         }
 
@@ -426,7 +429,7 @@ namespace FYP.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ExternalsAccount(string batch, string ViewValue, string Group)
         {
-            
+
 
             var userGroup = await _studentGroupService.GetAllAsync();
             var project = await _projectService.GetAllAsync();
@@ -485,29 +488,44 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ExternalsAccount(ExternalEvaluation model)
         {
-
             var getUser = await _userManager.FindByEmailAsync(model.Email);
-
             var studentGroups = await _studentGroupService.GetAllAsync();
-            if (getUser != null)
+            var fypCommitteeGroups = await _fYPCommitteService.GetAllAsync();
+
+            if (getUser != null) // User already exists
             {
-                var CheckExternal = studentGroups.Where(x => x.ExternalId == getUser.Id);
-                var checkExternalGroup = CheckExternal.Where(x => x.ID.ToString() == model.Group);
-                if (checkExternalGroup != null)
+                // Check if the user is already assigned to the group
+                var isAssignedToStudentGroup = studentGroups.Any(x => x.ExternalId == getUser.Id && x.ID.ToString() == model.Group);
+                var isAssignedToFypGroup = fypCommitteeGroups.Any(x => x.ExternalId == getUser.Id && x.groupID.ToString() == model.Group);
+
+                if (isAssignedToStudentGroup || isAssignedToFypGroup)
                 {
                     return RedirectToAction("Evaluation", "Cordinator", new { batch = model.Batch, ViewValue = "Existed" });
                 }
-                else
+
+                // Assign to student group
+                var fetchStudentGroup = studentGroups.FirstOrDefault(x => x.ID.ToString() == model.Group);
+                if (fetchStudentGroup != null)
                 {
-                    var fetchGroup = studentGroups.FirstOrDefault(x => x.ID.ToString() == model.Group);
-                    fetchGroup.ExternalId = getUser.Id;
-                    await _studentGroupService.UpdateAsync(fetchGroup);
+                    fetchStudentGroup.ExternalId = getUser.Id;
+                    await _studentGroupService.UpdateAsync(fetchStudentGroup);
                 }
+
+                // Assign to FYP committee group
+                var fetchFypGroup = fypCommitteeGroups.FirstOrDefault(x => x.groupID.ToString() == model.Group && x.EvaluationID == "Final");
+                if (fetchFypGroup != null)
+                {
+                    fetchFypGroup.ExternalId = getUser.Id;
+                    await _fYPCommitteService.UpdateAsync(fetchFypGroup);
+                }
+
+                return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Added" });
             }
-            else
+            else // Create a new user
             {
                 var email = model.Email.Trim().ToLower();
                 var nameFromEmail = email.Split('@')[0]; // Extract name from email
+
                 var newUser = new AppUser
                 {
                     UserName = model.Email,
@@ -518,32 +536,36 @@ namespace FYP.Web.Controllers
                     ActiveState = "Active",
                     DateofCreation = DateOnly.FromDateTime(DateTime.Now),
                 };
-                var result = await _userManager.CreateAsync(newUser, "BahriaExternals123@@");
-                if (result.Succeeded)
+
+                var createResult = await _userManager.CreateAsync(newUser, "BahriaExternals123@@");
+                if (createResult.Succeeded)
                 {
-                    var role = await _userManager.AddToRoleAsync(newUser, Roles.External.ToString());
-                    if (role != null)
+                    var roleResult = await _userManager.AddToRoleAsync(newUser, Roles.External.ToString());
+                    if (roleResult.Succeeded)
                     {
-                        var getUsers = await _userService.GetAllAsync();
-                        var user = getUsers.Where(x => x.Email == model.Email).FirstOrDefault();
-                        if (user != null)
+                        var fetchStudentGroup = studentGroups.FirstOrDefault(x => x.ID.ToString() == model.Group);
+                        var fetchFypGroup = fypCommitteeGroups.FirstOrDefault(x => x.groupID.ToString() == model.Group && x.EvaluationID == "Final");
+
+                        if (fetchStudentGroup != null && fetchStudentGroup.ExternalId == null)
                         {
-                            var FetchGroup = studentGroups.Where(x => x.ID.ToString() == model.Group).FirstOrDefault();
-                            if (FetchGroup.ExternalId == null)
-                            {
-                                FetchGroup.ExternalId = user.Id;
-                                await _studentGroupService.UpdateAsync(FetchGroup);
-                                return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Added" });
-                            }
-
+                            fetchStudentGroup.ExternalId = newUser.Id;
+                            await _studentGroupService.UpdateAsync(fetchStudentGroup);
                         }
-                    }
 
+                        if (fetchFypGroup != null && fetchFypGroup.ExternalId == null)
+                        {
+                            fetchFypGroup.ExternalId = newUser.Id;
+                            await _fYPCommitteService.UpdateAsync(fetchFypGroup);
+                        }
+
+                        return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Added" });
+                    }
                 }
             }
-            return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Failed" });
 
+            return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Failed" });
         }
+
 
         [HttpPost]
         public async Task<IActionResult> EditExternalsAccount(ExternalEvaluation model)
@@ -553,7 +575,7 @@ namespace FYP.Web.Controllers
             {
                 if (user != null)
                 {
-                    
+
                     user.ActiveState = "Blocked";
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
@@ -566,7 +588,7 @@ namespace FYP.Web.Controllers
             {
                 if (user != null)
                 {
-                    
+
                     user.ActiveState = "Active";
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
@@ -583,10 +605,10 @@ namespace FYP.Web.Controllers
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch,  ViewValue = "Updated" });
+                    return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "Updated" });
                 }
             }
-            return RedirectToAction("ExternalsAccount", "Cordinator", new {batch = model.Batch, ViewValue = "NoUser" });
+            return RedirectToAction("ExternalsAccount", "Cordinator", new { batch = model.Batch, ViewValue = "NoUser" });
 
 
         }
@@ -598,11 +620,11 @@ namespace FYP.Web.Controllers
             var groups = await _studentGroupService.GetAllAsync();
             if (groups != null)
             {
-                var filteredGroups = groups.Select(x=>x.Batch).Distinct().ToList();
+                var filteredGroups = groups.Select(x => x.Batch).Distinct().ToList();
                 var model = new NotificationsViewModel();
                 model.Batches = filteredGroups;
 
-            return PartialView(model);
+                return PartialView(model);
             }
             return PartialView();
         }
@@ -737,6 +759,68 @@ namespace FYP.Web.Controllers
             return Ok(filteredNotifications);
         }
 
+        public async Task<IActionResult> StudentGroupAlongMarks()
+        {
+            // Fetch all necessary data upfront
+            var studentGroups = await _studentGroupService.GetAllAsync();
+            var evaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+
+            // Initialize the model list
+            if (studentGroups != null)
+            {
+                var userIds = studentGroups.SelectMany(x => new[] { x.student1LID, x.student2ID, x.student3ID })
+                                           .Where(id => id != null).Distinct();
+                var users = (await Task.WhenAll(userIds.Select(id => _userManager.FindByIdAsync(id))))
+                            .ToDictionary(user => user?.Id, user => user);
+
+                var model = studentGroups.Select(x =>
+                {
+                    var leaderUser = x.student1LID != null && users.ContainsKey(x.student1LID) ? users[x.student1LID] : null;
+                    var member1User = x.student2ID != null && users.ContainsKey(x.student2ID) ? users[x.student2ID] : null;
+                    var member2User = x.student3ID != null && users.ContainsKey(x.student3ID) ? users[x.student3ID] : null;
+
+                    var groupCriteria = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString());
+
+                    return new StudentGroupViewModel
+                    {
+                        Id = x.ID,
+                        Name = x.Name,
+                        Batch = x.Batch,
+                        student1LID = x.student1LID,
+                        student2ID = x.student2ID,
+                        student3ID = x.student3ID,
+                        CoSupervisorID = x.CoSupervisorID,
+                        SupervisorID = x.SupervisorID,
+
+                        LeaderEnrollement = leaderUser?.Email ?? "Don't Exist",
+                        member1Enrollment = member1User?.Email ?? "Don't Exist",
+                        Member2Enrollment = member2User?.Email ?? "Don't Exist",
+
+                        LeaderName = leaderUser?.Name ?? "Don't Exist",
+                        member1 = member1User?.Name ?? "Don't Exist",
+                        Member2 = member2User?.Name ?? "Don't Exist",
+
+                        StudentsProposalMarks = groupCriteria?.StudentsProposalMarks ?? 0,
+                        Student1MidMarks = groupCriteria?.Student1MidMarks ?? 0,
+                        Student2MidMarks = groupCriteria?.Student2MidMarks ?? 0,
+                        Student3MidMarks = groupCriteria?.Student3MidMarks ?? 0,
+                        Student1FinalMarks = groupCriteria?.Student1FinalMarks ?? 0,
+                        Student2FinalMarks = groupCriteria?.Student2FinalMarks ?? 0,
+                        Student3FinalMarks = groupCriteria?.Student3FinalMarks ?? 0,
+                        CordinatorMarks = groupCriteria?.CordinatorMarks ?? 0,
+                        SupervisorMarks = groupCriteria?.SupervisorMarks ?? 0,
+
+                        ProposalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Proposal")?.Remarks ?? "No Remarks",
+                        MidRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Mid")?.Remarks ?? "No Remarks",
+                        FinalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Final")?.Remarks ?? "No Remarks",
+                    };
+                }).ToList();
+
+                return PartialView(model);
+            }
+
+            return PartialView();
+        }
     }
 
 

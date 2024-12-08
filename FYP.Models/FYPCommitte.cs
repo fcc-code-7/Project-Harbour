@@ -12,6 +12,7 @@ namespace FYP.Entities
         public string? EvaluationID  { get; set; }
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
+        public string? ExternalId { get; set; }
         public string? Room { get; set; }
         public DateTime AppointedDate{ get; set; }
         public TimeOnly AppointedTime{ get; set; }

@@ -3,6 +3,7 @@ using System;
 using FYP.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FYP.Databases.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207201813_DbChange")]
+    partial class DbChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -195,9 +198,6 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("CommiteeID")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("CordinatorMarks")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("EvalName")
                         .HasColumnType("TEXT");
 
@@ -231,26 +231,26 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student1FinalMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student1FinalMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student1MidMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student1MidMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student2FinalMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student2FinalMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student2MidMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student2MidMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student3FinalMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student3FinalMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Student3MidMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Student3MidMarks")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("StudentsProposalMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("StudentsProposalMarks")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("SubmissionDate")
                         .HasColumnType("TEXT");
@@ -258,11 +258,8 @@ namespace FYP.Databases.Migrations
                     b.Property<DateTime?>("SubmissionTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("SupervisorMarks")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TotalMarks")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("TotalMarks")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 

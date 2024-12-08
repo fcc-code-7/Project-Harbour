@@ -56,18 +56,18 @@ namespace FYP.Web.Controllers
         {
             if (User.IsInRole("Supervisor"))
             {
-            if (ViewValue != null)
-            {
-                ViewBag.success = ViewValue;
-            }
+                if (ViewValue != null)
+                {
+                    ViewBag.success = ViewValue;
+                }
             }
             var studentGroups = new List<StudentGroup>();
             var model = new StudentGroupViewModel();
             if (User.IsInRole("Supervisor"))
             {
-            var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
-            var Groups = await _studentGroupService.GetAllAsync();
-             studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
+                var fetchUser = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
+                var Groups = await _studentGroupService.GetAllAsync();
+                studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id).ToList();
             }
             if (User.IsInRole("Cordinator"))
             {
@@ -125,10 +125,10 @@ namespace FYP.Web.Controllers
         {
             if (User.IsInRole("Supervisor"))
             {
-            if (Value != null)
-            {
-                ViewBag.success = Value;
-            }
+                if (Value != null)
+                {
+                    ViewBag.success = Value;
+                }
 
             }
             if (batch == "All Groups")
@@ -143,14 +143,14 @@ namespace FYP.Web.Controllers
             if (User.IsInRole("Supervisor"))
             {
                 studentGroups = Groups.Where(x => x.SupervisorID == fetchUser.Id && x.Batch == batch).ToList();
-                 distinctBatches = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Batch).Distinct().ToList();
-                 distinctYears = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Year).Distinct().ToList();
+                distinctBatches = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Batch).Distinct().ToList();
+                distinctYears = Groups.Where(x => x.SupervisorID == fetchUser.Id).Select(x => x.Year).Distinct().ToList();
             }
             if (User.IsInRole("Cordinator"))
             {
-                studentGroups = Groups.Where(x =>  x.Batch == batch).ToList();
-                 distinctBatches = Groups.Select(x => x.Batch).Distinct().ToList();
-                 distinctYears = Groups.Select(x => x.Year).Distinct().ToList();
+                studentGroups = Groups.Where(x => x.Batch == batch).ToList();
+                distinctBatches = Groups.Select(x => x.Batch).Distinct().ToList();
+                distinctYears = Groups.Select(x => x.Year).Distinct().ToList();
             }
             var project = await _projectService.GetAllAsync();
             var model = new StudentGroupViewModel()
@@ -192,7 +192,7 @@ namespace FYP.Web.Controllers
             var Users = await _userService.GetAllAsync();
             if (model.student1LEmail == model.student2Email || model.student1LEmail == model.student3Email || model.student2Email == model.student3Email)
             {
-                return RedirectToAction("Create", "supervisor", new { batch = model.Batch, ViewValue = "Same" , stu1 = model.student1LEmail , stu2 = model.student2Email , stu3 = model.student3Email, groupName = model.Name });
+                return RedirectToAction("Create", "supervisor", new { batch = model.Batch, ViewValue = "Same", stu1 = model.student1LEmail, stu2 = model.student2Email, stu3 = model.student3Email, groupName = model.Name });
 
             }
             if (Users.Any())
@@ -706,6 +706,7 @@ namespace FYP.Web.Controllers
                 // Get supervisors for the department
                 if (supervisorList.Any() && !string.IsNullOrEmpty(id))
                 {
+                   var CountGroupSupervisor = allGroups.Select(x=>x.SupervisorID).Count();
                     var fetchCurrentGroup = allGroups.Where(x => x.ID.ToString() == id).FirstOrDefault();
                     var fetchCurrentGroupSupervisor = allGroups.Where(x => x.SupervisorID == fetchCurrentGroup.SupervisorID).FirstOrDefault().SupervisorID;
                     var departmentSupervisors = supervisorList
@@ -1451,7 +1452,8 @@ namespace FYP.Web.Controllers
             var committees = await _fYPCommitteService.GetAllAsync();
             // Filter committees based on AppointedDate and logged-in user
             var filteredCommittees = committees.Where
-                                                           (c => c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
+                                                           (c => c.Member1ID == currentUserId || c.Member2ID == currentUserId || c.ExternalId == currentUserId).ToList();
+            //(c => c.Member1ID == currentUserId || c.Member2ID == currentUserId && c.AppointedDate == currentDate).ToList();
             var viewModel = new EvaluationMarksViewModel();
 
             var groups = await _studentGroupService.GetAllAsync();
@@ -1465,16 +1467,27 @@ namespace FYP.Web.Controllers
             {
                 var evaluations = await _evaluationService.GetAllAsync();
                 var filteredEvaluations = filteredCommittees
-                    .Where(c => c.groupID == groupId && c.AppointedDate == currentDate)
+                    .Where(c => c.groupID == groupId)
                     .FirstOrDefault().EvaluationID;
+                //var filteredEvaluations = filteredCommittees
+                //    .Where(c => c.groupID == groupId && c.AppointedDate == currentDate)
+                //    .FirstOrDefault().EvaluationID;
                 viewModel.EvalName = filteredEvaluations;
                 viewModel.GroupId = groupId;
 
                 var fetchGroup = groups.Where(x => x.ID.ToString() == groupId).FirstOrDefault();
                 var userGet = await _userService.GetAllAsync();
-                viewModel.stu1 = userGet.Where(x => x.Id.ToString() == fetchGroup.student1LID).FirstOrDefault().Name;
-                viewModel.stu2 = userGet.Where(x => x.Id.ToString() == fetchGroup.student2ID).FirstOrDefault().Name;
-                viewModel.stu3 = userGet.Where(x => x.Id.ToString() == fetchGroup.student3ID).FirstOrDefault().Name;
+                viewModel.stu1 = userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student1LID) != null
+      ? userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student1LID).Name
+      : "Don't exist";
+                viewModel.stu2 = userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student2ID) != null
+                    ? userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student2ID).Name
+                    : "Don't exist";
+                viewModel.stu3 = userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student3ID) != null
+                    ? userGet.FirstOrDefault(x => x.Id.ToString() == fetchGroup.student3ID).Name
+                    : "Don't exist";
+
+
                 if (groupId != null)
                 {
                     var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
@@ -1484,14 +1497,21 @@ namespace FYP.Web.Controllers
                         .FirstOrDefault(e => e.GId == groupId && e.SubmissionDate == currentDate && e.CommiteeID == currentUserId);
                     if (existingRecord != null)
                     {
-                        viewModel.qno1 = existingRecord.Q1Marks;
-                        viewModel.qno2 = existingRecord.Q2Marks;
-                        viewModel.qno3 = existingRecord.Q3Marks;
-                        viewModel.qno4 = existingRecord.Q4Marks;
-                        viewModel.qno5 = existingRecord.Q5Marks;
-                        viewModel.qno6 = existingRecord.Q6Marks;
-                        viewModel.qno7 = existingRecord.Q7Marks;
-                        viewModel.qno8 = existingRecord.Q8Marks;
+                        viewModel.qno1 = existingRecord.Q1;
+                        viewModel.qno2 = existingRecord.Q2;
+                        viewModel.qno3 = existingRecord.Q3;
+                        viewModel.qno4 = existingRecord.Q4;
+                        viewModel.qno5 = existingRecord.Q5;
+                        viewModel.qno6 = existingRecord.Q6;
+                        viewModel.qno7 = existingRecord.Q7;
+                        viewModel.qno8 = existingRecord.Q8;
+                        viewModel.StudentsProposalMarks = existingRecord.StudentsProposalMarks;
+                        viewModel.Student3MidMarks = existingRecord.Student3MidMarks;
+                        viewModel.Student1MidMarks = existingRecord.Student1MidMarks;
+                        viewModel.Student2MidMarks = existingRecord.Student2MidMarks;
+                        viewModel.Student1FinalMarks = existingRecord.Student1FinalMarks;
+                        viewModel.Student2FinalMarks = existingRecord.Student2FinalMarks;
+                        viewModel.Student3FinalMarks = existingRecord.Student3FinalMarks;
                         viewModel.Remarks = existingRecord.Remarks;
                     }
                 }
@@ -1533,21 +1553,6 @@ namespace FYP.Web.Controllers
         public async Task<IActionResult> AssignEvaluationMarks([FromBody] EvaluationMarksViewModel viewModel)
         {
 
-
-            // Store the question marks in an array and calculate TotalMarks
-            var questionMarks = new string[] { viewModel.qno1, viewModel.qno2, viewModel.qno3,
-                                       viewModel.qno4, viewModel.qno5, viewModel.qno6,
-                                       viewModel.qno7, viewModel.qno8 };
-            decimal totalMarks = questionMarks
-                .Select(q => string.IsNullOrEmpty(q) ? 0 : Convert.ToDecimal(q)) // Convert each to decimal or 0
-                .Sum(); // Sum all the marks
-
-            viewModel.TotalMarks = totalMarks;
-
-
-            // Set the calculated TotalMarks in the viewModel
-            viewModel.TotalMarks = totalMarks;
-
             var evaluationCriteriaList = await _evaluationCriteriaService.GetAllAsync();
             var currentUserId = _userManager.GetUserId(User);
             var group = await _studentGroupService.GetAllAsync();
@@ -1559,21 +1564,47 @@ namespace FYP.Web.Controllers
             if (existingRecord != null)
             {
                 // Update existing record with new data
-                existingRecord.Q1Marks = viewModel.qno1;
-                existingRecord.Q2Marks = viewModel.qno2;
-                existingRecord.Q3Marks = viewModel.qno3;
-                existingRecord.Q4Marks = viewModel.qno4;
-                existingRecord.Q5Marks = viewModel.qno5;
-                existingRecord.Q6Marks = viewModel.qno6;
-                existingRecord.Q7Marks = viewModel.qno7;
-                existingRecord.Q8Marks = viewModel.qno8;
+                existingRecord.Q1 = viewModel.qno1;
+                existingRecord.Q2 = viewModel.qno2;
+                existingRecord.Q3 = viewModel.qno3;
+                existingRecord.Q4 = viewModel.qno4;
+                existingRecord.Q5 = viewModel.qno5;
+                existingRecord.Q6 = viewModel.qno6;
+                existingRecord.Q7 = viewModel.qno7;
+                existingRecord.Q8 = viewModel.qno8;
+                existingRecord.StudentsProposalMarks = viewModel.StudentsProposalMarks;
+                existingRecord.Student3MidMarks = viewModel.Student3MidMarks;
+                existingRecord.Student2MidMarks = viewModel.Student2MidMarks;
+                existingRecord.Student1MidMarks = viewModel.Student1MidMarks;
+                existingRecord.Student1FinalMarks = viewModel.Student1FinalMarks;
+                existingRecord.Student2FinalMarks = viewModel.Student2FinalMarks;
+                existingRecord.Student3FinalMarks = viewModel.Student3FinalMarks;
 
                 if (!string.IsNullOrEmpty(viewModel.Remarks))
                 {
                     existingRecord.Remarks = viewModel.Remarks;
                 }
+                if (viewModel.EvalName == "Proposal")
+                {
+                    existingRecord.TotalMarks = viewModel.StudentsProposalMarks ?? 0;
+                      
+                }
 
-                existingRecord.TotalMarks = viewModel.TotalMarks;
+                if (viewModel.EvalName == "Mid")
+                {
+                    existingRecord.TotalMarks =
+                        (viewModel.Student1MidMarks ?? 0) +
+                        (viewModel.Student2MidMarks ?? 0) +
+                        (viewModel.Student3MidMarks ?? 0); // Default to 0 if null
+                }
+                if (viewModel.EvalName == "Final")
+                {
+                    existingRecord.TotalMarks = (viewModel.Student1FinalMarks ?? 0) +
+                        (viewModel.Student2FinalMarks ?? 0) +
+                        (viewModel.Student3FinalMarks ?? 0); // Default to 0 if null
+
+                }
+
                 existingRecord.SubmissionTime = DateTime.UtcNow;
                 existingRecord.SubmissionDate = DateTime.Today;
 
@@ -1593,14 +1624,21 @@ namespace FYP.Web.Controllers
                     GId = viewModel.GroupId,
                     Batch = fetchBatch,
                     EvalName = viewModel.EvalName,
-                    Q1Marks = viewModel.qno1,
-                    Q2Marks = viewModel.qno2,
-                    Q3Marks = viewModel.qno3,
-                    Q4Marks = viewModel.qno4,
-                    Q5Marks = viewModel.qno5,
-                    Q6Marks = viewModel.qno6,
-                    Q7Marks = viewModel.qno7,
-                    Q8Marks = viewModel.qno8,
+                    Q1 = viewModel.qno1,
+                    Q2 = viewModel.qno2,
+                    Q3 = viewModel.qno3,
+                    Q4 = viewModel.qno4,
+                    Q5 = viewModel.qno5,
+                    Q6 = viewModel.qno6,
+                    Q7 = viewModel.qno7,
+                    Q8 = viewModel.qno8,
+                    StudentsProposalMarks = viewModel.StudentsProposalMarks,
+                    Student1MidMarks = viewModel.Student1MidMarks,
+                    Student2MidMarks = viewModel.Student2MidMarks,
+                    Student3MidMarks = viewModel.Student3MidMarks,
+                    Student1FinalMarks = viewModel.Student1FinalMarks,
+                    Student2FinalMarks = viewModel.Student2FinalMarks,
+                    Student3FinalMarks = viewModel.Student3FinalMarks,
                     Remarks = viewModel.Remarks,
                     TotalMarks = viewModel.TotalMarks,
                     CommiteeID = currentUserId,

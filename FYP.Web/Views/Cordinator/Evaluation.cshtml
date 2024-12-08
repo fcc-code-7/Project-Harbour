@@ -168,20 +168,17 @@
                                                                 </span>
                                                             </div>
 
-                          
+                                                            <div>
+                                                                <span class="inline-flex mx-4 items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                                                                    <b> @item.EvaluationName </b>
+                                                                </span>
                                                             </div>
+                                                        </div>
                                                         <div class="card-body pt-0 ">
                                                             <div class="widget-49">
                                                                 <div class="table-responsive">
                                                                     <table class="">
-                                                                        <tr>
-                                                                            <td class="text-black fw-bold">Group:</td>
-                                                                            <td>
-                                                                                <span class="inline-flex mx-2 items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
-                                                                                    <b> @item.EvaluationName </b>
-                                                                                </span>
-                                                                            </td>
-                                                                        </tr>
+                                                                       
                                                                         <tr>
                                                                             <td class="text-black fw-bold">Batch:</td>
                                                                             <td>
@@ -194,7 +191,7 @@
                                                                             <td class="text-black fw-bold">Date:</td>
                                                                             <td>
                                                                                 <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                                                    <b>  @item.LastDate.ToString("dd-MM-yyyy") </b>
+                                                                                    <b>  @item.LastDate.ToString("dd-MMM-yyyy") </b>
                                                                                 </span>
                                                                             </td>
                                                                         </tr>
