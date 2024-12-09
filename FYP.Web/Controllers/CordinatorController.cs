@@ -759,20 +759,54 @@ namespace FYP.Web.Controllers
             return Ok(filteredNotifications);
         }
 
-        public async Task<IActionResult> StudentGroupAlongMarks()
+        public async Task<IActionResult> StudentGroupAlongMarks(string batch)
         {
             // Fetch all necessary data upfront
             var studentGroups = await _studentGroupService.GetAllAsync();
             var evaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+            var currentUser = await _userManager.GetUserAsync(User); // Get the current logged-in user
+            var userRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault(); // Get the role of the user
+
+            // If a batch is selected, filter the student groups by batch
+            if (!string.IsNullOrEmpty(batch))
+            {
+                studentGroups = studentGroups.Where(x => x.Batch == batch).ToList();
+                ViewBag.batch = batch;
+            }
 
             // Initialize the model list
             if (studentGroups != null)
             {
+                // If user is a Coordinator, show all groups
+                if (userRole == "Coordinator")
+                {
+                    // No additional filtering needed as Coordinator can see all groups
+                }
+                // If user is a Supervisor, show only the groups assigned to them
+                else if (userRole == "Supervisor")
+                {
+                    studentGroups = studentGroups.Where(x => x.SupervisorID == currentUser.Id).ToList();
+                }
+                // If user is a Student, show only the group(s) associated with them
+                else if (userRole == "Student")
+                {
+                    studentGroups = studentGroups.Where(x =>
+                        x.student1LID == currentUser.Id || x.student2ID == currentUser.Id || x.student3ID == currentUser.Id)
+                        .ToList();
+                }
+
+                // Get distinct batches
+                var batches = studentGroups.Select(sg => sg.Batch).Distinct().ToList();
+
+                // Get all user ids from the groups
                 var userIds = studentGroups.SelectMany(x => new[] { x.student1LID, x.student2ID, x.student3ID })
                                            .Where(id => id != null).Distinct();
+
+                // Fetch all users asynchronously
                 var users = (await Task.WhenAll(userIds.Select(id => _userManager.FindByIdAsync(id))))
                             .ToDictionary(user => user?.Id, user => user);
 
+                // Construct the view model for each group
                 var model = studentGroups.Select(x =>
                 {
                     var leaderUser = x.student1LID != null && users.ContainsKey(x.student1LID) ? users[x.student1LID] : null;
@@ -813,12 +847,20 @@ namespace FYP.Web.Controllers
                         ProposalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Proposal")?.Remarks ?? "No Remarks",
                         MidRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Mid")?.Remarks ?? "No Remarks",
                         FinalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Final")?.Remarks ?? "No Remarks",
+                        projectname = _projectService.GetAllAsync().Result.FirstOrDefault(y => y.groupId == x.ID.ToString())?.Title ?? "No Project",
+                        supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result?.Name ?? "No Supervisor",
+                        Approved = _projectService.GetAllAsync().Result.FirstOrDefault(y => y.groupId == x.ID.ToString())?.Status ?? "Pending",
                     };
                 }).ToList();
 
+                // Set distinct batches in the ViewBag for dropdown
+                ViewBag.Batches = batches;
+
+                // Return the model to the partial view
                 return PartialView(model);
             }
 
+            // If no groups found, return an empty view or a view with a message
             return PartialView();
         }
     }

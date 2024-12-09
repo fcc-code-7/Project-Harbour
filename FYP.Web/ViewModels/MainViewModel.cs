@@ -68,6 +68,7 @@ namespace FYP.Web.ViewModels
         public bool changeSupervisorForm { get; set; }
         public string? Member1Name { get; set; }
         public string? Member2Name { get; set; }
+        public string? Approved { get; set; }
         public IEnumerable<StudentGroupViewModel> StudentGroups { get; set; }
 
 

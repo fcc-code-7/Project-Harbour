@@ -234,6 +234,18 @@
                                         <span class="menu-item" data-i18n="Evaluation">Evaluation</span>
                                     </a>
                                 </li>
+                                <li class="nav-item" id="GDetails">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Message">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="Messages">Messages</span>
+                                    </a>
+                                </li>
                             }
                             else if (User.IsInRole("Student"))
                             {
@@ -249,10 +261,22 @@
                                         <span class="menu-item" data-i18n="Submissions">Submissions</span>
                                     </a>
                                 </li>
+                                <li class="nav-item" id="GDetails">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" id="WeeklyLogs">
                                     <a>
                                         <i class="fa fa-cloud-upload"></i>
                                         <span class="menu-item" data-i18n="WeeklyLogs">Weekly Logs</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Message">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="Messages">Messages</span>
                                     </a>
                                 </li>
                             }
@@ -264,6 +288,7 @@
                                         <span class="menu-item" data-i18n="Groups">Groups</span>
                                     </a>
                                 </li>
+                                
                                 <li class="nav-item" id="ProjectsSup">
                                     <a>
                                         <i class="feather icon-edit"></i>
@@ -288,10 +313,16 @@
                                         <span class="menu-item" data-i18n="Externals">Externals</span>
                                     </a>
                                 </li>
+                                <li class="nav-item" id="GDetails">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item">
                                     <a>
                                         <i class="feather icon-settings"></i>
-                                        <span class="menu-item" data-i18n="Settings">Settings</span>
+                                        <span class="menu-item" data-i18n="Settings">Incharge</span>
                                     </a>
                                     <ul class="menu-content">
                                         <li>
@@ -302,6 +333,13 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class="nav-item" id="Message">
+                                    <a>
+                                        <i class="feather icon-mail"></i>
+                                        <span class="menu-item" data-i18n="Messages">Messages</span>
+                                    </a>
+                                </li>
+                               
 
                             }
                             else if (User.IsInRole("External"))
@@ -313,18 +351,8 @@
                                     </a>
                                 </li>
                             }
-                            <li class="nav-item" id="Message">
-                                <a>
-                                    <i class="feather icon-mail"></i>
-                                    <span class="menu-item" data-i18n="Messages">Messages</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="GDetails">
-                                <a>
-                                    <i class="feather icon-mail"></i>
-                                    <span class="menu-item" data-i18n="GDetails">GDetails</span>
-                                </a>
-                            </li>
+                           
+                           
                         </ul>
                     }
                 }

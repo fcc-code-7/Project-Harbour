@@ -1,125 +1,204 @@
 ﻿@model List<FYP.Web.ViewModels.StudentGroupViewModel>
 
-
-@{
-   
-}
-
 <!-- BEGIN: Content-->
 <div class="app-content content">
     <div class="content-overlay"></div>
     <div class="content-wrapper">
-        <div class="content-header row">
-        </div>
-        <div class="content-body ">
+        <div class="content-header row"></div>
+        <div class="content-body">
             <section class="users-list-wrapper">
                 <div class="users-list-filter px-1">
                     <!-- Section 1 -->
-                    <div class=" ">
-                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+                    <div class="p-3 bg-white text-black rounded-lg" style="height:80vh; min-height:80vh;">
+                        <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4">
+                            <!-- Column 1 -->
+                            <div class="p-3 fs-6 font-bold">
+                                <h1 style="font-size: 25px; font-weight: bold;">Student Groups</h1>
+                            </div>
 
-                            <!-- Column 1: -->
-                            <div class="" style="min-height:100px;">
-                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                                    <div class=" text-2xl font-bold">
-                                        <h1>
-                                            Student Groups
-                                        </h1>
-                                    </div>
-                                    <div class="card" style="width: 18rem;">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Dropdown Example</h5>
-                                            <p class="card-text">Click the dropdown button to see options.</p>
-                                            <div class="dropdown">
-                                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Dropdown Button
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    <li><a class="dropdown-item" href="#">Option 1</a></li>
-                                                    <li><a class="dropdown-item" href="#">Option 2</a></li>
-                                                    <li><a class="dropdown-item" href="#">Option 3</a></li>
-                                                </ul>
+                            <!-- Groups -->
+                        </div>
+                        @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
+                        {
+                            <div class="p-3 ">
+                                <label>Batch</label>
+                                <select class="form-control" id="GroupBatchs" name="GroupBatchs">
+                                    <option value="">Select Batch</option>
+                                    @if (ViewBag.Batches != null)
+                                    {
+                                        foreach (var batch in ViewBag.Batches)
+                                        {
+                                            @if (batch == ViewBag.batch)
+
+                                            {
+                                                <option value="@batch" selected>@batch</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@batch">@batch</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+
+                        }
+                         @if (Model != null || Model.Any())
+                        {
+                        <div class="container mt-4 p-3">
+                            <div class="row">
+                                @foreach (var group in Model)
+                                {
+                                    <div class="col-12 col-lg-6 col-md-12 col-sm-12">
+                                        <!-- Group Card -->
+                                        <div class="card">
+                                            <div class="card-header text-center">
+                                                <h5 class="card-title inline-flex  items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                                                    @group.Name - @{
+                                                        if (group.projectname != null)
+                                                        {
+                                                            @group.projectname
+                                                        }
+                                                    }
+
+                                                </h5>
+                                               
                                             </div>
+                                            <div class="p-3">
+                                                <p style="margin: 0;">Supervisor: @group.supervisorname</p>
+                                                <p style="margin: 0;">Batch: @group.Batch</p>
+                                                <p style="margin: 0;">Staus: @group.Approved</p>
+                                            </div>
+
+                                            <!-- Collapse Section for Group Evaluations (inside the group card) -->
+                                            <div id="group-@group.Id" class="collapse mt-2 p-5">
+                                                <div class="card p-3">
+                                                    <div class="card-header text-center">Evaluations</div>
+                                                    <div class="card-body">
+                                                        <div class="list-group">
+                                                            <!-- Proposal Card -->
+                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#proposal-@group.Id">
+                                                                Proposal
+                                                            </button>
+                                                            <div id="proposal-@group.Id" class="collapse p-3">
+                                                                <p>Marks: @group.StudentsProposalMarks</p>
+                                                                <p>Remarks: @group.ProposalRemarks</p>
+                                                            </div>
+
+                                                            <!-- Mid Card -->
+                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#mid-@group.Id">
+                                                                Mid
+                                                            </button>
+                                                            <div id="mid-@group.Id" class="collapse p-3">
+                                                                <p>@group.LeaderEnrollement : @group.Student1MidMarks</p>
+                                                                <p>@group.member1Enrollment: @group.Student2MidMarks</p>
+                                                                @if (group.Member2Enrollment != "Don't Exist")
+                                                                {
+                                                                    <p>@group.Member2Enrollment: @group.Student3MidMarks</p>
+
+                                                                }
+                                                                <p>Remarks: @group.MidRemarks</p>
+                                                            </div>
+
+                                                            <!-- Final Card -->
+                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#final-@group.Id">
+                                                                Final
+                                                            </button>
+                                                            <div id="final-@group.Id" class="collapse p-3">
+                                                                <p>@group.LeaderEnrollement: @group.Student1FinalMarks</p>
+                                                                <p>@group.member1Enrollment: @group.Student2FinalMarks</p>
+                                                                @if (group.Member2Enrollment != "Don't Exist")
+                                                                {
+                                                                    <p>@group.Member2Enrollment: @group.Student3FinalMarks</p>
+
+                                                                }
+                                                                <p>Remarks: @group.FinalRemarks</p>
+                                                            </div>
+                                                            <!-- Final Card -->
+                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#supervisor-@group.Id">
+                                                                Supervisor/Cordinator
+                                                            </button>
+                                                            <div id="supervisor-@group.Id" class="collapse p-3">
+                                                                <p>SupervisorMarks: @group.SupervisorMarks</p>
+                                                                <p>CordinatorMarks: @group.CordinatorMarks</p>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <button class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#group-@group.Id">
+                                                    View Evaluations
+                                                </button>
+                                            </div>
+
+
                                         </div>
                                     </div>
-
-                                </div>
-                               
+                                }
                             </div>
-                        </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center" style="min-height: 68vh;">
+                                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                        <!-- Trash Icon -->
+                                        <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                        <!-- Text Below the Icon -->
+                                        <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Groups Found!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
-
                 </div>
             </section>
         </div>
     </div>
 </div>
-<!-- END: Content-->
-<!-- Modal -->
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <style>
-    .arrow-container {
-        position: relative;
-        margin-bottom: 20px; /* Adjust as needed */
-    }
-
-
-    .noborder {
-        border-color: white !important;
-    }
-
-
-
-    .colorchange {
-        transition: color 0.3s ease;
-        cursor: default;
-    }
-
-        .colorchange:hover {
-            color: green;
-            cursor: pointer;
-        }
-
-    .card-margin {
-        margin-bottom: 1.875rem !important;
-    }
-
     .card {
-        border: 0 !important;
-        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
-        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
-        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
-        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
-        position: relative !important;
-        display: flex !important;
-        flex-direction: column !important;
-        min-width: 0 !important;
-        word-wrap: break-word !important;
-        background-color: #ffffff !important;
-        background-clip: border-box !important;
-        border: 1px solid #3b0764 !important;
-        border-radius: 8px !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-        .card .card-header.no-border {
-            border: 0 !important;
-        }
-
-        .card .card-header {
-            background: none !important;
-            padding: 0 0.9375rem !important;
-            font-weight: 500 !important;
-            display: flex !important;
-            align-items: center !important;
-            min-height: 50px !important;
-        }
-
-    .card-header:first-child {
-        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    .card-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        text-align: center;
     }
 
+    .card-body p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .list-group-item {
+        cursor: pointer;
+    }
+
+        .list-group-item:hover {
+            background-color: #f1f1f1;
+        }
 </style>
-
+<script>
+    $('#GroupBatchs').on('change', function () {
+        var batch = $(this).val();
+        $.ajax({
+            url: '@Url.Action("StudentGroupAlongMarks", "ControllerName")',
+            data: { batch: batch },
+            success: function (result) {
+                $('#studentGroupsList').html("");
+                $('#studentGroupsList').html(result);
+            }
+        });
+    });
+</script>

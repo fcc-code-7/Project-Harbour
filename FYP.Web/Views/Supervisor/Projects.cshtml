@@ -145,7 +145,7 @@
                                                                         <i class="fas fa-info-circle text-blue-700 hover:text-blue-500 transition-all"></i>
                                                                     </a>
 
-                                                                    @if (item.SupervsiorApproved != "Approved")
+                                                                    @if (item.SupervsiorApproved == null)
                                                                     {
                                                                         <a href="javascript:void(0)" class="approvedIcon" style="margin-left:1rem;" data-id="@item.Id" data-status="Approved" id="Approve" title="Approve the Project">
                                                                             <i class="fas fa-check-circle text-green-700 hover:text-green-500 transition-all"></i>
@@ -208,18 +208,10 @@
                                                                                 <u>
                                                                                     <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem">
                                                                                         <b>
-                                                                                            @if (item.PropPPT != null && item.PropReport != null)
+                                                                                            @if (item.PropPPT != null && item.PropReport != null && item.MidPPT !=null && item.MidReport != null && item.FinalDocs != null)
                                                                                             {
-                                                                                                <span>Proposal Docs Submitted</span>
-                                                                                                @if (item.PropPPT != null && item.PropReport != null && item.MidPPT != null && item.MidReport != null)
-                                                                                                {
-                                                                                                    <span>,Mid Docs Submitted</span>
-                                                                                                    @if (item.PropPPT != null && item.PropReport != null && item.MidPPT != null && item.MidReport != null && item.FinalDocs != null)
-                                                                                                    {
-                                                                                                        <span>,Final Docs Submitted</span>
-
-                                                                                                    }
-                                                                                                }
+                                                                                                
+                                                                                                <span class="badge badge-success text-dark">Uploaded</span>
                                                                                             }
                                                                                             else
                                                                                             {
@@ -404,6 +396,7 @@
                 Batch: batch
             },
             success: function (response) {
+                console.log(response);
                 hideLoadingSpinner();
 
                 // Clear the current group container
@@ -521,8 +514,7 @@
                                                                                             <u><span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem"><b>${item.projectGroup}</b></span></u>
                                                                                 </td>
                                                                             </tr>
-                                                                                ${item.PropPPT != null && item.PropReport != null
-                                ? `
+                                                                                
         <tr>
             <td class="">
                 <span class="text-black fw-bold">Submission:</span>
@@ -530,12 +522,10 @@
                     <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300" style="margin-left:0.5rem">
                         <b>
                             Proposal Docs Submitted
-                            ${item.MidPPT != null && item.MidReport != null
+                                 @*    ${item.MidPPT != null && item.MidReport != null && item.MidPPT != null && item.MidReport != null && item.MidPPT != null 
                                     ? `, Mid Docs Submitted`
-                                    : ``}
-                            ${item.MidPPT != null && item.MidReport != null && item.FinalDocs != null
-                                    ? `, Final Docs Submitted`
-                                    : ``}
+                                    : ``} *@
+                           
                         </b>
                     </span>
                 </u>

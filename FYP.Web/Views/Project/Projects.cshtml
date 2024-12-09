@@ -149,14 +149,14 @@
                                              
                                               
                                                 <div class="widget-49-meeting-action">
-                                                    @if (item.Status == "NotApproved")
+                                                    @if (item.Status == "NotApproved" || item.SupervsiorApproved == "NotApproved")
                                                     {
                                                             <a class="btn btn-sm btn-flash-border-warning " id="EditClicks" data-id="@item.ProId">Edit</a>
                                                     }
                                                        
                                                         <p class="btn btn-sm btn-flash-border-warning " id="Details" data-id="@item.code">DETAILS</p>
-                                                        <p class="btn btn-sm btn-flash-border-warning " id="ChangeTitleForm" data-id="@item.code">DETAILS</p>
-                                                </div>
+@*                                                         <p class="btn btn-sm btn-flash-border-warning " id="ChangeTitleForm" data-id="@item.code">ChangeTitleForm</p>
+ *@                                                </div>
                                             </div>
                                         </div>
                                     </div>
