@@ -30,6 +30,10 @@ namespace FYP.Entities
         public string? MidPPT { get; set; }
         public string? MidReport { get; set; }
         public string? FinalDocs { get; set; }
+        public string? ProposalSubmissionDate { get; set; }
+        public string? MidSubmissionDate { get; set; }
+        public string? FinalSubmissionDate { get; set; }
+
         public int TotalMarks { get; set; }
 
     }

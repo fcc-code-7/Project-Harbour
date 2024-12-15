@@ -70,13 +70,43 @@ namespace FYP.Web.ViewModels
         public string? Member2Name { get; set; }
         public string? Approved { get; set; }
         public IEnumerable<StudentGroupViewModel> StudentGroups { get; set; }
+        public string? PropPPT { get; set; }
+        public string? PropLast { get; set; }
+        public string? MidLast { get; set; }
+        public string? FinalLast { get; set; }
+        public string? PropSubCheck { get; set; }
+        public string? MidSubCheck { get; set; }
+        public string? FinalSubCheck { get; set; }
+        public string? CheckProjectstatus { get; set; }
+        public string? CheckProject { get; set; }
 
+
+        public string? PropReport { get; set; }
+        public string? MidPPT { get; set; }
+        public string? MidReport { get; set; }
+        public string? PropRemark { get; set; }
+        public string? MidRemark { get; set; }
+        public string? FinalRemark { get; set; }
+        public string? FinalDocs { get; set; }
+
+    }
+    public class FetchRoomNoViewModel
+    {
+        public List<string> Batches { get; set; }
+        public string? RoomName { get; set; }
+        public string? EvalName { get; set; }
+        public string? AppointedDate { get; set; }
+        public string? AppointedTime { get; set; }
+        public string? EndTime { get; set; }
+        public string? Batch { get; set; }
+        public List<FetchRoomNoViewModel> fetchRooms { get; set; }
 
     }
     public class EvaluationMarksViewModel
 
     {
         public Guid Id { get; set; }
+        public List<FetchRoomNoViewModel> RoomsFetch { get; set; }
         public string? GroupId { get; set; }
         public string? Batch { get; set; }
         public string? EvalName { get; set; }
@@ -104,6 +134,8 @@ namespace FYP.Web.ViewModels
         public int? Student1FinalMarks { get; set; }
         public int? Student2FinalMarks { get; set; }
         public int? Student3FinalMarks { get; set; }
+        public int? CordinatorMarks { get; set; }
+        public int? SupervisorMarks { get; set; }
         public int TotalMarks { get; set; }
         public List<string> Batchs { get; set; }
         public List<StudentGroup> Groups { get; set; }
@@ -178,6 +210,7 @@ namespace FYP.Web.ViewModels
         public string? groupID { get; set; }
         public List<string>? Evaluations { get; set; }
         public string? EvaluationID { get; set; }
+        public string? CheckDates { get; set; }
         public string? Member1ID { get; set; }
         public string? Member2ID { get; set; }
         [Required(ErrorMessage = "Room No is required")]
@@ -247,6 +280,8 @@ namespace FYP.Web.ViewModels
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters")]
         public string? Name { get; set; }
+        public string? Id { get; set; }
+        public string? oldPassword { get; set; }
 
         [DataType(DataType.EmailAddress)]
         [Required(ErrorMessage = "Enter Valid Email Address.")]
@@ -315,63 +350,66 @@ namespace FYP.Web.ViewModels
         public List<WeeklyLogsViewModel> weeklies { get; set; }
     }
 
-    public class ProjectViewModel
-    {
-        public Guid Id { get; set; }
-        public string ProId { get; set; }
-        public string code { get; set; }
+        public class ProjectViewModel
+        {
+            public Guid Id { get; set; }
+            public string ProId { get; set; }
+            public string code { get; set; }
 
-        public string Title { get; set; }
-        public string ProjectCategory { get; set; }
-        public string projectGroup { get; set; }
-        public string Others { get; set; }
-        public string groupId { get; set; }
-        public string groupname { get; set; }
-        public string supervisorname { get; set; }
-        public string cosupervisor { get; set; }
-        public List<AppUserViewModel> cosupervisorList { get; set; }
-        public string Specialization { get; set; }
-        public string Tools { get; set; }
-        public string companyID { get; set; }
-        public string companyName { get; set; }
-        public string companyMentor { get; set; }
-        public string mentorcontact { get; set; }
-        public string mentoremail { get; set; }
-        public string batch { get; set; }
-        public List<string> batches { get; set; }
-        public string Summary { get; set; }
-        public int TotalMarks { get; set; }
-        public string objectives { get; set; }
-        public string ExpectedResults { get; set; }
-        public string commiteeId { get; set; }
-        public string? changeTitleFormStatus { get; set; }
-        public string? SupervsiorApproved { get; set; }
-        public string? Status { get; set; }
-        public string? evaluationId { get; set; }
-        public string? Proposal { get; set; }
-        public DateTime Proposaldate { get; set; }
-        public int Proposalmarks { get; set; }
-        public string? Proposalbatch { get; set; }
-        public string? final { get; set; }
-        public DateTime finaldate { get; set; }
-        public int finalmarks { get; set; }
-        public string? finalbatch { get; set; }
-        public string? mid { get; set; }
-        public DateTime middate { get; set; }
-        public int midmarks { get; set; }
-        public string? midbatch { get; set; }
-        public string? PropPPT { get; set; }
-        public string? PropReport { get; set; }
-        public string? MidPPT { get; set; }
-        public string? MidReport { get; set; }
-        public string? FinalDocs { get; set; }
-        public string? Docs { get; set; }
-        public Project CurrentProject { get; set; }
-        public List<ProjectViewModel> projects { get; set; }
-        public CompanyViewModel company { get; set; }
+            public string Title { get; set; }
+            public string ProjectCategory { get; set; }
+            public string projectGroup { get; set; }
+            public string Others { get; set; }
+            public string groupId { get; set; }
+            public string groupname { get; set; }
+            public string supervisorname { get; set; }
+            public string cosupervisor { get; set; }
+            public List<AppUserViewModel> cosupervisorList { get; set; }
+            public string Specialization { get; set; }
+            public string Tools { get; set; }
+            public string companyID { get; set; }
+            public string companyName { get; set; }
+            public string companyMentor { get; set; }
+            public string mentorcontact { get; set; }
+            public string mentoremail { get; set; }
+            public string batch { get; set; }
+            public List<string> batches { get; set; }
+            public string Summary { get; set; }
+            public int TotalMarks { get; set; }
+            public string objectives { get; set; }
+            public string ExpectedResults { get; set; }
+            public string commiteeId { get; set; }
+            public string? changeTitleFormStatus { get; set; }
+            public string? SupervsiorApproved { get; set; }
+            public string? Status { get; set; }
+            public string? evaluationId { get; set; }
+            public string? Proposal { get; set; }
+            public DateTime Proposaldate { get; set; }
+            public int Proposalmarks { get; set; }
+            public string? Proposalbatch { get; set; }
+            public string? final { get; set; }
+            public DateTime finaldate { get; set; }
+            public int finalmarks { get; set; }
+            public string? finalbatch { get; set; }
+            public string? mid { get; set; }
+            public DateTime middate { get; set; }
+            public int midmarks { get; set; }
+            public string? midbatch { get; set; }
+            public string? PropPPT { get; set; }
+            public string? PropReport { get; set; }
+            public string? MidPPT { get; set; }
+            public string? MidReport { get; set; }
+            public string? PropRemark { get; set; }
+            public string? MidRemark { get; set; }
+            public string? FinalRemark { get; set; }
+            public string? FinalDocs { get; set; }
+            public string? Docs { get; set; }
+            public Project CurrentProject { get; set; }
+            public List<ProjectViewModel> projects { get; set; }
+            public CompanyViewModel company { get; set; }
 
 
-    }
+        }
     public class EvaluationViewModel
     {
         public Guid EvaluationID { get; set; }
@@ -471,8 +509,10 @@ namespace FYP.Web.ViewModels
         public string DesignationId { get; set; }
         public IEnumerable<DesignationViewModel> DesignationList { get; set; }
         public AppUserViewModel appUser { get; set; }
+        public List<AppUserViewModel> ListAppUser { get; set; }
         public SupervisorViewModel supervisor { get; set; }
         public string supervisorStudent { get; set; }
+        public string supervisorAddress { get; set; }
         public string groupname { get; set; }
         public string LeaderName { get; set; }
         public string supervisorEmail { get; set; }
@@ -481,8 +521,9 @@ namespace FYP.Web.ViewModels
         public int regNo { get; set; }
         public string? semester { get; set; }
         public string? group1name { get; set; }
-        public string? group2name { get; set; }
+        public List<StudentGroup> group2name { get; set; }
         public string? group1leader { get; set; }
+        public string? batch { get; set; }
         public string? group2leader { get; set; }
 
 

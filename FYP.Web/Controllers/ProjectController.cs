@@ -25,7 +25,7 @@ namespace FYP.Web.Controllers
 
 
 
-        public ProjectController(IEvaluationCriteriaService evaluationCriteriaService,IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
+        public ProjectController(IEvaluationCriteriaService evaluationCriteriaService, IWeeklyLogsService weeklyLogsService, IEvaluationService evaluationService, ICompanyService companyService, IProjectService projectService, IUserService userService, UserManager<AppUser> userManager, Services.IRoomAllotmentService supervisorService, IProposalDefenseService proposalDefense, IRoomService designationService, IStudentGroupService studentGroupService)
         {
             _userService = userService;
             _userManager = userManager;
@@ -74,7 +74,7 @@ namespace FYP.Web.Controllers
             {
                 projects = projects.Select(x => new ProjectViewModel
                 {
-                    
+
                     code = x.code,
                     Specialization = x.Specialization,
                     Status = x.Status,
@@ -220,18 +220,34 @@ namespace FYP.Web.Controllers
 
             return PartialView(model);
         }
-        public async Task<IActionResult> ProjectDetails(string code)
+        public async Task<IActionResult> ProjectDetails(string code, string groupId,string Data)
         {
             // Fetch all necessary data asynchronously
+            if (Data != null)
+            {
+                ViewBag.success = Data;
+            }
             var studentGroups = await _studentGroupService.GetAllAsync();
             var projects = await _projectService.GetAllAsync();
             var companies = await _companyService.GetAllAsync();
 
-            // Get the project matching the given code
             var project = projects.FirstOrDefault(x => x.code.ToString() == code);
+            if (groupId !=null)
+            {
+                 project = projects.FirstOrDefault(x => x.groupId == groupId);
+                if (project == null)
+                {
+                   
+                        return RedirectToAction("StudentGroupAlongMarks", "Cordinator", new { ViewValue = "NotFound" });
+                    
+                }
+            }
             if (project == null)
             {
-                return NotFound("Project not found");
+                
+                
+                 return NotFound("Project not found");
+                
             }
 
             // Find the student group associated with the project using groupId
@@ -284,9 +300,9 @@ namespace FYP.Web.Controllers
         {
             // Retrieve the project with the specified ID
             var fetchproject = await _projectService.GetAllAsync();
-            var project = fetchproject.Where(x=>x.ID.ToString() == id).FirstOrDefault();
+            var project = fetchproject.Where(x => x.ID.ToString() == id).FirstOrDefault();
             var Fetchcompany = await _companyService.GetAllAsync();
-            var company = Fetchcompany.Where(x=>x.ID.ToString() == project.companyID).FirstOrDefault();
+            var company = Fetchcompany.Where(x => x.ID.ToString() == project.companyID).FirstOrDefault();
             if (project == null)
             {
                 return NotFound();
@@ -323,18 +339,18 @@ namespace FYP.Web.Controllers
 
             };
 
-           
-                var studentGroup = group.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault();
-                if (studentGroup != null)
-                {
-                    var getSupervisor = studentGroup.SupervisorID;
-                    var getGroup = studentGroup.ID;
-                    var getLeader = studentGroup.student1LID;
 
-                    model.supervisorname = (await _userManager.FindByIdAsync(getSupervisor)).Name;
-                    model.groupname = group.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
-                }
-            
+            var studentGroup = group.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault();
+            if (studentGroup != null)
+            {
+                var getSupervisor = studentGroup.SupervisorID;
+                var getGroup = studentGroup.ID;
+                var getLeader = studentGroup.student1LID;
+
+                model.supervisorname = (await _userManager.FindByIdAsync(getSupervisor)).Name;
+                model.groupname = group.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
+            }
+
             return PartialView(model);
         }
 
@@ -342,7 +358,7 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProjects([FromBody] ProjectViewModel model)
         {
-                       // Retrieve the existing project by ID
+            // Retrieve the existing project by ID
             var fetchProjects = await _projectService.GetAllAsync();
             var existingProject = fetchProjects.FirstOrDefault(x => x.ID.ToString() == model.ProId);
 
@@ -392,60 +408,130 @@ namespace FYP.Web.Controllers
 
         public async Task<IActionResult> ProjectList(string Id)
         {
-             var LoggedInUser = _userManager.GetUserId(User);
-                Project project = null;  // Declare project variable here
+            var LoggedInUser = _userManager.GetUserId(User);
+            Project project = null;  // Declare project variable here
 
-                if (Id == null)
+            if (Id == null)
+            {
+                var groupId = _studentGroupService.GetAllAsync().Result
+                                  .Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser)
+                                  .FirstOrDefault()?.ID;
+
+                if (groupId != null)
                 {
-                    var groupId = _studentGroupService.GetAllAsync().Result.Where(x => x.student1LID == LoggedInUser || x.student2ID == LoggedInUser || x.student3ID == LoggedInUser).FirstOrDefault().ID;
                     var projects = await _projectService.GetAllAsync();
-                     project = projects.FirstOrDefault(x => x.groupId == groupId.ToString());
+                    project = projects.FirstOrDefault(x => x.groupId == groupId.ToString());
                 }
-                else
+            }
+            else
+            {
+                var projects = await _projectService.GetAllAsync();
+                project = projects.FirstOrDefault(x => x.ID.ToString() == Id);
+            }
+
+            if (project == null)
+            {
+                var models = new ProjectViewModel();
+                models.CurrentProject = null;
+                return PartialView(models);
+            }
+
+            var evaluations = await _evaluationService.GetAllAsync();
+            var evaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+
+            var evaluation = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Proposal");
+            var evaluationfinal = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Final");
+            var evaluationmid = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Mid");
+
+            var evaluationRemarks = evaluationCriteria.FirstOrDefault(x => x.Batch == project.batch && x.Batch == "Proposal");
+            var evaluationfinalRemarks = evaluationCriteria.FirstOrDefault(x => x.Batch == project.batch && x.Batch == "Final");
+            var evaluationmidRemarks = evaluationCriteria.FirstOrDefault(x => x.Batch == project.batch && x.Batch == "Mid");
+
+            var evaluatioProposal = evaluationCriteria.FirstOrDefault(x => x.Batch == project.batch && x.EvalName == "Proposal")?.StudentsProposalMarks;
+
+            // Fetch marks for each evaluation type, with null handling
+            var finalMarks1 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Final")
+                                                .Select(x => x.Student1FinalMarks ?? 0)
+                                                .ToList();
+
+            var midMarks1 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Mid")
+                                              .Select(x => x.Student1MidMarks ?? 0)
+                                              .ToList();
+
+            int finalAverage1 = finalMarks1.Any() ? (int)Math.Round(finalMarks1.Average()) : 0;
+            int midAverage1 = midMarks1.Any() ? (int)Math.Round(midMarks1.Average()) : 0;
+
+            var finalMarks2 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Final")
+                                                .Select(x => x.Student2FinalMarks ?? 0)
+                                                .ToList();
+
+            var midMarks2 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Mid")
+                                              .Select(x => x.Student2MidMarks ?? 0)
+                                              .ToList();
+
+            int finalAverage2 = finalMarks2.Any() ? (int)Math.Round(finalMarks2.Average()) : 0;
+            int midAverage2 = midMarks2.Any() ? (int)Math.Round(midMarks2.Average()) : 0;
+
+            var finalMarks3 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Final")
+                                                .Select(x => x.Student3FinalMarks ?? 0)
+                                                .ToList();
+
+            var midMarks3 = evaluationCriteria.Where(x => x.Batch == project.batch && x.EvalName == "Mid")
+                                              .Select(x => x.Student3MidMarks ?? 0)
+                                              .ToList();
+
+            int finalAverage3 = finalMarks3.Any() ? (int)Math.Round(finalMarks3.Average()) : 0;
+            int midAverage3 = midMarks3.Any() ? (int)Math.Round(midMarks3.Average()) : 0;
+
+            var model = new ProjectViewModel
+            {
+                code = project.code,
+                Status = project.Status,
+                CurrentProject = project,
+                MidPPT = project.MidPPT,
+                MidReport = project.MidReport,
+                PropPPT = project.PropPPT,
+                PropReport = project.PropReport,
+                FinalDocs = project.FinalDocs,
+                Proposal = evaluation?.EvaluationName ?? "N/A",
+                Proposaldate = evaluation?.LastDate ?? DateTime.MinValue,
+                Proposalbatch = evaluation?.PBatch ?? "N/A",
+                final = evaluationfinal?.EvaluationName ?? "N/A",
+                finaldate = evaluationfinal?.LastDate ?? DateTime.MinValue,
+                finalbatch = evaluationfinal?.PBatch ?? "N/A",
+                mid = evaluationmid?.EvaluationName ?? "N/A",
+                middate = evaluationmid?.LastDate ?? DateTime.MinValue,
+                midbatch = evaluationmid?.PBatch ?? "N/A",
+                ExpectedResults = project.ExpectedResults,
+                FinalRemark = evaluationfinalRemarks?.Remarks ?? "N/A",
+                MidRemark = evaluationmidRemarks?.Remarks ?? "N/A",
+                PropRemark = evaluationRemarks?.Remarks ?? "N/A",
+                Proposalmarks = evaluatioProposal ?? 0
+            };
+
+            var fetchGroup = _studentGroupService.GetAllAsync().Result;
+            var getGroup = fetchGroup.Where(x => x.ID.ToString() == project.groupId).FirstOrDefault();
+
+            if (getGroup != null)
+            {
+                if (getGroup.student1LID == LoggedInUser)
                 {
-                    var projects = await _projectService.GetAllAsync();
-                     project = projects.FirstOrDefault(x => x.ID.ToString() == Id);
+                    model.midmarks = midAverage1;
+                    model.finalmarks = finalAverage1;
                 }
-
-
-                if (project == null)
+                if (getGroup.student2ID == LoggedInUser)
                 {
-                    var models = new ProjectViewModel();
-                    models.CurrentProject = null;
-                    return PartialView(models);
-
+                    model.midmarks = midAverage2;
+                    model.finalmarks = finalAverage2;
                 }
-                var evaluations = await _evaluationService.GetAllAsync();
-                var evaluation = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Proposal");
-                var evaluationfinal = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Final");
-                var evaluationmid = evaluations.FirstOrDefault(x => x.PBatch == project.batch && x.EvaluationName == "Mid");
-
-                var model = new ProjectViewModel
+                if (getGroup.student3ID == LoggedInUser)
                 {
-                    code = project.code,
-                    Status = project.Status,
-                    CurrentProject = project,
-                    MidPPT = project.MidPPT,
-                    MidReport = project.MidReport,
-                    PropPPT = project.PropPPT,
-                    PropReport = project.PropReport,
-                    FinalDocs = project.FinalDocs,
-                    Proposal = evaluation.EvaluationName,
-                    Proposalmarks = evaluation.Marks,
-                    Proposaldate = evaluation.LastDate,
-                    Proposalbatch = evaluation.PBatch,
-                    final = evaluationfinal.EvaluationName,
-                    finalmarks = evaluationfinal.Marks,
-                    finaldate = evaluationfinal.LastDate,
-                    finalbatch = evaluationfinal.PBatch,
-                    mid = evaluationmid.EvaluationName,
-                    midmarks = evaluationmid.Marks,
-                    middate = evaluationmid.LastDate,
-                    midbatch = evaluationmid.PBatch,
-                };
+                    model.midmarks = midAverage3;
+                    model.finalmarks = finalAverage3;
+                }
+            }
 
-                return PartialView(model);
-           
+            return PartialView(model);
         }
         [HttpPost]
         public async Task<IActionResult> Submissions([FromBody] ProjectViewModel model)
@@ -463,30 +549,35 @@ namespace FYP.Web.Controllers
             if (!string.IsNullOrEmpty(model.PropPPT) && model.PropPPT != projectDetails.PropPPT)
             {
                 projectDetails.PropPPT = model.PropPPT;
+                projectDetails.ProposalSubmissionDate = DateTime.Now.ToString();
                 isUpdated = true;
             }
 
             if (!string.IsNullOrEmpty(model.PropReport) && model.PropReport != projectDetails.PropReport)
             {
                 projectDetails.PropReport = model.PropReport;
+                projectDetails.ProposalSubmissionDate = DateTime.Now.ToString();
                 isUpdated = true;
             }
 
             if (!string.IsNullOrEmpty(model.MidPPT) && model.MidPPT != projectDetails.MidPPT)
             {
                 projectDetails.MidPPT = model.MidPPT;
+                projectDetails.MidSubmissionDate = DateTime.Now.ToString();
                 isUpdated = true;
             }
 
             if (!string.IsNullOrEmpty(model.MidReport) && model.MidReport != projectDetails.MidReport)
             {
                 projectDetails.MidReport = model.MidReport;
+                projectDetails.MidSubmissionDate = DateTime.Now.ToString();
                 isUpdated = true;
             }
 
             if (!string.IsNullOrEmpty(model.FinalDocs) && model.FinalDocs != projectDetails.FinalDocs)
             {
                 projectDetails.FinalDocs = model.FinalDocs;
+                projectDetails.FinalSubmissionDate = DateTime.Now.ToString();
                 isUpdated = true;
             }
 
@@ -561,7 +652,7 @@ namespace FYP.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeSupervisorApprovedStatus(string Id, string status)
+        public async Task<IActionResult> ChangeSupervisorApprovedStatus(string Id, string status,string Data)
         {
             // Fetch the project by ID
             var project = (await _projectService.GetAllAsync()).FirstOrDefault(x => x.ID.ToString() == Id);
@@ -580,12 +671,19 @@ namespace FYP.Web.Controllers
 
             if (result.IsCompletedSuccessfully)
             {
-                // Redirect to the desired page or action after a successful update
-                return RedirectToAction("Projects", "Supervisor");
+                if (Data == "NG")
+                {
+                    return RedirectToAction("Projects", "Supervisor");
+                }
+                else
+                {
+                    return RedirectToAction("StudentGroupAlongMarks", "cordinator");
+
+                }
             }
 
-            // In case the update fails, handle it accordingly (e.g., show an error message)
-            return BadRequest("Failed to update the project status.");
+                // In case the update fails, handle it accordingly (e.g., show an error message)
+                return BadRequest("Failed to update the project status.");
         }
 
         public async Task<IActionResult> weeklylog()

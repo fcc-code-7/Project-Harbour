@@ -78,7 +78,7 @@
                                         <!-- Group -->
                                         <div class="col-12 col-lg-12 col-md-12 col-sm-12 order-sm-2 order-md-2 order-lg-2 mb-2">
                                             <div class="form-group">
-                                                <label>Enrollment No./ Group Name</label>
+                                                <label>Enrollment No./ Group Name /Supervisor</label>
                                                 <fieldset>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
@@ -88,7 +88,7 @@
 
                                                         </div>
 
-                                                        <input type="text" class="form-control" placeholder="Enter Enrollment No./ Group Name to Search" id="GroupNameCheck" aria-describedby="basic-addon1" required>
+                                                        <input type="text" class="form-control" placeholder="Enter Enrollment No./ Group Name /Supervisor to Search" id="GroupNameCheck" aria-describedby="basic-addon1" required>
 
                                                     </div>
                                                 </fieldset>
@@ -469,7 +469,7 @@
                                             <td>
                                                 <span class="text-black fw-bold">Supervisor Name:</span>
                                                 <u><span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
-                                                    ${item.supervisorname}
+                                                            <b> ${item.supervisorname} </b>
                                                 </span></u>
                                             </td>
                                         </tr>
@@ -478,26 +478,26 @@
                                         <tr>
                                             <td>
                                                 <span class="text-black fw-bold">Group Name:</span>
-                                                    <u><span class="badge badge-success text-dark">${item.name}</span></u>
+                                                    <u><span class="badge badge-success text-dark"><b>${item.name}</b></span></u>
                                             </td>
                                         </tr>
                                     ` : ""}
                                                     <tr>
                                                         <td>
                                                             <span class="text-black fw-bold">Member1:</span>
-                                                            <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1">${item.leaderName}</span>
+                                                                        <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1"><u><b>${item.leaderName}</b></u></span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <span class="text-black fw-bold">Member2:</span>
-                                                            <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1">${item.member1}</span>
+                                                                    <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1"><u><b>${item.member1}</b></u></span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <span class="text-black fw-bold">Member3:</span>
-                                                            <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1">${item.member2}</span>
+                                                                        <span class="text-green-600 text-sm font-medium dark:bg-green-900 dark:text-green-300 mx-1"><u><b>${item.member2}</b></u></span>
                                                         </td>
                                                     </tr>
                                                 </table>

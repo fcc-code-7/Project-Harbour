@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+@{
+    Layout = null;
+}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objectives</title>
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.rtl.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
+    <style>
+        .cursorChange {
+            cursor: pointer;
+        }
+        /* For Chrome, Safari, Edge, and Opera */
+        ::-webkit-scrollbar {
+            width: 6px; /* Set the width of the scrollbar */
+            height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Background of the scrollbar track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+            border-radius: 10px; /* Rounded corners for the scrollbar */
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+            }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .team-area {
+            color: #fff;
+        }
+
+        .box {
+            position: relative;
+            margin: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            transition: transform 0.3s ease;
+        }
+
+            .box img {
+                width: 100%;
+                display: block;
+                border-radius: 10px;
+                transition: transform 0.5s ease;
+            }
+
+            .box:hover {
+                transform: scale(1.05);
+            }
+
+            .box figcaption {
+                position: absolute;
+                width: 100%;
+                bottom: 0;
+                padding: 20px;
+                text-align: center;
+                background: #000080;
+                transform: translateY(100%);
+                transition: transform 0.5s ease;
+            }
+
+            .box:hover figcaption {
+                transform: translateY(0);
+            }
+
+            .box h2 {
+                font-size: 40px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-family: "Bebas Neue", sans-serif;
+                margin: 0;
+            }
+
+            .box p {
+                font-size: 14px;
+            }
+
+        .socials {
+            margin-top: 10px;
+        }
+
+            .socials i {
+                font-size: 18px;
+                margin: 0 10px;
+            }
+
+        .imageSize {
+            height: 200px;
+            width: 200px;
+            border-radius: 15px;
+        }
+
+        .backgroundImage {
+            background-image: url('../images/homePage_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 88.5vh;
+        }
+
+        .animated-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+            .animated-card.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        .logoSetting {
+            width: 70px;
+            height: 40px;
+        }
+
+        @@media screen and (max-width: 480px) {
+            .mobileScreen {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+  <!-- Navbar Section -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="~/Logo/fyp_logo-removebg-preview.png" class="logoSetting"/></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto gap-3 mobileScreen">
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="homeLink">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="objectivesLink">Objectives</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="criteriaNPoliciesLink">Criteria & Policies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="fypCommitteeLink">Fyp Committee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="notificationsLink">Notifications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="recentProjectsLink">Recent Projects</a>
+                    </li>
+        </ul>
+        <!-- Buttons -->
+                <div class="mobileScreen">
+                    <button class="btn btn-primary text-white px-3 py-1 rounded" href="/account/login" id="login-btn">Login</button>
+                </div>
+      </div>
+    </div>
+  </nav>
+
+   <!-- Cards -->
+  <div class="backgroundImage pb-2 pt-3">
+
+    <!-- Cards -->
+    <div class="objectives mt-2">
+      <div class="container">
+        <div class="row gap-3 flex justify-content-center mx-2">
+          <div class="col-md-5 mt-1 border border-2 borderRadius shadow bg-white card-style animated-card">
+            <div>
+              <p class="fs-4 fw-bold text-primary text-center ">Objective 1</p>
+              <p class="text-center">To expose the student to the practical application of acquired theoretical
+                knowledge.</p>
+            </div>
+          </div>
+          <div class="col-md-5 mt-1 border border-2 borderRadius shadow bg-white card-style animated-card">
+            <div>
+              <p class="fs-4 fw-bold text-primary text-center ">Objective 2</p>
+              <p class="text-center">To have hands on experience to their field of interest so that they can apply and
+                strengthen what has been learnt at the classes.</p>
+            </div>
+          </div>
+
+          <div class="col-md-5  border border-2 borderRadius shadow bg-white card-style animated-card">
+            <div>
+              <p class="fs-4 fw-bold text-primary text-center ">Objective 3</p>
+              <p class="text-center">To learn the qualities of research orientation for accumulating knowledge on a
+                specific problem domain, and to develop synergetic collaboration between people and procedures.</p>
+            </div>
+          </div>
+
+          <div class="col-md-5  border border-2 borderRadius shadow bg-white card-style animated-card">
+            <div>
+              <p class="fs-4 fw-bold text-primary text-center ">Objective 4</p>
+              <p class="text-center">To ensure that project can be commercialized wholly or partly.</p>
+            </div>
+          </div>
+
+          <div class="col-md-5  border border-2 borderRadius shadow bg-white card-style animated-card">
+            <div>
+              <p class="fs-4 fw-bold text-primary text-center ">Objective 5</p>
+              <p class="text-center">To expose students to various phases of a Project and its Management.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/app-assets/js/core/libraries/jquery.min.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".animated-card");
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add("show");
+                }, index * 800); // Delay of 800ms between each card
+            });
+        });
+        $(document).ready(function () {
+
+            // Navigate on button click
+            $('#login-btn').on('click', function () {
+                window.location.href = '/account/login';
+            });
+
+
+
+            const pageLinks = {
+                homeLink: '/', // Index route (no need for "/home")
+                objectivesLink: '/objectives',
+                criteriaNPoliciesLink: '/criteriaNPolicies',
+                fypCommitteeLink: '/fypCommittee',
+                notificationsLink: '/notifications',
+                recentProjectsLink: '/recentProjects'
+            };
+
+
+            // Add click event to each nav item
+            $('.nav-link').on('click', function () {
+                const linkId = $(this).attr('id'); // Get the ID of the clicked link
+                const targetUrl = pageLinks[linkId]; // Find the corresponding URL
+                if (targetUrl) {
+                    window.location.href = targetUrl; // Redirect to the target page
+                }
+            });
+        });
+
+    </script>
+
+  
+</body>
+
+</html>

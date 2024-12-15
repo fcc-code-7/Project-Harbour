@@ -22,9 +22,8 @@
         </div>
         <div class="content-body">
             <!-- Section 1 -->
-            <div class="mb-2">
-                <div class="p-6 bg-white text-black  ">
-                    <!-- Column 1: -->
+            <div class=" ">
+                <div class="p-6 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
 
                     <div class="w-full flex sm:flex-col lg:flex-row gap-4">
                         <div class="p-10 text-2xl font-bold">
@@ -41,75 +40,147 @@
                     <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
 
                         <div class="flex justify-center">
-                            <img src="@(Model.Docs ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBQcRtWVDjSpn8k9DDCETUsh-LL3HVJGDMaQ&s")"
-                                 alt="image" class="rounded-full p-2 w-32 h-32 object-cover" />
+
+                            @if (Model.Docs != null)
+                            {
+                                <img src="@Model.Docs"
+                                     alt="image"
+                                     class="rounded-full p-2 w-40 h-40 object-cover" style="object-fit: cover; width: 160px; height: 160px;" />
+
+
+                            }
+                            else
+                            {
+                                <img src="~/images.jpg"
+                                     alt="image"
+                                     class="rounded-full p-2 w-32 h-32 object-cover" />
+                            }
+
                         </div>
-                        <div class="text-center">
+                        <div class="text-center mt-2">
                             <p class="text-3xl font-bold">@(Model.Name ?? "User")</p>
-                            <p class="mt-1">Role</p>
-                            <p class="text-lg font-bold">@(Model.Designation ?? "N/A")</p>
+                            <p class="mt-2 ">Designation:</p>
+                            <p class="text-lg font-bold bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">@(Model.Designation ?? "N/A")</p>
                         </div>
                         <div class="text-center">
-                            <p class="mt-1">Phone Number:</p>
+                            <p class="mt-2">Phone Number:</p>
                             <p class="text-lg font-bold">@(Model.Telephone ?? "N/A")</p>
                         </div>
-                        <div class="text-center">
-                            <p class="mt-1">Email Address:</p>
-                            <p class="text-lg font-bold">@(Model.email ?? "N/A")</p>
-                        </div>
+                        @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
+                        {
+
+                            <div class="text-center">
+                                <p class="mt-2">Email Address:</p>
+                                <p class="text-lg font-bold ">@(Model.email ?? "N/A")</p>
+                            </div>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+
+                            <div class="text-center">
+                                <p class="mt-2">Enrollment Number:</p>
+                                <p class="text-lg font-bold ">@(Model.email ?? "N/A")</p>
+                            </div>
+                        }
 
                     </div>
 
 
                     <!-- Column 3 -->
-                    <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mt-8 gap-6">
-                        <div class="flex p-2 bg-white rounded  bg-opacity-30 backdrop-blur-lg shadow-sm border border-dark">
-                            <div class="flex-grow">
+                    <div class="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mt-8 gap-6 ">
+                        <div class="flex p-2 bg-white rounded  bg-opacity-30 backdrop-blur-lg shadow-sm border border-dark ">
+                            <div class="flex-grow ">
                                 @*                                 <h6>Personal info</h6>
                                 *@                                <table class="responsive">
                                     @if (User.IsInRole("Student"))
                                     {
                                         <tr>
-                                            <td class="text-lg font-bold">Enroll No.</td>
+                                            <td class="text-lg font-bold">Area of Interest</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.Enrollment ?? "N/A")
-                                                </span>
+                                                @if (Model.areaofintrest == "1")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        Industrial
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "2")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        AI (Mining/Computer Vision...)
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "3")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2300">
+                                                        Mobile App
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "4")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        Wireless Communication
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "5")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        Network & Security
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "6")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        Web App
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "7")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        Software Application/ERP
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == "8")
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        IOT (H/W + S/W Application)
+                                                    </span>
+                                                }
+                                                @if (Model.areaofintrest == null)
+                                                {
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        N/A
+                                                    </span>
+                                                }
+
                                             </td>
                                         </tr>
+
                                         <tr>
                                             <td class="text-lg font-bold">Reg No.</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.regNo)
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                    @(Model.regNo == 0 ? "NA" : Model.regNo.ToString())
                                                 </span>
                                             </td>
                                         </tr>
                                     }
                                     else
-                                    {@*
-                                    <tr>
-                                    <td class="text-lg font-bold">Role</td>
-                                    <td>
-                                    <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center ">
-                                    @Model.Role
-                                    </span>
-                                    </td>
-                                    </tr> *@
+                                    {
                                         <tr>
                                             <td class="text-lg font-bold">Department</td>
                                             <td>
-
-                                                <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                     @(Model.Department ?? "N/A")
                                                 </span>
+
+
                                             </td>
                                         </tr>
                                     }
                                     <tr>
                                         <td class="text-lg font-bold">CNIC</td>
                                         <td>
-                                            <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                            <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                 @(Model.Cnic ?? "N/A")
                                             </span>
                                         </td>
@@ -117,7 +188,7 @@
                                     <tr>
                                         <td class="text-lg font-bold">Address</td>
                                         <td>
-                                            <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                            <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                 @(Model.Address ?? "N/A")
                                             </span>
                                         </td>
@@ -130,12 +201,11 @@
                         {
                             <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-sm rounded-lg border border-dark">
                                 <div class="flex-grow">
-                                    <h6>Group info</h6>
                                     <table class="responsive">
                                         <tr>
                                             <td class="text-lg font-bold">Group Name:</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                     @Model.groupname
                                                 </span>
                                             </td>
@@ -143,7 +213,7 @@
                                         <tr>
                                             <td class="text-lg font-bold">Supervisor Name:</td>
                                             <td>
-                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                     @Model.supervisorStudent
                                                 </span>
                                             </td>
@@ -151,7 +221,7 @@
                                         <tr>
                                             <td class="text-lg font-bold">Supervisor Email:</td>
                                             <td>
-                                                <span class="text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                     @Model.supervisorEmail
                                                 </span>
                                             </td>
@@ -159,8 +229,8 @@
                                         <tr>
                                             <td class="text-lg font-bold">Supervisor Room:</td>
                                             <td>
-                                                <span class="bg-green-100 mx-2 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
-                                                    @(Model.LeaderName ?? "User")
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2 justify-center">
+                                                    @(Model.supervisorAddress ?? "N/A")
                                                 </span>
                                             </td>
                                         </tr>
@@ -169,86 +239,108 @@
                             </div>
 
                         }
-                        else if (User.IsInRole("Supervisor"))
+                        else if (User.IsInRole("Supervisor") || User.IsInRole("Cordinator"))
                         {
                             <div class="flex p-2 bg-white bg-opacity-30 backdrop-blur-md shadow-sm rounded-lg shadow-sm rounded-lg border border-dark">
                                 <div class="flex-grow">
                                     @*                                     <h6>Group info</h6>
                                 *@                                    <table class="">
+                                        @if (User.IsInRole("Supervisor"))
+                                        {
                                         <tr>
                                             <td class="text-lg font-bold">Area of Interest</td>
                                             <td>
                                                 @if (Model.areaofintrest == "1")
                                                 {
-                                                    <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         Industrial
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "2")
                                                 {
-                                                    <span class="text-blue-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         AI (Mining/Computer Vision...)
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "3")
                                                 {
-                                                    <span class="text-yellow-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2300">
                                                         Mobile App
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "4")
                                                 {
-                                                    <span class="text-red-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         Wireless Communication
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "5")
                                                 {
-                                                    <span class="text-purple-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         Network & Security
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "6")
                                                 {
-                                                    <span class="text-orange-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-orange-900 dark:text-orange-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         Web App
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "7")
                                                 {
-                                                    <span class="text-pink-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-pink-900 dark:text-pink-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         Software Application/ERP
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == "8")
                                                 {
-                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         IOT (H/W + S/W Application)
                                                     </span>
                                                 }
                                                 @if (Model.areaofintrest == null)
                                                 {
-                                                    <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                         N/A
                                                     </span>
                                                 }
 
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <td class="text-lg font-bold">Groups</td>
                                             <td>
-                                                <span class="mx-2 text-green-600 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                                    @(Model.group2name ?? "No Group 2 Exist")
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                    @((Model.group2name?.Count() ?? 0).ToString())
+
                                                 </span>
                                             </td>
                                         </tr>
+                                        } @if (User.IsInRole("Cordinator"))
+                                        {
+                                            <tr>
+                                                <td class="text-lg font-bold">Email</td>
+                                                <td>
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        @(Model.email ?? "N/A")
 
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-lg font-bold">Phone</td>
+                                                <td>
+                                                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
+                                                        @(Model.Telephone ?? "N/A")
+
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <td class="text-lg font-bold">Role</td>
                                             <td>
-                                                <span class="text-indigo-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">
+                                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 font-bold mx-2">
                                                     @Model.Role
                                                 </span>
                                             </td>
@@ -433,8 +525,8 @@
             toast.classList.add('Success-toast');
 
             toast.innerHTML = `
-                                 <div class="Success-toast-message">Successfully Updated!</div>
-                                                            `;
+                                         <div class="Success-toast-message">Successfully Updated!</div>
+                                                                    `;
 
             toastContainer.appendChild(toast);
 
@@ -471,8 +563,8 @@
             toast.classList.add('Warning-toast');
 
             toast.innerHTML = `
-                                <div class="Warning-toast-message">Failed to Update, Try Again!</div>
-                                                            `;
+                                        <div class="Warning-toast-message">Failed to Update, Try Again!</div>
+                                                                    `;
 
             toastContainer.appendChild(toast);
 

@@ -22,8 +22,10 @@ namespace FYP.Web.Controllers
         private readonly IUserService _userService;
         private readonly IChangeSupervisorFormService _changeSupervisorFormService;
         private readonly IStudentService _studentService;
+        private readonly IFYPCommitteService _fYPCommitteService;
+        private readonly IRoomService _roomService;
 
-        public SupervisorController(IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
+        public SupervisorController(IRoomService roomService, IFYPCommitteService fYPCommitteService, IChangeSupervisorFormService changeSupervisorFormService, IUserService userService, IRoomAllotmentService supervisorService, IStudentService studentService, IStudentGroupService studentGroupService, UserManager<AppUser> userManager, IProjectService projectService, IProposalDefenseService proposalDefense)
         {
             _studentGroupService = studentGroupService;
             _userManager = userManager;
@@ -33,6 +35,8 @@ namespace FYP.Web.Controllers
             _supervisorService = supervisorService;
             _changeSupervisorFormService = changeSupervisorFormService;
             _userService = userService;
+            _fYPCommitteService = fYPCommitteService;
+            _roomService = roomService;
         }
         public IActionResult Index()
         {
@@ -79,7 +83,7 @@ namespace FYP.Web.Controllers
             return PartialView("projects", model);
         }
 
-        public async Task<IActionResult> Create(string registeredMessage,string ViewValue, string groupName, string stu1, string stu2, string stu3, string batch)
+        public async Task<IActionResult> Create(string registeredMessage, string ViewValue, string groupName, string stu1, string stu2, string stu3, string batch)
         {
             if (ViewValue != null)
             {
@@ -164,7 +168,7 @@ namespace FYP.Web.Controllers
             if (User.IsInRole("Supervisor"))
             {
                 // Filter groups based on the supervisor's ID
-                 supervisorGroups = groupList.Where(x => x.SupervisorID == userId).ToList();
+                supervisorGroups = groupList.Where(x => x.SupervisorID == userId).ToList();
 
                 if (!supervisorGroups.Any())
                 {
@@ -176,7 +180,7 @@ namespace FYP.Web.Controllers
             {
                 supervisorGroups = groupList.ToList();
             }
-          
+
 
             // Get the distinct batch values for the supervisor's groups
             var distinctBatches = supervisorGroups.Select(x => x.Batch).Distinct().ToList();
@@ -215,14 +219,14 @@ namespace FYP.Web.Controllers
                         commiteeId = x.commiteeId,
                         Status = x.Status,
                         SupervsiorApproved = x.SupervsiorApproved,
-                        groupname = groupList.Where(x=>x.ID == groupId).FirstOrDefault().Name,
+                        groupname = groupList.Where(x => x.ID == groupId).FirstOrDefault().Name,
                         MidPPT = x.MidPPT,
                         MidReport = x.MidReport,
                         PropPPT = x.PropPPT,
                         PropReport = x.PropReport,
                         FinalDocs = x.FinalDocs,
                         TotalMarks = x.TotalMarks,
-                        
+
                     })
                     .ToList();
 
@@ -247,23 +251,23 @@ namespace FYP.Web.Controllers
                 var userId = _userManager.GetUserId(User);
 
                 // Get the IDs of groups supervised by the current user
-                 groupList = groups
-                    .Where(x => x.SupervisorID == userId) // Filter groups by SupervisorID
-                    .Select(x => x.ID.ToString()) // Select group IDs
-                    .ToList();
+                groupList = groups
+                   .Where(x => x.SupervisorID == userId) // Filter groups by SupervisorID
+                   .Select(x => x.ID.ToString()) // Select group IDs
+                   .ToList();
 
                 // Filter projects where groupId matches the supervised group IDs
-                 filteredProjects = projects
-                    .Where(p => groupList.Contains(p.groupId)) // Match project groupId with supervised group IDs
-                    .Where(p => string.IsNullOrWhiteSpace(ProjectWord) || p.Title.Contains(ProjectWord, StringComparison.OrdinalIgnoreCase)) // Filter by ProjectWord
-                    .Where(p => string.IsNullOrEmpty(Batch) || p.batch == Batch) // Filter by Batch
-                    .ToList();
+                filteredProjects = projects
+                   .Where(p => groupList.Contains(p.groupId)) // Match project groupId with supervised group IDs
+                   .Where(p => string.IsNullOrWhiteSpace(ProjectWord) || p.Title.Contains(ProjectWord, StringComparison.OrdinalIgnoreCase)) // Filter by ProjectWord
+                   .Where(p => string.IsNullOrEmpty(Batch) || p.batch == Batch) // Filter by Batch
+                   .ToList();
             }
             if (User.IsInRole("Cordinator"))
             {
                 // Get the IDs of groups supervised by the current user
                 groupList = groups
-                  
+
                    .Select(x => x.ID.ToString()) // Select group IDs
                    .ToList();
 
@@ -275,7 +279,7 @@ namespace FYP.Web.Controllers
                    .ToList();
             }
             // Get the current user's ID
-            
+
 
             // Create a list of view models for the filtered projects
             var projectViewModels = filteredProjects.Select(project => new ProjectViewModel
@@ -309,6 +313,78 @@ namespace FYP.Web.Controllers
             return Json(projectViewModels);
         }
 
+        public async Task<IActionResult> ShowRooms(string batch)
+        {
+            var userId = _userManager.GetUserId(User);
+            var fypComitee = await _fYPCommitteService.GetAllAsync();
+            var model = new FetchRoomNoViewModel();
+            var fetchCurrentDate = DateTime.Now.Date; // Only take the date part
+            if (fypComitee != null)
+            {
+                var room =await _roomService.GetAllAsync();
+                if (User.IsInRole("Supervisor") || User.IsInRole("External"))
+                {
+                    var FetchCurrentComittee = fypComitee.Where(x=>x.ExternalId == userId || x.Member1ID == userId || x.Member2ID == userId);
+                    model.Batches = FetchCurrentComittee.Select(x => x.batch).Distinct().ToList();
+                    if (batch != null)
+                    {
+                        var ListRooms = FetchCurrentComittee.Where(x => batch == batch && x.AppointedDate == fetchCurrentDate).Select(x => new FetchRoomNoViewModel
+                        {
+                            RoomName = room.FirstOrDefault(y => y.ID.ToString() == x.Room).RoomNo,
+                            Batch = x.batch,
+                            EvalName = x.EvaluationID,
+                            AppointedDate = x.AppointedDate.ToString("dd/MM/yyyy"),
+                            AppointedTime = x.AppointedTime.ToString(),
+                            EndTime = x.Endime.ToString()
+                        }).ToList();
+                        model.fetchRooms = ListRooms.ToList();
+                        return PartialView(model);
+                    }
+                   
+                } if (User.IsInRole("Cordinator") )
+                {
+                    model.Batches = fypComitee.Select(x => x.batch).Distinct().ToList();
+                    if (batch != null)
+                    {
+                        var ListRooms = fypComitee.Where(x => batch == batch && x.AppointedDate == fetchCurrentDate).Select(x => new FetchRoomNoViewModel
+                        {
+                            RoomName = room.FirstOrDefault(y => y.ID.ToString() == x.Room).RoomNo,
+                            Batch = x.batch,
+                            EvalName = x.EvaluationID,
+                            AppointedDate = x.AppointedDate.ToString("dd/MM/yyyy"),
+                            AppointedTime = x.AppointedTime.ToString(),
+                            EndTime = x.Endime.ToString()
+                        }).ToList();
+                        model.fetchRooms = ListRooms.ToList();
+                        return PartialView(model);
+                    }
+                   
+                }
+                if (User.IsInRole("Student"))
+                {
+                    var studentGroups = await _studentGroupService.GetAllAsync();
+                    var studentGroup = studentGroups.Where(x => x.student1LID == userId || x.student2ID == userId || x.student3ID == userId).FirstOrDefault();
+                    var FetchCurrentComittee = fypComitee.Where(x=>x.groupID == studentGroup.ID.ToString());
+                    model.Batches = FetchCurrentComittee.Select(x => x.batch).Distinct().ToList();
 
+                        var ListRooms = FetchCurrentComittee.Where(x => x.AppointedDate == fetchCurrentDate).Select(x => new FetchRoomNoViewModel
+                        {
+                            RoomName = room.FirstOrDefault(y => y.ID.ToString() == x.Room).RoomNo,
+                            Batch = x.batch,
+                            EvalName = x.EvaluationID,
+                            AppointedDate = x.AppointedDate.ToString("dd/MM/yyyy"),
+                            AppointedTime = x.AppointedTime.ToString(),
+                            EndTime = x.Endime.ToString()
+
+                        }).ToList();
+                        model.fetchRooms = ListRooms.ToList();
+                        model.Batch = studentGroup.Batch;
+                    return PartialView(model);
+                    
+                }
+            }
+            return PartialView(model);
+
+        }
     }
 }

@@ -154,8 +154,8 @@
                         <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="feather icon-menu font-large-1"></i></a></li>
                         <li class="nav-item">
                             <a class="navbar-brand d-flex align-items-center" href="">
-                                <img class="brand-logo me-2" alt="stack admin logo" src="~/app-assets/images/logo/stack-logo.png">
-                                <span class="brand-text">FYP</span>
+                                <img class="brand-logo me-2  " style="width:80px; height:35px;" alt="stack admin logo" src="~/Logo/fyp_logo-removebg-preview.png">
+                                @* <span class="brand-text">FYP</span> *@
                             </a>
 
                         </li>
@@ -177,11 +177,11 @@
                             </li>
                             <li class="dropdown dropdown-user nav-item">
                                 <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
-                                    <div class="avatar avatar-online"><img src="~/app-assets/images/portrait/small/avatar-s-1.png" alt="avatar"><i></i></div><span class="user-name">@userName</span>
+                                    <div class="avatar avatar-online"></div><span class="user-name">@userName</span>
 
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="user-profile.html"><i class="feather icon-user"></i> Edit Profile</a><a class="dropdown-item" href="app-chat.html"><i class="feather icon-message-square"></i> Chats</a>
+                                    <a class="dropdown-item" id="EditProfile"><i class="feather icon-user"></i> Edit Profile</a><a class="dropdown-item" id="EditPassword"><i class="feather icon-message-square"></i> Change Password</a>
                                     <div class="dropdown-divider"></div><a class="dropdown-item" href="@Url.Action("Logout", "Account")"<i class="feather icon-power"></i> Logout</a>
                                 </div>
                             </li>
@@ -196,127 +196,147 @@
         <div class="spinner"></div>
     </div>
     <main class="">
+
         <!-- BEGIN: Main Menu-->
         <div class=" main-menu menu-fixed menu-dark menu-accordion menu-shadow " data-scroll-to-active="true">
-            <div class=" main-menu-content ">
+            <div class="main-menu-content">
                 @{
                     if (User.Identity.IsAuthenticated)
                     {
-                        <ul class=" navigation navigation-main " id="main-menu-navigation " data-menu="menu-navigation">
-                            <li class=" navigation-header">
+                        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                            <li class="navigation-header">
                                 <span>General</span>
                                 <i class="feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="General"></i>
                             </li>
-                            <li class=" nav-item" id="profile">
+                            <li class="nav-item" id="profile">
                                 <a>
-                                    <i class="fa fa-user-circle-o"></i>
+                                    <i class="feather icon-user"></i>
                                     <span class="menu-item" data-i18n="Profile">Profile</span>
                                 </a>
                             </li>
 
                             @if (User.IsInRole("Supervisor"))
                             {
+                                <li class="nav-item" id="GDetails">
+                                    <a>
+                                        <i class="feather icon-list"></i>
+                                        <span class="menu-item" data-i18n="GDetails">Groups DashBoard</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" id="ProjectsSup">
                                     <a>
-                                        <i class="fa fa-calendar-check-o"></i>
-                                        <span class="menu-item" data-i18n="Projects">Projects</span>
+                                        <i class="feather icon-clipboard"></i>
+                                        <span class="menu-item" data-i18n="Projects">Project Hub</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="groups">
                                     <a>
-                                        <i class="fa fa-users"> </i>
-                                        <span class="menu-item" data-i18n="Groups">Groups</span>
+                                        <i class="feather icon-users"></i>
+                                        <span class="menu-item" data-i18n="Groups">Group Hub</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Edetails">
+                                    <a>
+                                        <i class="feather icon-file-text"></i>
+                                        <span class="menu-item" data-i18n="Edetails">Assesment Details</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="evaluationExam">
                                     <a>
-                                        <i class="fa fa-users"></i>
-                                        <span class="menu-item" data-i18n="Evaluation">Evaluation</span>
+                                        <i class="feather icon-edit"></i>
+                                        <span class="menu-item" data-i18n="Evaluation">Assesment</span>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="GDetails">
-                                    <a>
-                                        <i class="feather icon-mail"></i>
-                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
-                                    </a>
-                                </li>
+                               
                                 <li class="nav-item" id="Message">
                                     <a>
-                                        <i class="feather icon-mail"></i>
+                                        <i class="feather icon-message-square"></i>
                                         <span class="menu-item" data-i18n="Messages">Messages</span>
                                     </a>
                                 </li>
                             }
                             else if (User.IsInRole("Student"))
                             {
+                                <li class="nav-item" id="GDetails">
+                                    <a>
+                                        <i class="feather icon-layers"></i>
+                                        <span class="menu-item" data-i18n="GDetails">Group Dashboard</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" id="Projects">
                                     <a>
-                                        <i class="fa fa-calendar-check-o"></i>
-                                        <span class="menu-item" data-i18n="Projects">Projects</span>
+                                        <i class="feather icon-folder"></i>
+                                        <span class="menu-item" data-i18n="Projects">Project Hub</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="Submissions">
                                     <a>
-                                        <i class="fa fa-cloud-upload"></i>
-                                        <span class="menu-item" data-i18n="Submissions">Submissions</span>
+                                        <i class="feather icon-upload"></i>
+                                        <span class="menu-item" data-i18n="Submissions">Upload</span>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="GDetails">
-                                    <a>
-                                        <i class="feather icon-mail"></i>
-                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
-                                    </a>
-                                </li>
+                              
                                 <li class="nav-item" id="WeeklyLogs">
                                     <a>
-                                        <i class="fa fa-cloud-upload"></i>
+                                        <i class="feather icon-calendar"></i>
                                         <span class="menu-item" data-i18n="WeeklyLogs">Weekly Logs</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Edetails">
+                                    <a>
+                                        <i class="feather icon-file-text"></i>
+                                        <span class="menu-item" data-i18n="Edetails">Assesment Details</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="Message">
                                     <a>
-                                        <i class="feather icon-mail"></i>
+                                        <i class="feather icon-message-circle"></i>
                                         <span class="menu-item" data-i18n="Messages">Messages</span>
                                     </a>
                                 </li>
                             }
                             else if (User.IsInRole("Cordinator"))
                             {
-                                <li class="nav-item" id="groups">
+                                <li class="nav-item" id="GDetails">
                                     <a>
-                                        <i class="fa fa-users"></i>
-                                        <span class="menu-item" data-i18n="Groups">Groups</span>
+                                        <i class="feather icon-list"></i>
+                                        <span class="menu-item" data-i18n="GDetails">Group Dashboard</span>
                                     </a>
                                 </li>
-                                
+                                <li class="nav-item" id="groups">
+                                    <a>
+                                        <i class="feather icon-users"></i>
+                                        <span class="menu-item" data-i18n="Groups">Group Hub</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" id="ProjectsSup">
                                     <a>
-                                        <i class="feather icon-edit"></i>
-                                        <span class="menu-item" data-i18n="Projects">Projects</span>
+                                        <i class="feather icon-clipboard"></i>
+                                        <span class="menu-item" data-i18n="Projects">Project Hub</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="EvaluationDates">
                                     <a>
-                                        <i class="feather icon-edit"></i>
-                                        <span class="menu-item" data-i18n="EvaluationDates">EvalDate</span>
+                                        <i class="feather icon-calendar"></i>
+                                        <span class="menu-item" data-i18n="EvaluationDates">Assesment Dates</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="Evaluators">
                                     <a>
-                                        <i class="feather icon-calendar"></i>
+                                        <i class="feather icon-check-square"></i>
                                         <span class="menu-item" data-i18n="Evaluators">Evaluators</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="Edetails">
+                                    <a>
+                                        <i class="feather icon-file-text"></i>
+                                        <span class="menu-item" data-i18n="Edetails">Assesment Schedules</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" id="Externals">
                                     <a>
-                                        <i class="feather icon-calendar"></i>
+                                        <i class="feather icon-user-check"></i>
                                         <span class="menu-item" data-i18n="Externals">Externals</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item" id="GDetails">
-                                    <a>
-                                        <i class="feather icon-mail"></i>
-                                        <span class="menu-item" data-i18n="GDetails">GroupEvaluations</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -326,10 +346,14 @@
                                     </a>
                                     <ul class="menu-content">
                                         <li>
-                                            <a class="menu-item" id="Rooms" data-i18n="Rooms">Rooms</a>
+                                            <a class="menu-item" id="Rooms" data-i18n="Rooms">
+                                                <i class="feather icon-home"></i> Rooms
+                                            </a>
                                         </li>
                                         <li>
-                                            <a class="menu-item" id="RoomIncharges" data-i18n="Room Incharge">Room Incharge</a>
+                                            <a class="menu-item" id="RoomIncharges" data-i18n="Room Incharge">
+                                                <i class="feather icon-user"></i> Room Incharge
+                                            </a>
                                         </li>
                                     </ul>
                                 </li>
@@ -339,25 +363,25 @@
                                         <span class="menu-item" data-i18n="Messages">Messages</span>
                                     </a>
                                 </li>
-                               
-
                             }
                             else if (User.IsInRole("External"))
                             {
+                                <li class="nav-item" id="Edetails">
+                                    <a>
+                                        <i class="feather icon-file-text"></i>
+                                        <span class="menu-item" data-i18n="Edetails">Assesment Details</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" id="GroupsEvaluation">
                                     <a>
-                                        <i class="feather icon-mail"></i>
-                                        <span class="menu-item" data-i18n="GroupsEvaluation">Groups</span>
+                                        <i class="feather icon-layers"></i>
+                                        <span class="menu-item" data-i18n="GroupsEvaluation">Assesment</span>
                                     </a>
                                 </li>
                             }
-                           
-                           
                         </ul>
                     }
                 }
-
-
             </div>
         </div>
         <!-- END: Main Menu-->
@@ -454,6 +478,16 @@
                 loadSection("/studentgroups/StudentGroups", "#MainContainer");
             });
         });
+        $("#EditProfile").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/user/create", "#MainContainer");
+            });
+        });
+        $("#EditPassword").click(function () {
+            loadAdminIndex(function () {
+                loadSection("/user/ChangePassword", "#MainContainer");
+            });
+        });
         $("#ProjectsSup").click(function () {
             loadAdminIndex(function () {
                 loadSection("/supervisor/projects", "#MainContainer");
@@ -546,6 +580,12 @@
             loadAdminIndex(function () {
 
                 loadSection("/cordinator/StudentGroupAlongMarks", "#MainContainer");
+            });
+        });
+        $("#Edetails").click(function () {
+            loadAdminIndex(function () {
+
+                loadSection("/supervisor/ShowRooms", "#MainContainer");
             });
         });
 

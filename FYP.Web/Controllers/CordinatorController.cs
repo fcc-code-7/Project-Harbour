@@ -145,7 +145,7 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
         [HttpPost]
-        public async Task<IActionResult> ChangeStatus(string Id, string status)
+        public async Task<IActionResult> ChangeStatus(string Id, string status, string Data)
         {
             // Fetch the project by ID
             var project = (await _projectService.GetAllAsync()).FirstOrDefault(x => x.ID.ToString() == Id);
@@ -164,8 +164,15 @@ namespace FYP.Web.Controllers
 
             if (result.IsCompletedSuccessfully)
             {
-                // Redirect to the desired page or action after a successful update
-                return RedirectToAction("Projects", "Supervisor");
+                if (Data == "NG")
+                {
+                     return RedirectToAction("Projects", "Supervisor");
+                }
+                else
+                {
+                    return RedirectToAction("StudentGroupAlongMarks", "cordinator");
+
+                }
             }
 
             // In case the update fails, handle it accordingly (e.g., show an error message)
@@ -184,7 +191,7 @@ namespace FYP.Web.Controllers
             if (user == null)
             {
                 return BadRequest("User not found.");
-            }
+            }   
 
             var allGroups = await _studentGroupService.GetAllAsync();
             var userGroup = allGroups
@@ -696,8 +703,26 @@ namespace FYP.Web.Controllers
                         SenderId = x.SenderId,
                         Batch = x.Batch
                     }).ToList();
+
                 }
-                else
+                else if (User.IsInRole("Supervisor") && !string.IsNullOrEmpty(userBatch))
+                {
+                    var filteredNotifications = notifications
+                       .Where(x => x.Batch == userBatch && x.UserType == "Supervisor")
+                       .OrderByDescending(x => x.Date);
+
+                    model.NotificationsViewModels = filteredNotifications.Select(x => new NotificationsViewModel
+                    {
+                        Id = x.ID,
+                        Subject = x.Subject,
+                        Message = x.Message,
+                        UserType = x.UserType,
+                        Date = x.Date,
+                        SenderId = x.SenderId,
+                        Batch = x.Batch
+                    }).ToList();
+                }
+                else 
                 {
                     // Other roles (e.g., Coordinator or Supervisor)
                     var filteredNotifications = notifications.OrderByDescending(x => x.Date);
@@ -758,12 +783,67 @@ namespace FYP.Web.Controllers
 
             return Ok(filteredNotifications);
         }
-
-        public async Task<IActionResult> StudentGroupAlongMarks(string batch)
+        [HttpPost]
+        public async Task<IActionResult> AssignMarks([FromBody] EvaluationMarksViewModel model)
         {
+            if (model == null || string.IsNullOrEmpty(model.GroupId) || model.SupervisorMarks < 0 || model.CordinatorMarks < 0)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            // Retrieve the group by GroupId
+            var evaluation = (await _evaluationCriteriaService.GetAllAsync())
+                             .FirstOrDefault(e => e.GId == model.GroupId);
+
+            if (evaluation == null)
+            {
+                return NotFound("Group not found.");
+            }
+
+            // Assign marks based on the role
+            if (User.IsInRole("Supervisor"))
+            {
+                if (model.SupervisorMarks > 20)
+                    return BadRequest("Marks exceed maximum allowed for Supervisor.");
+
+                evaluation.SupervisorMarks = model.SupervisorMarks;
+            }
+            else if (User.IsInRole("Cordinator"))
+            {
+                if (model.CordinatorMarks > 10)
+                    return BadRequest("Marks exceed maximum allowed for Coordinator.");
+
+                evaluation.CordinatorMarks = model.CordinatorMarks;
+            }
+            else
+            {
+                return BadRequest("Invalid role.");
+            }
+
+            // Save changes to the database
+            await _evaluationCriteriaService.UpdateAsync(evaluation);
+
+            return Ok(new
+            {
+                message = "Marks assigned successfully.",
+                evaluation.GId,
+                evaluation.SupervisorMarks,
+                evaluation.CordinatorMarks
+            });
+        }
+
+        public async Task<IActionResult> StudentGroupAlongMarks(string batch, string ViewValue)
+        {
+            if (ViewValue != null)
+            {
+                ViewBag.success = ViewValue;
+            }
+
             // Fetch all necessary data upfront
             var studentGroups = await _studentGroupService.GetAllAsync();
             var evaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+            var fetchEvaluation = await _evaluationService.GetAllAsync();
+            var fetchProjects = await _projectService.GetAllAsync();
             var currentUser = await _userManager.GetUserAsync(User); // Get the current logged-in user
             var userRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault(); // Get the role of the user
 
@@ -777,17 +857,11 @@ namespace FYP.Web.Controllers
             // Initialize the model list
             if (studentGroups != null)
             {
-                // If user is a Coordinator, show all groups
-                if (userRole == "Coordinator")
-                {
-                    // No additional filtering needed as Coordinator can see all groups
-                }
-                // If user is a Supervisor, show only the groups assigned to them
-                else if (userRole == "Supervisor")
+                // Role-specific filtering
+                if (userRole == "Supervisor")
                 {
                     studentGroups = studentGroups.Where(x => x.SupervisorID == currentUser.Id).ToList();
                 }
-                // If user is a Student, show only the group(s) associated with them
                 else if (userRole == "Student")
                 {
                     studentGroups = studentGroups.Where(x =>
@@ -798,7 +872,7 @@ namespace FYP.Web.Controllers
                 // Get distinct batches
                 var batches = studentGroups.Select(sg => sg.Batch).Distinct().ToList();
 
-                // Get all user ids from the groups
+                // Get all user IDs from the groups
                 var userIds = studentGroups.SelectMany(x => new[] { x.student1LID, x.student2ID, x.student3ID })
                                            .Where(id => id != null).Distinct();
 
@@ -814,6 +888,38 @@ namespace FYP.Web.Controllers
                     var member2User = x.student3ID != null && users.ContainsKey(x.student3ID) ? users[x.student3ID] : null;
 
                     var groupCriteria = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString());
+                    var project = fetchProjects.FirstOrDefault(y => y.groupId == x.ID.ToString());
+
+                    var midLast = fetchEvaluation
+                        .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Mid")?.LastDate
+                        .ToString("dd-MM-yyyy") ?? "No Date Available";
+
+                    var propLast = fetchEvaluation
+                        .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Proposal")?.LastDate
+                        .ToString("dd-MM-yyyy") ?? "No Date Available";
+
+                    var finalLast = fetchEvaluation
+                        .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Final")?.LastDate
+                        .ToString("dd-MM-yyyy") ?? "No Date Available";
+                    DateTime proposalSubmissionDate, midSubmissionDate, finalSubmissionDate;
+                    DateTime propLastDate, midLastDate, finalLastDate;
+
+                    // Parse the project's submission dates
+                    DateTime.TryParse(project?.ProposalSubmissionDate, out proposalSubmissionDate);
+                    DateTime.TryParse(project?.MidSubmissionDate, out midSubmissionDate);
+                    DateTime.TryParse(project?.FinalSubmissionDate, out finalSubmissionDate);
+
+                    // Parse the "last date" strings
+                    DateTime.TryParse(propLast, out propLastDate);
+                    DateTime.TryParse(midLast, out midLastDate);
+                    DateTime.TryParse(finalLast, out finalLastDate);
+
+                    var propPpt = project?.PropPPT ?? "No submission found";
+                    var propReport = project?.PropReport ?? "No submission found";
+                    var midPpt = project?.MidPPT ?? "No submission found";
+                    var midReport = project?.MidReport ?? "No submission found";
+                    var finalDocs = project?.FinalDocs ?? "No submission found";
+                    var status = project?.Status ?? "No Status";
 
                     return new StudentGroupViewModel
                     {
@@ -847,9 +953,25 @@ namespace FYP.Web.Controllers
                         ProposalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Proposal")?.Remarks ?? "No Remarks",
                         MidRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Mid")?.Remarks ?? "No Remarks",
                         FinalRemarks = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString() && y.EvalName == "Final")?.Remarks ?? "No Remarks",
-                        projectname = _projectService.GetAllAsync().Result.FirstOrDefault(y => y.groupId == x.ID.ToString())?.Title ?? "No Project",
+
+                        projectname = project?.Title ?? "No Project",
                         supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result?.Name ?? "No Supervisor",
-                        Approved = _projectService.GetAllAsync().Result.FirstOrDefault(y => y.groupId == x.ID.ToString())?.Status ?? "Pending",
+                        Approved = project?.Status ?? "Pending",
+
+                        MidLast = midLast,
+                        PropLast = propLast,
+                        FinalLast = finalLast,
+                        CheckProjectstatus = status,
+                        PropPPT = propPpt,
+                        PropReport = propReport,
+                        MidPPT = midPpt,
+                        MidReport = midReport,
+                        FinalDocs = finalDocs,
+                        PropSubCheck = proposalSubmissionDate <= propLastDate ? "Yes" : "No",
+                        MidSubCheck = midSubmissionDate <= midLastDate ? "Yes" : "No",
+                        FinalSubCheck = finalSubmissionDate <= finalLastDate ? "Yes" : "No",
+                        CheckProject = project == null ? "No" : "Yes"
+
                     };
                 }).ToList();
 
@@ -863,6 +985,186 @@ namespace FYP.Web.Controllers
             // If no groups found, return an empty view or a view with a message
             return PartialView();
         }
+        [HttpPost]
+        public async Task<IActionResult> SearchStudentGroupAlongMarks(string batch, string ViewValue, string searchKeyword)
+        {
+            // Handle ViewBag value for success messages
+            if (!string.IsNullOrEmpty(ViewValue))
+            {
+                ViewBag.success = ViewValue;
+            }
+
+            // Fetch all required data upfront
+            var studentGroups = await _studentGroupService.GetAllAsync();
+            var evaluationCriteria = await _evaluationCriteriaService.GetAllAsync();
+            var fetchProjects = await _projectService.GetAllAsync();
+            var fetchEvaluation = await _evaluationService.GetAllAsync();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var userRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault();
+
+            // Apply filters based on role
+            if (userRole == "Supervisor")
+            {
+                studentGroups = studentGroups.Where(x => x.SupervisorID == currentUser.Id).ToList();
+            }
+            else if (userRole == "Student")
+            {
+                studentGroups = studentGroups.Where(x =>
+                    x.student1LID == currentUser.Id || x.student2ID == currentUser.Id || x.student3ID == currentUser.Id)
+                    .ToList();
+            }
+
+            // Filter by batch
+            if (!string.IsNullOrEmpty(batch))
+            {
+                studentGroups = studentGroups.Where(x => x.Batch == batch).ToList();
+                ViewBag.batch = batch; // Store the selected batch
+            }
+
+            // Search by keyword (group name, project title, supervisor name)
+            if (!string.IsNullOrEmpty(searchKeyword))
+            {
+                studentGroups = studentGroups.Where(x =>
+                    x.Name.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase) ||
+                    fetchProjects.Any(p => p.groupId == x.ID.ToString() && p.Title.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase)) ||
+                    _userManager.FindByIdAsync(x.SupervisorID).Result?.Name.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase) == true)
+                    .ToList();
+
+                ViewBag.searchKeyword = searchKeyword; // Store the search keyword
+            }
+
+            // Pre-fetch all users for better performance
+            var userIds = studentGroups.SelectMany(x => new[] { x.student1LID, x.student2ID, x.student3ID })
+                                        .Where(id => id != null)
+                                        .Distinct();
+
+            var users = (await Task.WhenAll(userIds.Select(id => _userManager.FindByIdAsync(id)))).ToDictionary(user => user?.Id, user => user);
+
+            // Build the view model
+            var model = studentGroups.Select(x =>
+            {
+                var leaderUser = x.student1LID != null && users.ContainsKey(x.student1LID) ? users[x.student1LID] : null;
+                var member1User = x.student2ID != null && users.ContainsKey(x.student2ID) ? users[x.student2ID] : null;
+                var member2User = x.student3ID != null && users.ContainsKey(x.student3ID) ? users[x.student3ID] : null;
+
+                var groupCriteria = evaluationCriteria.FirstOrDefault(y => y.GId == x.ID.ToString());
+                var project = fetchProjects.FirstOrDefault(y => y.groupId == x.ID.ToString());
+
+                var midLast = fetchEvaluation
+                    .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Mid")?.LastDate
+                    .ToString("dd-MM-yyyy") ?? "No Date Available";
+
+                var propLast = fetchEvaluation
+                    .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Proposal")?.LastDate
+                    .ToString("dd-MM-yyyy") ?? "No Date Available";
+
+                var finalLast = fetchEvaluation
+                    .FirstOrDefault(y => y.PBatch == x.Batch && y.EvaluationName == "Final")?.LastDate
+                    .ToString("dd-MM-yyyy") ?? "No Date Available";
+
+                DateTime proposalSubmissionDate, midSubmissionDate, finalSubmissionDate;
+                DateTime propLastDate, midLastDate, finalLastDate;
+
+                // Parse the project's submission dates
+                DateTime.TryParse(project?.ProposalSubmissionDate, out proposalSubmissionDate);
+                DateTime.TryParse(project?.MidSubmissionDate, out midSubmissionDate);
+                DateTime.TryParse(project?.FinalSubmissionDate, out finalSubmissionDate);
+
+                // Parse the "last date" strings
+                DateTime.TryParse(propLast, out propLastDate);
+                DateTime.TryParse(midLast, out midLastDate);
+                DateTime.TryParse(finalLast, out finalLastDate);
+
+                var propPpt = project?.PropPPT ?? "No submission found";
+                var propReport = project?.PropReport ?? "No submission found";
+                var midPpt = project?.MidPPT ?? "No submission found";
+                var midReport = project?.MidReport ?? "No submission found";
+                var finalDocs = project?.FinalDocs ?? "No submission found";
+                var status = project?.Status ?? "No Status";
+
+                return new StudentGroupViewModel
+                {
+                    Id = x.ID,
+                    Name = x.Name,
+                    Batch = x.Batch,
+                    student1LID = x.student1LID,
+                    student2ID = x.student2ID,
+                    student3ID = x.student3ID,
+                    CoSupervisorID = x.CoSupervisorID,
+                    SupervisorID = x.SupervisorID,
+
+                    LeaderEnrollement = leaderUser?.Email ?? "Don't Exist",
+                    member1Enrollment = member1User?.Email ?? "Don't Exist",
+                    Member2Enrollment = member2User?.Email ?? "Don't Exist",
+
+                    LeaderName = leaderUser?.Name ?? "Don't Exist",
+                    member1 = member1User?.Name ?? "Don't Exist",
+                    Member2 = member2User?.Name ?? "Don't Exist",
+
+                    StudentsProposalMarks = groupCriteria?.StudentsProposalMarks ?? 0,
+                    Student1MidMarks = groupCriteria?.Student1MidMarks ?? 0,
+                    Student2MidMarks = groupCriteria?.Student2MidMarks ?? 0,
+                    Student3MidMarks = groupCriteria?.Student3MidMarks ?? 0,
+                    Student1FinalMarks = groupCriteria?.Student1FinalMarks ?? 0,
+                    Student2FinalMarks = groupCriteria?.Student2FinalMarks ?? 0,
+                    Student3FinalMarks = groupCriteria?.Student3FinalMarks ?? 0,
+                    CordinatorMarks = groupCriteria?.CordinatorMarks ?? 0,
+                    SupervisorMarks = groupCriteria?.SupervisorMarks ?? 0,
+
+                    ProposalRemarks = groupCriteria?.Remarks ?? "No Remarks",
+                    projectname = project?.Title ?? "No Project",
+                    supervisorname = _userManager.FindByIdAsync(x.SupervisorID).Result?.Name ?? "No Supervisor",
+                    Approved = project?.Status ?? "Pending",
+                    
+                    PropPPT = propPpt,
+                    PropReport = propReport,
+                    MidPPT = midPpt,
+                    MidReport = midReport,
+                    FinalDocs = finalDocs,
+
+                    MidLast = midLast,
+                    PropLast = propLast,
+                    FinalLast = finalLast,
+
+                    CheckProjectstatus = status,
+                    PropSubCheck = proposalSubmissionDate <= propLastDate ? "Yes" : "No",
+                    MidSubCheck = midSubmissionDate <= midLastDate ? "Yes" : "No",
+                    FinalSubCheck = finalSubmissionDate <= finalLastDate ? "Yes" : "No",
+                    CheckProject = project == null ? "No" : "Yes"
+                };
+            }).ToList();
+
+            // Store distinct batches in ViewBag for dropdowns
+            ViewBag.Batches = studentGroups.Select(x => x.Batch).Distinct().ToList();
+
+            return PartialView("StudentGroupAlongMarks", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignSupandCordMarks(int cMarks, int sMarks , string groupid)
+        {
+            var fetchEvaluation = await _evaluationCriteriaService.GetAllAsync();
+            var evaluation = fetchEvaluation.FirstOrDefault(x => x.GId == groupid && x.EvalName == "Proposal");
+
+            if (fetchEvaluation != null)
+            {
+                if (cMarks != 0)
+                {
+
+                evaluation.CordinatorMarks = cMarks;
+                }
+                else
+                {
+                 evaluation.SupervisorMarks = sMarks;
+                }
+                await _evaluationCriteriaService.UpdateAsync(evaluation);
+                return RedirectToAction("StudentGroupAlongMarks", "Cordinator", new { ViewValue = "Updated" });
+            }
+            return RedirectToAction("StudentGroupAlongMarks", "Cordinator", new { ViewValue = "Failed" });
+        }
+
+
+
     }
 
 

@@ -38,5 +38,31 @@ namespace FYP.Databases
                 }
             }
         }
+        private static async Task CreateAdminUserAsync(UserManager<AppUser> userManager, ApplicationDbContext context)
+        {
+            var adminEmail = "FypAdmin@gmail.com";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+            if (adminUser == null)
+            {
+                var user = new AppUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    Name = "Faraz",
+                    ActiveState = "true",
+                    Role = Roles.Admin.ToString(),
+                    EmailConfirmed = true
+                };
+
+                // Create the user
+                var result = await userManager.CreateAsync(user, "Admin@@123");
+                if (result.Succeeded)
+                {
+                    
+                    await userManager.AddToRoleAsync(user, Roles.Admin.ToString());
+                }
+            }
+        }
     }
 }

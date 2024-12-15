@@ -20,135 +20,481 @@
                         </div>
                         @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
                         {
-                            <div class="p-3 ">
+                            <div class="form-group">
                                 <label>Batch</label>
-                                <select class="form-control" id="GroupBatchs" name="GroupBatchs">
-                                    <option value="">Select Batch</option>
-                                    @if (ViewBag.Batches != null)
-                                    {
-                                        foreach (var batch in ViewBag.Batches)
-                                        {
-                                            @if (batch == ViewBag.batch)
-
+                                <fieldset>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon3">
+                                                <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                            </span>
+                                        </div>
+                                        <select class="form-control" id="GroupBatchs">
+                                            <option value="">Select Batch</option>
+                                            @foreach (var item in ViewBag.Batches)
                                             {
-                                                <option value="@batch" selected>@batch</option>
+                                                @if (ViewBag.batch == item)
+                                                {
+                                                    <option value="@item" selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item">@item</option>
+                                                }
                                             }
-                                            else
-                                            {
-                                                <option value="@batch">@batch</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-
+                                        </select>
+                                    </div>
+                                </fieldset>
                             </div>
+                            <div class="form-group">
+                                <label>Search</label>
+                                <fieldset>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon0">
+                                                <i class="fa fa-users" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control"
+                                               placeholder="Enter Group Name/ Project Name/ Supervisor Name"
+                                               id="NameCheck"
+                                               value="@(ViewBag.searchKeyword ?? "")"
+                                               aria-describedby="basic-addon0" required>
+                                    </div>
+                                </fieldset>
+                            </div>
+
 
                         }
-                         @if (Model != null || Model.Any())
+                        @if (Model != null && Model.Any())
                         {
-                        <div class="container mt-4 p-3">
-                            <div class="row">
-                                @foreach (var group in Model)
-                                {
-                                    <div class="col-12 col-lg-6 col-md-12 col-sm-12">
-                                        <!-- Group Card -->
-                                        <div class="card">
-                                            <div class="card-header text-center">
-                                                <h5 class="card-title inline-flex  items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
-                                                    @group.Name - @{
-                                                        if (group.projectname != null)
-                                                        {
-                                                            @group.projectname
-                                                        }
+                            <div class="container mt-4 p-3">
+                                <div class="row">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered  table-hover text-center" id="SubmissionMarkstable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Group Name</th>
+                                                    <th>Supervisor</th>
+                                                    <th>Batch</th>
+                                                    <th>Status</th>
+                                                    <th>Submission</th>
+                                                    @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
+                                                    {
+                                                        <th>Assign Marks</th>
                                                     }
-
-                                                </h5>
-                                               
-                                            </div>
-                                            <div class="p-3">
-                                                <p style="margin: 0;">Supervisor: @group.supervisorname</p>
-                                                <p style="margin: 0;">Batch: @group.Batch</p>
-                                                <p style="margin: 0;">Staus: @group.Approved</p>
-                                            </div>
-
-                                            <!-- Collapse Section for Group Evaluations (inside the group card) -->
-                                            <div id="group-@group.Id" class="collapse mt-2 p-5">
-                                                <div class="card p-3">
-                                                    <div class="card-header text-center">Evaluations</div>
-                                                    <div class="card-body">
-                                                        <div class="list-group">
-                                                            <!-- Proposal Card -->
-                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#proposal-@group.Id">
-                                                                Proposal
+                                                        <th>Details</th>
+                                                    <th>Evaluations</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var group in Model)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @group.Name
+                                                            @if (group.projectname != null)
+                                                            {
+                                                                <br />
+                                                                <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;">@group.projectname</small>
+                                                            }
+                                                        </td>
+                                                        <td>@group.supervisorname</td>
+                                                        <td>@group.Batch</td>
+                                                        <td >
+                                                            @if (group.Approved == "Approved")
+                                                            {
+                                                                <span title="Project Approved" class="esizeSmall bg-green-100  text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                    <i class="fas fa-check-circle"></i>
+                                                                    Approved
+                                                                </span>
+                                                            }
+                                                            else if (group.Approved == "NotApproved")
+                                                            {
+                                                                <span title="Cordinator didnt Approve the Project! Change it." class="esizeSmall bg-red-100  text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                    <i class="fas fa-times-circle"></i>
+                                                                    Not Approved
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span title="Not Exist/ Not Approved yet!" class="bg-yellow-100  text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300 justify-center">
+                                                                    <i class="fas fa-hourglass-half"></i>
+                                                                    Pending
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <button class="bg-blue-100 mx-1 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 justify-center" id="viewSubmissionBtn-@group.Id">
+                                                                View Submissions
                                                             </button>
-                                                            <div id="proposal-@group.Id" class="collapse p-3">
-                                                                <p>Marks: @group.StudentsProposalMarks</p>
-                                                                <p>Remarks: @group.ProposalRemarks</p>
+                                                            <div class="modal fade SubmissionModal" id="SubmissionModal-@group.Id" tabindex="-1" aria-labelledby="SubmissionModal-@group.Id" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="SubmissionModal-@group.Id">Submissions for @group.Name</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="table-responsive">
+                                                                                <table class="table table-bordered table-sm text-center">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Submission Type</th>
+                                                                                            <th>Document Type</th>
+                                                                                            <th>Status</th>
+                                                                                            <th>Last Date</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <!-- Proposal Submission -->
+                                                                                        <tr>
+                                                                                            <td>Proposal</td>
+                                                                                            <td>
+                                                                                                @if (group.PropPPT == "No submission found" && group.PropReport == "No submission found")
+                                                                                                {
+                                                                                                    <span>N/A</span>
+                                                                                                }
+                                                                                                @if (group.PropPPT != "No submission found")
+                                                                                                {
+                                                                                                    <a href="@group.PropPPT" download="Proposal" class="btn bg btn-sm "><i class="fa fa-download"></i> PPT</a>
+                                                                                                }
+                                                                                                @if (group.PropReport != "No submission found")
+                                                                                                {
+
+                                                                                                    <a href="@group.PropReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @if (group.PropPPT != "No submission found" && group.PropReport != "No submission found" && group.PropSubCheck == "Yes")
+                                                                                                {
+                                                                                                    <span title="Project Approved" class="esizeSmall bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                                                        <i class="fas fa-check-circle"></i>
+                                                                                                        OnTime
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span title="Not Exist/ Not Approved yet!" class="bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                                                        <i class="fas fa-times-circle"></i>
+                                                                                                        Late
+                                                                                                    </span>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@group.PropLast</span>
+
+                                                                                            </td>
+
+                                                                                        </tr>
+                                                                                        <!-- Mid Submission -->
+                                                                                        <tr>
+                                                                                            <td>Mid</td>
+                                                                                            <td>
+                                                                                                @if (group.MidPPT == "No submission found" && group.MidReport == "No submission found")
+                                                                                                {
+                                                                                                    <span>N/A</span>
+                                                                                                }
+                                                                                                @if (group.MidPPT != "No submission found")
+                                                                                                {
+                                                                                                    <a href="@group.MidPPT" download="MidDefense.ppt" class="btn bg btn-sm"><i class="fa fa-download"></i> PPT</a>
+                                                                                                }
+                                                                                                @if (group.MidReport != "No submission found")
+                                                                                                {
+
+                                                                                                    <a href="@group.MidReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @if (group.MidPPT != "No submission found" && group.MidReport != "No submission found" && group.MidSubCheck == "Yes")
+                                                                                                {
+                                                                                                    <span title="Project Approved" class="esizeSmall bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                                                        <i class="fas fa-check-circle"></i>
+                                                                                                        OnTime
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span title="Not Exist/ Not Approved yet!" class="bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                                                        <i class="fas fa-times-circle"></i>
+                                                                                                        Late
+                                                                                                    </span>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@group.MidLast</span>
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <!-- Final Submission -->
+                                                                                        <tr>
+                                                                                            <td>Final</td>
+                                                                                            <td>
+                                                                                                @if (group.FinalDocs == "No submission found")
+                                                                                                {
+                                                                                                    <span>N/A</span>
+                                                                                                }
+                                                                                                @if (group.FinalDocs != "No submission found")
+                                                                                                {
+                                                                                                    <a href="@group.FinalDocs" download="Final" class="btn bg btn-sm"><i class="fa fa-download"></i> ZIP</a>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @if (group.FinalDocs != "No submission found" && group.FinalSubCheck == "Yes")
+                                                                                                {
+                                                                                                    <span title="Project Approved" class="esizeSmall bg-green-100 mx-1 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300 justify-center">
+                                                                                                        <i class="fas fa-check-circle"></i>
+                                                                                                        OnTime
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span title="Not Exist/ Not Approved yet!" class="bg-red-100 mx-1 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 justify-center">
+                                                                                                        <i class="fas fa-times-circle"></i>
+                                                                                                        Late
+                                                                                                    </span>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@group.FinalLast</span>
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
 
-                                                            <!-- Mid Card -->
-                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#mid-@group.Id">
-                                                                Mid
-                                                            </button>
-                                                            <div id="mid-@group.Id" class="collapse p-3">
-                                                                <p>@group.LeaderEnrollement : @group.Student1MidMarks</p>
-                                                                <p>@group.member1Enrollment: @group.Student2MidMarks</p>
-                                                                @if (group.Member2Enrollment != "Don't Exist")
-                                                                {
-                                                                    <p>@group.Member2Enrollment: @group.Student3MidMarks</p>
+                                                        </td>
+                                                        @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
+                                                        {
+                                                            @if (group.CheckProjectstatus == "Approved" && group.StudentsProposalMarks != 0)
+                                                            {
+                                                                <td>
+                                                                    <button type="button" class="bg-blue-100 mx-1 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 justify-center" data-bs-toggle="modal" data-bs-target="#assignMarksModal-@group.Id">
+                                                                        Assign Marks
+                                                                    </button>
+                                                                </td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>
+                                                                    <button type="button" class="bg-blue-100 mx-1 text-slate-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-slate-300 justify-center" disabled>
+                                                                        Assign Marks
+                                                                    </button>
+                                                                </td>
+                                                            }
 
-                                                                }
-                                                                <p>Remarks: @group.MidRemarks</p>
+                                                        }
+                                                            <td>
+
+                                                            <button type="button"
+                                                                    class="details-button bg-blue-100 mx-1 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 justify-center"
+                                                                    data-id="@group.Id" data-checkproject="@group.CheckProject"
+                                                                    id="Details">
+                                                                Details
+                                                            </button>
+                                                            </td>
+
+                                                        <td>
+                                                            <button class="bg-blue-100 mx-1 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 justify-center" data-bs-toggle="modal" data-bs-target="#evaluationModal-@group.Id">
+                                                                View Evaluations
+                                                            </button>
+                                                            <script>
+                                                                $(document).ready(function () {
+                                                                    // Attach click event to the button
+                                                                    $("#viewSubmissionBtn-@group.Id").click(function () {
+                                                                        // Check if group.project is null (or you can modify this condition to check your actual variable)
+                                                                        var groupProject = '@group.CheckProject';  // Ensure that you get the correct value for group.project here
+                                                                        var checkPropSumission = '@group.PropPPT';
+                                                                        var checkMidSumission = '@group.MidPPT';
+                                                                        var checkFinalSumission = '@group.FinalDocs';
+                                                                        if (groupProject === "No" || !groupProject) {
+                                                                            // If project is null, show SweetAlert
+                                                                            Swal.fire({
+                                                                                title: 'Project Not Found!',        // Title of the modal
+                                                                                icon: 'question',                // Warning icon for alerts
+                                                                                confirmButtonText: 'OK',        // Text on the confirm button
+                                                                                customClass: {
+                                                                                    confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+                                                                                },
+                                                                                showCancelButton: false,        // Hides the cancel button
+                                                                                buttonsStyling: false,          // Disables default button styling
+                                                                            });
+                                                                        } else if (checkPropSumission == "No submission found" || checkMidSumission == "No submission found" || checkFinalSumission == "No submission found") {
+                                                                            Swal.fire({
+                                                                                title: 'Submission Not Found!',        // Title of the modal
+                                                                                icon: 'question',                // Warning icon for alerts
+                                                                                confirmButtonText: 'OK',        // Text on the confirm button
+                                                                                customClass: {
+                                                                                    confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+                                                                                },
+                                                                                showCancelButton: false,        // Hides the cancel button
+                                                                                buttonsStyling: false,          // Disables default button styling
+                                                                            });
+                                                                        }
+                                                                        else {
+                                                                            // Otherwise, show the modal
+                                                                            $("#SubmissionModal-@group.Id").modal('show');
+                                                                        }
+                                                                    });
+                                                                });
+                                                            </script>
+                                                            <!-- Modal for Assign Marks -->
+                                                            <div class="modal fade AssignMarksModal" id="assignMarksModal-@group.Id" tabindex="-1" aria-labelledby="assignMarksModalLabel-@group.Id" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="assignMarksModalLabel-@group.Id">Assign Marks for @group.Name</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            @if (User.IsInRole("Supervisor"))
+                                                                            {
+                                                                                <label for="supervisorMarks">Enter Marks (0-20):</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                                                                                    <input type="number" id="supervisorMarks" class="form-control" min="0" max="20" maxLength="2" />
+                                                                                </div>
+                                                                            }
+                                                                            else if (User.IsInRole("Cordinator"))
+                                                                            {
+                                                                                <label for="cordinatorMarks">Enter Marks (0-10):</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                                                                                    <input type="number" id="cordinatorMarks" class="form-control" min="0" max="10" maxLength="2" />
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                            <button type="button" class="btn btn-primary" id="SaveMarks" data-id="@group.Id">Save Marks</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
 
-                                                            <!-- Final Card -->
-                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#final-@group.Id">
-                                                                Final
-                                                            </button>
-                                                            <div id="final-@group.Id" class="collapse p-3">
-                                                                <p>@group.LeaderEnrollement: @group.Student1FinalMarks</p>
-                                                                <p>@group.member1Enrollment: @group.Student2FinalMarks</p>
-                                                                @if (group.Member2Enrollment != "Don't Exist")
-                                                                {
-                                                                    <p>@group.Member2Enrollment: @group.Student3FinalMarks</p>
+                                                            <!-- Modal for Evaluation Details -->
+                                                            <div class="modal fade EvaluationModal" id="evaluationModal-@group.Id" tabindex="-1" aria-labelledby="evaluationModalLabel-@group.Id" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="evaluationModalLabel-@group.Id">Evaluations for @group.Name</h5>
+                                                                            <button type="button" class="btn-close EvaluationDetail" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="table-responsive">
+                                                                                <table class="table table-bordered table-sm text-center">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Evaluation Type</th>
+                                                                                            <th>Enrollment Number</th>
+                                                                                            <th>Marks</th>
+                                                                                            <th>Remarks</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <!-- Proposal Evaluation -->
+                                                                                        <tr>
+                                                                                            <td>Proposal</td>
+                                                                                            <td>
+                                                                                                -
+                                                                                            </td>
+                                                                                            <td>@group.StudentsProposalMarks</td>
+                                                                                            <td>@group.ProposalRemarks</td>
+                                                                                        </tr>
+                                                                                        <!-- Mid Evaluation -->
+                                                                                        <tr>
+                                                                                            <td>Mid</td>
+                                                                                            <td>
+                                                                                                @group.LeaderEnrollement <br />
+                                                                                                @group.member1Enrollment <br />
+                                                                                                @if (group.Member2Enrollment != "Don't Exist")
+                                                                                                {
+                                                                                                    @group.Member2Enrollment
+                                                                                                }
 
-                                                                }
-                                                                <p>Remarks: @group.FinalRemarks</p>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @group.Student1MidMarks <br /> @group.Student2MidMarks <br /> @if (group.Member2Enrollment != "Don't Exist")
+                                                                                                {
+                                                                                                    @group.Student3MidMarks
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>@group.MidRemarks</td>
+                                                                                        </tr>
+                                                                                        <!-- Final Evaluation -->
+                                                                                        <tr>
+                                                                                            <td>Final</td>
+                                                                                            <td>
+                                                                                                @group.LeaderEnrollement <br />
+                                                                                                @group.member1Enrollment <br />
+                                                                                                @if (group.Member2Enrollment != "Don't Exist")
+                                                                                                {
+                                                                                                    @group.Member2Enrollment
+                                                                                                }
+
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                @group.Student1FinalMarks <br /> @group.Student2FinalMarks <br /> @if (group.Member2Enrollment != "Don't Exist")
+                                                                                                {
+                                                                                                    @group.Student3FinalMarks
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td>@group.FinalRemarks</td>
+                                                                                        </tr>
+                                                                                        <!-- Supervisor Evaluation -->
+                                                                                        <tr>
+                                                                                            <td>Cordinator</td>
+                                                                                            <td>-</td>
+                                                                                            <td>@group.SupervisorMarks</td>
+                                                                                            <td>-</td>
+                                                                                        </tr>
+                                                                                        <!-- Coordinator Evaluation -->
+                                                                                        <tr>
+                                                                                            <td>Supervisor</td>
+                                                                                            <td>-</td>
+                                                                                            <td>@group.CordinatorMarks</td>
+                                                                                            <td>-</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary EvaluationDetail" data-bs-dismiss="modal">Close</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <!-- Final Card -->
-                                                            <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#supervisor-@group.Id">
-                                                                Supervisor/Cordinator
-                                                            </button>
-                                                            <div id="supervisor-@group.Id" class="collapse p-3">
-                                                                <p>SupervisorMarks: @group.SupervisorMarks</p>
-                                                                <p>CordinatorMarks: @group.CordinatorMarks</p>
 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <button class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#group-@group.Id">
-                                                    View Evaluations
-                                                </button>
-                                            </div>
-
-
-                                        </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
                                     </div>
-                                }
+                                </div>
                             </div>
+                            <div id="paginationControls" class="text-center">
+                                <button class="btn btn-primary" onclick="changePage(-1)">Prev</button>
+                                <span id="pageNumber">Page 1 of 5</span>
+                                <button class="btn btn-primary" onclick="changePage(1)">Next</button>
                             </div>
+
                         }
                         else
                         {
                             <div class="container">
                                 <div class="row justify-content-center align-items-center" style="min-height: 68vh;">
                                     <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
-                                        <!-- Trash Icon -->
                                         <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
-                                        <!-- Text Below the Icon -->
                                         <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Groups Found!</p>
                                     </div>
                                 </div>
@@ -189,16 +535,198 @@
             background-color: #f1f1f1;
         }
 </style>
+@if (ViewBag.success == "NotFound")
+{
+    <script>
+        Swal.fire({
+            title: 'Project Not Found!',        // Title of the modal
+            icon: 'question',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}@if (ViewBag.success == "Updated")
+{
+    <script>
+        Swal.fire({
+            title: 'Evaluation Marked!',        // Title of the modal
+            icon: 'success',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-success',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}@if (ViewBag.success == "Failed")
+{
+    <script>
+        Swal.fire({
+            title: 'Evaluation Marked Failed!',        // Title of the modal
+            icon: 'question',                // Warning icon for alerts
+            confirmButtonText: 'OK',        // Text on the confirm button
+            customClass: {
+                confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+            },
+            showCancelButton: false,        // Hides the cancel button
+            buttonsStyling: false,          // Disables default button styling
+        });
+    </script>
+}
+
 <script>
-    $('#GroupBatchs').on('change', function () {
-        var batch = $(this).val();
-        $.ajax({
-            url: '@Url.Action("StudentGroupAlongMarks", "ControllerName")',
-            data: { batch: batch },
-            success: function (result) {
-                $('#studentGroupsList').html("");
-                $('#studentGroupsList').html(result);
+    $(document).ready(function () {
+        let currentPage = 1;
+        const rowsPerPage = 100;  // You can adjust this number based on how many rows you want per page
+        const $table = $('#SubmissionMarkstable');
+        const $rows = $table.find('tr');
+        const totalRows = $rows.length - 1; // Exclude the header row
+
+        // Function to display rows for the current page
+        function displayRows(page) {
+            let start = (page - 1) * rowsPerPage;
+            let end = page * rowsPerPage;
+
+            // Loop through the table rows and hide those that are not on the current page
+            $rows.slice(1).each(function (index) {  // Skip the header row
+                if (index >= start && index < end) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // Calculate total pages
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            // Update the page number and total pages
+            $('#pageNumber').text(`Page ${page} of ${totalPages}`);
+        }
+
+        // Function to change the page
+        function changePage(direction) {
+            let newPage = currentPage + direction;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            // Ensure the new page is within the valid range
+            if (newPage > 0 && newPage <= totalPages) {
+                currentPage = newPage;
+                displayRows(currentPage);
             }
+        }
+
+        // Initialize the table with the first page
+        displayRows(currentPage);
+
+        // Bind the event to show the modal when clicking on 'EvaluationDetail'
+        $('.EvaluationDetail').on('click', function () {
+            $('.EvaluationModal').modal('hide');
+        });
+
+        // Event listener for 'details-button'
+        $(document).on('click', '.details-button', function () {
+            var groupID = $(this).data('id'); // Retrieve the ID from the data-id attribute
+            var checkProject = $(this).data('checkproject'); // Retrieve the CheckProject value from the data attribute
+
+            // Check if project is null
+            if (checkProject === "No") {
+                // Show SweetAlert if CheckProject is null
+                Swal.fire({
+                    title: 'Project Not Found!',        // Title of the modal
+                    icon: 'question',                  // Warning icon for alerts
+                    confirmButtonText: 'OK',           // Text on the confirm button
+                    customClass: {
+                        confirmButton: 'btn btn-danger',  // Bootstrap class for the button
+                    },
+                    showCancelButton: false,           // Hides the cancel button
+                    buttonsStyling: false,             // Disables default button styling
+                });
+            } else {
+                // Proceed with AJAX request if project exists
+                var data = "MovetoGDetails";
+                $.ajax({
+                    url: '/project/projectdetails', // Your controller action URL
+                    type: "GET",
+                    data: { groupId: groupID, Data: data },
+                    success: function (response) {
+                        // Replace the content of a container with the response
+                        $("#MainContainer").html(response);
+                    },
+                    error: function () {
+                        console.log("Error loading project details.");
+                    }
+                });
+            }
+        });
+
+        // Change event for '#GroupBatchs'
+        $('#GroupBatchs').on('change', function () {
+            showLoadingSpinner(); // Show the loading spinner
+            var batch = $(this).val();
+            $.ajax({
+                url: '@Url.Action("StudentGroupAlongMarks", "cordinator")',
+                data: { batch: batch },
+                success: function (result) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $('#studentGroupsList').html(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        $('#SaveMarks').on('click', function () {
+            showLoadingSpinner(); // Show the loading spinner
+            var CordinatorMarks = $("#cordinatorMarks").val();
+            var SupervisorMarks = $("#supervisorMarks").val();
+            var gid = $(this).data("id");
+
+            $.ajax({
+                url: '@Url.Action("AssignSupandCordMarks", "cordinator")',
+                data: { cMarks: CordinatorMarks, sMarks: SupervisorMarks, groupid: gid },
+                                type: "POST",
+                success: function (result) {
+                    $('#AssignMarksModal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $('#MainContainer').html(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        // Change event for '#NameCheck' and '#GroupBatchs' to handle search/filter
+        $(document).on('change', '#NameCheck, #GroupBatchs', function (e) {
+            e.preventDefault();
+
+            showLoadingSpinner();
+            var groupWord = $("#NameCheck").val();  // Get the group name
+            var batch = $("#GroupBatchs").val();    // Get the selected batch
+
+            $.ajax({
+                url: "/cordinator/SearchStudentGroupAlongMarks", // Ensure the URL matches the route
+                type: "POST",
+                data: {
+                    batch: batch,
+                    searchKeyword: groupWord,
+                },
+                success: function (response) {
+                    hideLoadingSpinner();
+                    $('#MainContainer').html(response); // Updated to use response instead of result
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideLoadingSpinner();
+                    console.error("Error fetching groups:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the groups. Please try again.");
+                }
+            });
         });
     });
 </script>

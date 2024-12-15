@@ -399,3 +399,10 @@
     </script>
 }
 
+@section Scripts {
+    <script type="text/javascript">
+        // This will run as soon as the page is loaded after logout
+        localStorage.removeItem('lastSection');
+        console.log("lastSection has been cleared.");
+    </script>
+}

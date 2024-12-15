@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    @{
+        Layout = null;
+    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline and Schedule</title>
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.rtl.css" rel="stylesheet" />
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
+    <style>
+        .cursorChange {
+            cursor: pointer;
+        }
+        /* For Chrome, Safari, Edge, and Opera */
+        ::-webkit-scrollbar {
+            width: 6px; /* Set the width of the scrollbar */
+            height: 6px; /* Set the height of the scrollbar (for horizontal scrollbars) */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Background of the scrollbar track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2); /* Scrollbar color with transparency */
+            border-radius: 10px; /* Rounded corners for the scrollbar */
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: rgba(0, 0, 0, 0.5); /* Darker on hover */
+            }
+
+    .background-image {
+        background-image: url('../images/homePage_bg.jpg');
+        background-size: cover;
+        background-position: center;
+        min-height: 88.5vh;
+    }
+
+    .borderRadius {
+        border-radius: 10px;
+    }
+
+    .animated-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .animated-card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .logoSetting{
+            width: 70px;
+            height: 40px;
+        }
+        @@media screen and (max-width: 480px) {
+            .mobileScreen{
+                text-align: center;
+            }
+        }
+</style>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="~/Logo/fyp_logo-removebg-preview.png" class="logoSetting"/></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto gap-3 mobileScreen">
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="homeLink">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="objectivesLink">Objectives</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="criteriaNPoliciesLink">Criteria & Policies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="fypCommitteeLink">Fyp Committee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="notificationsLink">Notifications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cursorChange nav-link text-primary" aria-current="page" id="recentProjectsLink">Recent Projects</a>
+                    </li>
+                </ul>
+                <!-- Buttons -->
+                <div class="mobileScreen">
+                    <button class="btn btn-primary text-white px-3 py-1 rounded" href="/account/login" id="login-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Section -->
+    <div class="background-image pt-2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 py-3">
+                    <div class="bg-white notification w-100 mt-3 pt-2 px-2 border border-black shadow borderRadius animated-card">
+                        <div>
+                            <h5 class="bg-danger py-1 px-2 text-white text-center">Announcemet</h5>
+                        </div>
+                        <div>
+                            <p class=" px-2"><strong>Subject:</strong> Fyp defense schedule</p>
+                        </div>
+                        <div>
+                            <p class=" px-2">Fyp defense will be held on 20th june 2024. Everyone be prepare for their
+                                defense according to their turn.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white notification w-100 mt-3 pt-2 px-2 border border-black shadow borderRadius animated-card">
+                        <div>
+                            <h5 class="bg-danger py-1 px-2 text-white text-center">Announcemet</h5>
+                        </div>
+                        <div>
+                            <p class=" px-2"><strong>Subject:</strong> Fyp defense schedule</p>
+                        </div>
+                        <div>
+                            <p class=" px-2">Fyp defense will be held on 20th june 2024. Everyone be prepare for their
+                                defense according to their turn.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white notification w-100 mt-3 pt-2 px-2 border border-black shadow borderRadius animated-card">
+                        <div>
+                            <h5 class="bg-danger py-1 px-2 text-white text-center">Announcemet</h5>
+                        </div>
+                        <div>
+                            <p class=" px-2"><strong>Subject:</strong> Fyp defense schedule</p>
+                        </div>
+                        <div>
+                            <p class=" px-2">Fyp defense will be held on 20th june 2024. Everyone be prepare for their
+                                defense according to their turn.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/app-assets/js/core/libraries/jquery.min.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.js"></script>
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".animated-card");
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add("show");
+                }, index * 800); // Delay of 800ms between each card
+            });
+        });
+        $(document).ready(function () {
+
+            // Navigate on button click
+            $('#login-btn').on('click', function () {
+                window.location.href = '/account/login';
+            });
+
+
+
+            const pageLinks = {
+                homeLink: '/', // Index route (no need for "/home")
+                objectivesLink: '/objectives',
+                criteriaNPoliciesLink: '/criteriaNPolicies',
+                fypCommitteeLink: '/fypCommittee',
+                notificationsLink: '/notifications',
+                recentProjectsLink: '/recentProjects'
+            };
+
+
+            // Add click event to each nav item
+            $('.nav-link').on('click', function () {
+                const linkId = $(this).attr('id'); // Get the ID of the clicked link
+                const targetUrl = pageLinks[linkId]; // Find the corresponding URL
+                if (targetUrl) {
+                    window.location.href = targetUrl; // Redirect to the target page
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

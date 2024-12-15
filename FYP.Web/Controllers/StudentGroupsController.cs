@@ -644,100 +644,166 @@ namespace FYP.Web.Controllers
             return PartialView(model);
         }
 
-        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest, string EvalType, string room)
+        public async Task<IActionResult> FetchBatches(string id, string batch, string assignRequest, string EvalType, string room, string sup1, DateTime Date, TimeOnly Time)
         {
             var LoggedInUser = _userManager.GetUserId(User);
             var FetchUser = await _userManager.FindByIdAsync(LoggedInUser);
             var FetchUserDepartment = FetchUser.Department;
             var allGroups = await _studentGroupService.GetAllAsync();
             var supervisorList = await _userManager.GetUsersInRoleAsync("Supervisor");
+            var fypCommittees = await _fYPCommitteService.GetAllAsync();
             var RoomsServices = await _roomService.GetAllAsync();
 
             var model = new FYPCommitteViewModel();
-            string date = DateTime.Now.ToString("dd-MM-yy"); // Example string date
-            DateTime parsedDate = DateTime.ParseExact(date, "dd-MM-yy", CultureInfo.InvariantCulture);
-            model.AppointedDate = parsedDate;
-            model.AppointedTime = new TimeOnly(9, 0);  // Set to 9:00 
+            DateTime currentDate = DateTime.Now;
+            model.AppointedDate = currentDate;
+            model.AppointedTime = new TimeOnly(9, 0); // Default time slot
+
             if (!string.IsNullOrEmpty(batch))
             {
-                var Evaluation = await _evaluationService.GetAllAsync();
-                //var fypCommittee = await _fYPCommitteService.GetAllAsync();
-                //var fetchFypCommittee = fypCommittee.Where(x => x.batch == batch);
-                var fetchEvaluation = Evaluation.Where(x => x.PBatch == batch && x.EvaluationName == EvalType);
-                model.Evaluations = new List<string> { "Proposal", "Mid", "Final" };
-                //if (fetchFypCommittee.Any())
-                //{
-                //    model.AppointedDate = fetchFypCommittee.Select(x => x.AppointedDate).FirstOrDefault();
-                //    model.Lapse = fetchFypCommittee.Select(x => x.Lapse).FirstOrDefault();
-                //}
-                if (fetchEvaluation.Any())
-                {
-
-                    model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
-                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Proposal")
-                    {
-                        model.EvaluationID = "Proposal";
-                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
-                    }
-                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Mid")
-                    {
-                        model.EvaluationID = "Mid";
-                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
-                    }
-                    if (fetchEvaluation.FirstOrDefault().EvaluationName == "Final")
-                    {
-                        model.EvaluationID = "Final";
-                        model.AppointedDate = fetchEvaluation.Select(x => x.LastDate).FirstOrDefault();
-                    }
-                }
                 var filteredGroups = allGroups.Where(x => x.Batch == batch).ToList();
-                if (filteredGroups.Any())
+                if (batch != null && EvalType != null)
                 {
-                    model.studentGroups = filteredGroups.Select(x => new FetchGroupListViewModel
-                    {
-                        groupID = x.ID.ToString(),
-                        groupName = x.Name
-                    }).ToList();
+                    var evaluation = await _evaluationService.GetAllAsync();
 
+                    if (evaluation != null)
+                    {
+                        var EvalDate = evaluation.FirstOrDefault(x => x.PBatch == batch && x.EvaluationName == EvalType);
+
+                        if (EvalDate == null)
+                        {
+                            model.CheckDates = null;
+                            model.batch = batch;
+                            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+                            model.EvaluationID = EvalType;
+                            return PartialView("Evaluators", model);
+                        }
+
+                    }
 
                 }
-
-                model.batch = batch;
-                // Get supervisors for the department
-                if (supervisorList.Any() && !string.IsNullOrEmpty(id))
+                // Map student groups
+                model.CheckDates = "true";
+                model.studentGroups = filteredGroups.Select(x => new FetchGroupListViewModel
                 {
-                   var CountGroupSupervisor = allGroups.Select(x=>x.SupervisorID).Count();
-                    var fetchCurrentGroup = allGroups.Where(x => x.ID.ToString() == id).FirstOrDefault();
-                    var fetchCurrentGroupSupervisor = allGroups.Where(x => x.SupervisorID == fetchCurrentGroup.SupervisorID).FirstOrDefault().SupervisorID;
-                    var departmentSupervisors = supervisorList
-                        .Where(x => x.Department == FetchUserDepartment)
-                        .Select((supervisor, index) => new { supervisor, index })
-                        .ToList();
+                    groupID = x.ID.ToString(),
+                    groupName = x.Name
+                }).ToList();
 
-                    model.SupervisorList1 = departmentSupervisors
-                        .Where(x => x.index % 2 == 0 && x.supervisor.Id != fetchCurrentGroupSupervisor.ToString())
-                        .Select(x => new FetchSupervisorListViewModel
+                // Filter supervisors
+                var departmentSupervisors = supervisorList.Where(x => x.Department == FetchUserDepartment).ToList();
+
+                model.SupervisorList1 = departmentSupervisors
+                    .Where(supervisor =>
+                    {
+                        // Exclude supervisor assigned to the current group
+                        if (filteredGroups.Any(x => x.ID.ToString() == id && x.SupervisorID == supervisor.Id))
+                            return false;
+
+                        // Count how many groups the supervisor is assigned in the batch
+                        int supervisorGroupCount = filteredGroups.Count(x => x.SupervisorID == supervisor.Id);
+                        if (supervisorGroupCount == 0)
                         {
-                            SupervisorID = x.supervisor.Id,
-                            SupervisorName = x.supervisor.Name
-                        }).ToList();
+                            return false;
+                        }
+                        // Supervisor limits based on group count
+                        if (supervisorGroupCount == 1)
+                        {
+                            int fypCommitteeCount = fypCommittees.Count(x => x.batch == batch && (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+                            if (fypCommitteeCount > 3)
+                                return false;
+                        }
+                        else if (supervisorGroupCount == 2)
+                        {
+                            int fypCommitteeCount = fypCommittees.Count(x => x.batch == batch && (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+                            if (fypCommitteeCount > 5)
+                                return false;
+                        }
+
+                        bool isConflict = fypCommittees.Any(x =>
+          x.AppointedDate == Date &&
+          x.AppointedTime == Time &&
+    (x.Room != room) && // Doesn't matter if the room is same or different
+          (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+
+                        if (isConflict)
+                            return false;
+
+                        return true; // Supervisor passes all checks
+                    })
+                    .Select(supervisor => new FetchSupervisorListViewModel
+                    {
+                        SupervisorID = supervisor.Id,
+                        SupervisorName = supervisor.Name
+                    })
+                    .ToList();
+
+                if (sup1 != null)
+                {
+                    filteredGroups = allGroups.Where(x => x.Batch == batch).ToList();
+
+                    model.Room = room;
+                    model.EvaluationID = EvalType;
+                    model.groupID = id;
+                    model.batch = batch;
+                    model.Member1ID = sup1;
+                    departmentSupervisors = departmentSupervisors.Where(x => x.Id != sup1).ToList();
 
                     model.SupervisorList2 = departmentSupervisors
-                        .Where(x => x.index % 2 != 0 && x.supervisor.Id != fetchCurrentGroupSupervisor.ToString())
-                        .Select(x => new FetchSupervisorListViewModel
-                        {
-                            SupervisorID = x.supervisor.Id,
-                            SupervisorName = x.supervisor.Name
-                        }).ToList();
-                    model.assignRequest = assignRequest;
+                 .Where(supervisor =>
+                 {
+                     // Exclude supervisor assigned to the current group
+                     if (filteredGroups.Any(x => x.ID.ToString() == id && x.SupervisorID == supervisor.Id))
+                         return false;
+
+                     // Count how many groups the supervisor is assigned in the batch
+                     int supervisorGroupCount = filteredGroups.Count(x => x.SupervisorID == supervisor.Id);
+
+                     // Supervisor limits based on group count
+                     if (supervisorGroupCount == 0)
+                     {
+                         return false;
+                     }
+                     if (supervisorGroupCount == 1)
+                     {
+                         int fypCommitteeCount = fypCommittees.Count(x => x.batch == batch && (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+                         if (fypCommitteeCount > 3)
+                             return false;
+                     }
+                     else if (supervisorGroupCount == 2)
+                     {
+                         int fypCommitteeCount = fypCommittees.Count(x => x.batch == batch && (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+                         if (fypCommitteeCount > 5)
+                             return false;
+                     }
+
+                     // Check if there's any conflict
+                     bool isConflict = fypCommittees.Any(x =>
+           x.AppointedDate == Date &&
+           x.AppointedTime == Time &&
+     (x.Room != room) && // Doesn't matter if the room is same or different
+           (x.Member1ID == supervisor.Id || x.Member2ID == supervisor.Id));
+
+                     if (isConflict)
+                         return false;
+
+                     return true; // Supervisor passes all che
+
+                 })
+                 .Select(supervisor => new FetchSupervisorListViewModel
+                 {
+                     SupervisorID = supervisor.Id,
+                     SupervisorName = supervisor.Name
+                 })
+                 .ToList();
                 }
+                model.batch = batch;
+                model.assignRequest = assignRequest;
             }
 
-            // Handle id filtering
             if (!string.IsNullOrEmpty(id))
             {
-                var fypCommitte = await _fYPCommitteService.GetAllAsync();
-                var currentFypCommitte = fypCommitte.Where(x => x.groupID == id && x.EvaluationID == EvalType).FirstOrDefault();
+                var currentFypCommitte = fypCommittees.FirstOrDefault(x => x.groupID == id && x.EvaluationID == EvalType);
 
                 if (currentFypCommitte != null)
                 {
@@ -747,26 +813,16 @@ namespace FYP.Web.Controllers
                     model.batch = currentFypCommitte.batch;
                     model.Room = currentFypCommitte.Room;
                     model.EvaluationID = currentFypCommitte.EvaluationID;
-                    // Convert AppointedDate to string in dd-MM-yy format
-                    string appointedDateString = currentFypCommitte.AppointedDate.ToString("dd-MM-yy");
-
-                    string appointedTimeString = currentFypCommitte.AppointedTime.ToString("HH:mm:ss"); // Format for time
-                                                                                                        // Parse AppointedDate from string back to DateTime
-                    DateTime parsedAppointedDate = DateTime.ParseExact(appointedDateString, "dd-MM-yy", CultureInfo.InvariantCulture);
-
-                    // If AppointedTime is a TimeSpan or a specific time format
-                    TimeOnly parsedAppointedTime = TimeOnly.ParseExact(appointedTimeString, "HH:mm:ss", CultureInfo.InvariantCulture);
-                    model.AppointedDate = parsedAppointedDate;
-                    model.AppointedTime = parsedAppointedTime;
-
+                    model.AppointedDate = currentFypCommitte.AppointedDate;
+                    model.AppointedTime = currentFypCommitte.AppointedTime;
                 }
                 else
                 {
                     model.groupID = id;
                     model.batch = batch;
-
                 }
             }
+
             if (RoomsServices.Any())
             {
                 model.Rooms = RoomsServices.Select(x => new RoomViewModel
@@ -776,51 +832,18 @@ namespace FYP.Web.Controllers
                 }).ToList();
             }
 
-            if (id != null && batch != null && EvalType != null && room != null)
+            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
+            model.EvaluationID = EvalType;
+            if (EvalType != null && batch != null)
             {
-                var fypCommitte = await _fYPCommitteService.GetAllAsync();
-                var fetchLastRoom = fypCommitte.Where(x => x.Room == room).LastOrDefault();
-                var fetchRoomGroup = fypCommitte.Where(x => x.Room == room && x.EvaluationID == EvalType).FirstOrDefault();
-                if (fetchLastRoom != null && fetchRoomGroup != null)
+                var evaluation = await _evaluationService.GetAllAsync();
+                if (evaluation != null)
                 {
-                    if (fetchLastRoom.Room == room && fetchRoomGroup.groupID != id && fetchLastRoom.batch == batch)
-                    {
-                        if (EvalType == "Proposal")
-                        {
-                            TimeOnly time = fetchLastRoom.AppointedTime;
-                            TimeOnly newTime = time.AddMinutes(30);
-                            model.AppointedTime = newTime;
-                        }
-                        else if (EvalType == "Mid")
-                        {
-                            TimeOnly time = fetchLastRoom.AppointedTime;
-                            TimeOnly newTime = time.AddMinutes(45);
-                            model.AppointedTime = newTime;
-                        }
-                        else if (EvalType == "Final")
-                        {
-                            TimeOnly time = fetchLastRoom.AppointedTime;
-                            TimeOnly newTime = time.AddMinutes(45);
-                            model.AppointedTime = newTime;
-                        }
-                    }
-
-                }
-                else
-                {
-                    model.AppointedTime = new TimeOnly(9, 0);  // Set to 9:00 AM
+                    model.AppointedDate = evaluation.Where(x => x.PBatch == batch && x.EvaluationName == EvalType).FirstOrDefault().LastDate;
 
                 }
             }
-
-
-
-            model.batches = allGroups.Select(x => x.Batch).Distinct().ToList();
-
-            model.EvaluationID = EvalType;
-
             return PartialView("Evaluators", model);
-
         }
 
         [HttpPost]
@@ -1587,7 +1610,7 @@ namespace FYP.Web.Controllers
                 if (viewModel.EvalName == "Proposal")
                 {
                     existingRecord.TotalMarks = viewModel.StudentsProposalMarks ?? 0;
-                      
+
                 }
 
                 if (viewModel.EvalName == "Mid")
@@ -1678,7 +1701,10 @@ namespace FYP.Web.Controllers
             {
                 bool matchesGroupWord = string.IsNullOrWhiteSpace(GroupWord) ||
                     (startsWithAlphabet
-                        ? g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) // Search by group name
+            ? (g.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase) || // Search by group name
+               allUsers.Any(u =>
+                   (u.Id == g.SupervisorID && u.Name.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) // Search by supervisor name
+               ))
                         : allUsers.Any(u =>
                             (u.Id == g.student1LID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||
                             (u.Id == g.student2ID && u.Email.Contains(GroupWord, StringComparison.OrdinalIgnoreCase)) ||

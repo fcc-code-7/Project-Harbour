@@ -3,7 +3,7 @@
     string regNo;
     if (Model.regNo == 0)
     {
-        regNo = "Enter Registration Number";
+        regNo = "";
     }
     else
     {
@@ -49,7 +49,7 @@
                                                             <img id="previewImg" src="" alt="Click to upload">
                                                             <span id="uploadText">Click to upload</span>
                                                         </div>
-                                                        <input type="file" id="imageUpload" accept="image/*" />
+                                                        <input type="file" id="imageUpload" accept="image/jpeg, image/png, image/gif, image/bmp, image/tiff, image/webp, image/svg+xml, image/x-icon, image/heif, image/heic" />
                                                         <input type="hidden" id="Docs" name="Docs" value="@Model.Docs" /> <!-- Hidden input to store the uploaded image URL -->
 
                                                     </div>
@@ -138,22 +138,38 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-lg-6 col-md-6 col-sm-12 ">
-                                                    <div class="form-group">
-                                                        <fieldset>
-                                                            <div class="input-group">
+                                                   
+                                                    @if (User.IsInRole("Cordinator") || User.IsInRole("Supervisor"))
+                                                    {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
 
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text     " id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text     " id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control  " id="email" placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
+
+
                                                                 </div>
-                                                                <input type="text" class="form-control  " id="email" placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
-
-
-                                                            </div>
-                                                            <span asp-validation-for="email" class="text-danger"></span>
-                                                        </fieldset>
-                                                    </div>
+                                                            </fieldset>
+                                                        </div>
+                                                    }
                                                     @if (User.IsInRole("Student"))
                                                     {
+                                                        <div class="form-group">
+                                                            <fieldset>
+                                                                <div class="input-group">
+
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text     " id="basic-addon1"><i class="feather icon-mail"></i></span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control  " id="email" readonly placeholder="Enter email" value="@(Model.email ?? "")" asp-for="email" aria-describedby="basic-addon1" name="email" required>
+
+
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>
                                                         <div class="form-group">
                                                             <fieldset>
                                                                 <div class="input-group">
@@ -162,7 +178,7 @@
                                                                             <i class="feather icon-hash"></i>
                                                                         </span>
                                                                     </div>
-                                                                    <input type="text" class="form-control  " id="regNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo" aria-describedby="basic-addon1" name="regNo" required>
+                                                                    <input type="text" class="form-control  " id="RegNo" placeholder="Enter regNo" value="@regNo" asp-for="regNo" aria-describedby="basic-addon1" name="regNo" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="regNo" class="text-danger"></span>
@@ -243,7 +259,7 @@
                                                                     <div class="input-group-prepend">
                                                                         <span class="input-group-text  " id="basic-addon3"><i class="feather icon-paperclip"></i></span>
                                                                     </div>
-                                                                    <input type="text" class="form-control  " id="semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
+                                                                    <input type="text" class="form-control  " id="Semester" placeholder="Enter semester" value="@(Model.semester ?? "")" asp-for="semester" aria-describedby="basic-addon1" name="semester" required>
 
                                                                 </div>
                                                                 <span asp-validation-for="semester" class="text-danger"></span>
@@ -281,7 +297,7 @@
                                                                 };
                                                                     }
 
-                                                                    @Html.DropDownList("areaofintrest", areaOfInterests, new { @class = "form-control areaofintrest  " })
+                                                                    @Html.DropDownList("areaofintrest", areaOfInterests, new { @class = "form-control areaofintrest"  })
                                                                 </div>
                                                                 <span asp-validation-for="areaofintrest" class="text-danger"></span>
                                                             </fieldset>
@@ -463,8 +479,8 @@
                 Designation: $("#Designation").val(),
                 Docs: $("#Docs").val(),  // Use the uploaded image URL, not the local file path
                 Enrollment: $("#Enrollment").val(),
-                regNo: $("#regNo").val(),
-                semester: $("#semester").val(),
+                regNo: $("#RegNo").val(),
+                semester: $("#Semester").val(),
                 areaofintrest: $(".areaofintrest").val(),
             };
             $.ajax({

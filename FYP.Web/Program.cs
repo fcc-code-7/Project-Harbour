@@ -17,6 +17,13 @@ var builder = WebApplication.CreateBuilder(args);
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set to Commercial if you have a license
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//{
+//    options.UseMySql(
+//        builder.Configuration.GetConnectionString("default"),
+//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("default"))
+//    );
+//});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("default"));

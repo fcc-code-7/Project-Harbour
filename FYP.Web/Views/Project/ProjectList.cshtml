@@ -26,40 +26,39 @@
         <div class="content-header row">
         </div>
         <div class="content-body">
-            <!-- Section 1 -->
+                           <div class=" ">
+                                                       <i class="fas fa-arrow-left" style="font-size: 35px;" id="previousbtn"></i>
 
-            <div class=" ">
-                <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
-                    <!-- Column 1: -->
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
 
-                    <div class="" style="min-height:100px;" id="container">
-                        <!-- Left content (div1) -->
-                        <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
-                            <div class=" text-2xl font-bold">
-                                <h1>
-                                    Submissions
-                                </h1>
-                            </div>
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px;">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            Submissions
+                                        </h1>
+                                    </div>
 
-                        </div>
-
-                    </div>
+                                </div>
                     @if (Model.CurrentProject != null)
                     {
 
 
-                        @if (Model.Proposal != null && Model.final != null && Model.mid != null && Model.Status == "Approved")
+                        @if (Model.Status == "Approved")
                         {
-                            <div class="container ">
+                            <div class="container mt-3">
 
-                                <input type="hidden" value="@Model.code" id="code" />
                                 <div class="table-responsive">
-                                    <table class="table table-hover align-middle text-center w-100 table-bordered-custom">
+                                    <table class="table table-bordered  table-hover text-center">
                                         <thead>
                                             <tr>
-                                                <th>Type</th>
+                                                <th>Evaluation</th>
                                                 <th>Remarks</th>
+                                                                                                @if (User.IsInRole("Student"))
+{
                                                 <th>Total Marks</th>
+}
                                                 <th>Submission</th>
                                                 @if (User.IsInRole("Student"))
                                                 {
@@ -69,12 +68,39 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if (Model.Proposal != null && Model.Proposalmarks != null && Model.Proposaldate != null)
+                                          @if (Model.Proposaldate !=null)
+                                            {
+                                                    @if (Model.Proposal != null && Model.Proposaldate != null)
                                             {
                                                 <tr>
-                                                    <td>Proposal</td>
-                                                    <td>@Model.Proposal</td>
-                                                    <td>@Model.Proposalmarks</td>
+                                                    <td class="text-dark">Proposal</td>
+                                                        <td>
+                                                    @if (!string.IsNullOrEmpty(Model.MidRemark))
+                                                    {
+                                                        <span class="remark-text" >
+                                                            @Model.MidRemark
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="remark-text" >
+                                                            N/A
+                                                        </span>
+                                                    }
+                                                </td>
+                                                                                                                                                @if (User.IsInRole("Student"))
+{
+                                                    <td>
+                                                        @if (Model.Proposalmarks == 0)
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @Model.Proposalmarks
+                                                        }
+                                                    </td>
+}
                                                     <td>
                                                         @if (User.IsInRole("Student"))
                                                         {
@@ -100,7 +126,7 @@
 
                                                             }
                                                         }
-                                                        @if (User.IsInRole("Supervisor"))
+                                                        @if (User.IsInRole("Supervisor") ||User.IsInRole("Cordinator"))
                                                         {
                                                             @if (string.IsNullOrEmpty(Model.PropPPT) && string.IsNullOrEmpty(Model.PropReport))
                                                             {
@@ -145,17 +171,42 @@
                                                     </td>
                                                     }
                                                     <td>
-                                                        <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.Proposaldate.ToString("dd/MM/yyyy")</span>
+                                                        <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@Model.Proposaldate.ToString("dd/MM/yyyy")</span>
                                                     </td>
                                                 </tr>
                                             }
-                                            @if (Model.mid != null && Model.midmarks != null && Model.middate != null)
+                                            @if (Model.mid != null && Model.middate != null)
                                             {
                                                 <tr>
-                                                    <td>Mid</td>
-                                                    <td>@Model.mid</td>
-                                                    <td>@Model.midmarks</td>
+                                                    <td class="text-dark">Mid</td>
                                                     <td>
+                                                    @if (!string.IsNullOrEmpty(Model.MidRemark))
+                                                    {
+                                                        <span class="remark-text">
+                                                            @Model.MidRemark
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="remark-text" >
+                                                            N/A
+                                                        </span>
+                                                    }
+                                                </td>
+
+                                                     @if (User.IsInRole("Student"))
+{
+                                                    <td>
+                                                        @if (Model.midmarks == 0)
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @Model.midmarks
+                                                        }
+                                                    </td>
+}                                                 <td>
                                                         @if (User.IsInRole("Student"))
                                                         {
                                                             @if (string.IsNullOrEmpty(Model.MidPPT))
@@ -180,7 +231,7 @@
                                                                 <a href="@Model.MidReport" download="Report" class="btn bg btn-sm"><i class="fa fa-download"></i> Report</a>
                                                             }
                                                         }
-                                                        @if (User.IsInRole("Supervisor"))
+                                                        @if (User.IsInRole("Supervisor") || User.IsInRole("Cordinator"))
                                                         {
                                                             @if (string.IsNullOrEmpty(Model.MidPPT) && string.IsNullOrEmpty(Model.MidReport))
                                                             {
@@ -223,18 +274,43 @@
                                                     </td>
                                                     }
                                                     <td>
-                                                                                                                <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.middate.ToString("dd/MM/yyyy")</span>
+                                                                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@Model.middate.ToString("dd/MM/yyyy")</span>
 
                                                     </td>
                                                 </tr>
                                             }
-                                            @if (Model.final != null && Model.finalmarks != null && Model.finaldate != null)
+                                            @if (Model.final != null && Model.finaldate != null)
                                             {
                                                 <tr>
-                                                    <td>Final</td>
-                                                    <td>@Model.final</td>
-                                                    <td>@Model.finalmarks</td>
+                                                    <td class="text-dark">Final</td>
+                                                        <td>
+                                                            @if (!string.IsNullOrEmpty(Model.FinalRemark))
+                                                            {
+                                                                <span class="remark-text">
+                                                                    @Model.FinalRemark
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="remark-text" >
+                                                                    N/A
+                                                                </span>
+                                                            }
+                                                        </td>
+
+                                                    @if (User.IsInRole("Student"))
+{
                                                     <td>
+                                                        @if (Model.finalmarks == 0)
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @Model.finalmarks
+                                                        }
+                                                    </td>
+}                                                    <td>
                                                         @if (User.IsInRole("Student"))
                                                         {
                                                             @if (string.IsNullOrEmpty(Model.FinalDocs))
@@ -249,7 +325,7 @@
 
                                                             }
                                                         }
-                                                        @if (User.IsInRole("Supervisor"))
+                                                        @if (User.IsInRole("Supervisor") || User.IsInRole("Cordinator"))
                                                         {
                                                             @if (string.IsNullOrEmpty(Model.FinalDocs))
                                                             {
@@ -282,12 +358,26 @@
                                                         </td>
                                                     }
                                                     <td>
-                                                        <span class="inline-flex items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-500 text-white">@Model.finaldate.ToString("dd/MM/yyyy")</span>
+                                                        <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">@Model.finaldate.ToString("dd/MM/yyyy")</span>
 
                                                     </td>
                                                 </tr>
-                                            }
-                                        </tbody>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                             <div class="container">
+                                            <div class="row justify-content-center align-items-center" style="min-height: 50vh;">
+                                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                    <!-- Trash Icon -->
+                                                    <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                    <!-- Text Below the Icon -->
+                                                    <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Dates Exist!</p>
+                                                </div>
+                                            </div>
+                                            </div>
+                                                }
+                                            </tbody>
                                     </table>
 
 
@@ -325,6 +415,7 @@
                 </div>
             </div>
         </div>
+                                        <input type="hidden" value="@Model.code" id="code" />
 
     </div>
 </div>
@@ -384,7 +475,7 @@
         });
         $("#previousbtn").click(function () {
             $.ajax({
-                url: '/project/projects',
+                url: '/supervisor/projects',
                 type: "GET",
                 success: function (response) {
                     $("#MainContainer").html(response);
@@ -619,6 +710,12 @@
     }
 
 
+ 
+
+/* Show the remark when the cell is hovered */
+td:hover .remark-text {
+    display: inline;
+}
 
 
     .customheightcard {

@@ -204,7 +204,7 @@
                 $.ajax({
                     url: '/project/projectdetails',
                     type: "GET",
-                    data: { code: Code },
+                    data: { code: Code},
                     success: function (response) {
                         $("#MainContainer").html(response);
                     },

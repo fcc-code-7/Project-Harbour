@@ -34,50 +34,68 @@ namespace FYP.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-
+            // Find the user by email
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-                if (result.Succeeded)
+                // Check if ActiveState is "true"
+                if (user.ActiveState == "Active")
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Supervisor"))
+                    // Attempt to sign in
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                    if (result.Succeeded)
                     {
-                        return RedirectToAction("Index", "Supervisor");
-                    }
-                    else if (roles.Contains("Cordinator"))
-                    {
-                        return RedirectToAction("Index", "Cordinator");
-                    }
-                    else if (roles.Contains("Student"))
-                    {
-                        return RedirectToAction("Index", "Student");
-                    }
-                    else if (roles.Contains("External"))
-                    {
-                        return RedirectToAction("Index", "Student");
+                        // Retrieve roles
+                        var roles = await _userManager.GetRolesAsync(user);
+
+                        // Redirect based on roles
+                        if (roles.Contains("Supervisor"))
+                        {
+                            return RedirectToAction("Index", "Supervisor");
+                        }
+                        else if (roles.Contains("Cordinator"))
+                        {
+                            return RedirectToAction("Index", "Cordinator");
+                        }
+                        else if (roles.Contains("Student"))
+                        {
+                            return RedirectToAction("Index", "Student");
+                        }
+                        else if (roles.Contains("External"))
+                        {
+                            return RedirectToAction("Index", "Student");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Invalid user role.");
+                            return View(model);
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Invalid user role.");
-                        return View(model);
+                        // Handle invalid login attempt
+                        ModelState.AddModelError("", "Invalid Login Attempt");
+                        return RedirectToAction("Login", "Account", new { toastrnotification = "InvalidAccountDetails" });
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid Login Attempt");
-                    return RedirectToAction("Login", "Account", new { toastrnotification = "InvalidAccountDetails" });
-
+                    // Handle case where ActiveState is not "true"
+                    ModelState.AddModelError("", "Your account is not active. Please contact the administrator.");
+                    return RedirectToAction("Login", "Account", new { toastrnotification = "AccountNotActive" });
                 }
             }
             else
             {
+                // Handle case where user does not exist
                 ModelState.AddModelError("", "Invalid Login Attempt");
-                return RedirectToAction("Login", "Account" , new { toastrnotification = "NoAccount"});
+                return RedirectToAction("Login", "Account", new { toastrnotification = "NoAccount" });
             }
+
+            // Default return if something unexpected happens
             return View(model);
         }
+
 
 
         public IActionResult Register()

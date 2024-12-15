@@ -37,6 +37,13 @@
 
                                                     <div class="form-group">
                                                         <label>Evaluation Name</label>
+                                                        <fieldset>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text" id="basic-addon3">
+                                                                        <i class="fa fa-pencil" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                    </span>
+                                                                </div>
                                                         <select class="form-control EvaluationName" id="EvaluationName" name="EvaluationName" asp-for="EvaluationName">
                                                             <option value="Proposal">
                                                                 Proposal
@@ -48,13 +55,24 @@
                                                                 Final
                                                             </option>
                                                         </select>
+                                                            </div>
+
+                                                        </fieldset>
+
                                                         <span asp-validation-for="EvaluationName" class="text-danger"></span>
                                                     </div>
                                                     @if (Model != null && Model.batches != null && Model.batches.Any())
                                                     {
                                                         <div class="form-group">
                                                             <label>Batch</label>
-                                                            <select class="form-control PBatch" id="PBatch" name="PBatch" asp-for="PBatch">
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon3">
+                                                                            <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>                                                            <select class="form-control PBatch" id="PBatch" name="PBatch" asp-for="PBatch">
 
                                                                 <option value="">Select Batch</option>
                                                                 @foreach (var item in Model.batches)
@@ -70,7 +88,8 @@
                                                                     }
                                                                 }
                                                             </select>
-
+                                                                </div>
+                                                            </fieldset>
                                                         </div>
 
                                                     }
@@ -78,12 +97,21 @@
                                                     {
                                                         <div class="form-group">
                                                             <label>Batch</label>
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon3">
+                                                                            <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>
                                                             <select class="form-control PBatch" id="PBatch" name="PBatch" asp-for="PBatch">
 
                                                                 <option value="">Select Batch</option>
 
                                                             </select>
 
+                                                        </div>
+                                                         </fieldset>
                                                         </div>
                                                     }
                                                     @if (Model != null && Model.LastDate != null)
@@ -94,7 +122,7 @@
                                                             <fieldset>
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
-                                                                        <span class="input-group-text date" id="basic-addon3"><i class="feather icon-calendar"></i></span>
+                                                                        <span class="input-group-text date" id="basic-addon3"><i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
                                                                     </div>
                                                                     <input type="date" class="form-control" value="@Model.LastDate.ToString("yyyy-MM-dd")"
                                                                            id="LastDate" aria-describedby="basic-addon3" name="LastDate" required />

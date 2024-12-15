@@ -34,7 +34,7 @@ namespace FYP.Web.Controllers
         }
         public IActionResult Profile(string toastrnotification)
         {
-            
+
             var LoggedInUser = _userManager.GetUserId(User);
             var user = _userService.GetByIdAsync(LoggedInUser).Result;
             var model = new AppUserViewModel()
@@ -74,6 +74,13 @@ namespace FYP.Web.Controllers
                 model.supervisorEmail = _userManager.FindByIdAsync(getSupervisor).Result.Email;
                 model.groupname = _studentGroupService.GetAllAsync().Result.Where(x => x.ID == getGroup).Select(x => x.Name).FirstOrDefault();
                 model.LeaderName = _userManager.FindByIdAsync(getLeader).Result.Name;
+                model.supervisorAddress = _userManager.FindByIdAsync(getSupervisor).Result.Address;
+                if (User.IsInRole("Supervisor"))
+                {
+                    model.group2name = _studentGroupService.GetAllAsync().Result.Where(x => x.SupervisorID == LoggedInUser).ToList();
+
+                }
+
             }
             return PartialView(model);
         }
@@ -173,6 +180,8 @@ namespace FYP.Web.Controllers
                 hasChanges = true;
             }
 
+
+
             if (user.Cnic != model.Cnic)
             {
                 user.Cnic = model.Cnic;
@@ -212,6 +221,8 @@ namespace FYP.Web.Controllers
             if (User.IsInRole("Supervisor") || User.IsInRole("Cordinator"))
             {
                 user.Designation = model.Designation;
+                hasChanges = true;
+
 
             }
             if (User.IsInRole("Student"))
@@ -252,5 +263,54 @@ namespace FYP.Web.Controllers
             return PartialView();
         }
 
+        public async Task<IActionResult> ChangePassword()
+        {
+            var LoggedInUser = _userManager.GetUserId(User);
+            var model = new RegisterViewModel()
+            {
+                Id = LoggedInUser,
+                Name = _userManager.FindByIdAsync(LoggedInUser).Result.Name,
+            };
+            return PartialView(model);
+        }
+        [HttpPost]
+public async Task<IActionResult> ChangePassword([FromBody] RegisterViewModel model)
+{
+    // Check if the model is valid
+   
+
+    // Get the currently logged-in user
+    var loggedInUserId = _userManager.GetUserId(User);
+    var user = await _userManager.FindByIdAsync(loggedInUserId);
+
+    if (user == null)
+    {
+    return Json(new { success = false, message = "User Not Found."  });
     }
+
+    // Ensure that Password and ConfirmPassword match
+    if (model.Password != model.ConfirmPassword)
+    {
+        ModelState.AddModelError(string.Empty, "Password and Confirm Password do not match.");
+        return BadRequest(ModelState);
+    }
+
+    // Attempt to change the password
+    var changePasswordResult = await _userManager.ChangePasswordAsync(user,model.oldPassword , model.Password);
+
+    if (!changePasswordResult.Succeeded)
+    {
+        foreach (var error in changePasswordResult.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return BadRequest(ModelState);
+    }
+
+    // Password change successful, return success response
+    return Json(new { success = true, message = "Password successfully changed."  });
+}
+
+    }
+
 }

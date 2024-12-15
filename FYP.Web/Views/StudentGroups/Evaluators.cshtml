@@ -16,7 +16,7 @@
                     <div class="users-list-filter px-1">
                         <!-- Section 1 -->
                         <div class=" ">
-                            <div class="p-3 bg-white text-black rounded-lg customheightcard bg-opacity-100 backdrop-blur-lg shadow-md">
+                            <div class="p-3 bg-white text-black ">
 
                                 <!-- Column 1: -->
                                 <div class="" style="min-height:100px">
@@ -90,25 +90,48 @@
                                                                     </div>
                                                                     @if (Model.batch != null)
                                                                     {
-
-
-
                                                                         @Html.DropDownListFor(model => model.EvaluationID,
-                                                                                 new SelectList(Model.Evaluations, Model.EvaluationID),
+                                                                                 new SelectList(new List<string> { "Proposal", "Mid", "Final" }, Model.EvaluationID),
                                                                                  "Select Evaluation",
                                                                                  new { @class = "form-control EvaluationSelect", id = "EvaluationID" })
                                                                         <span asp-validation-for="EvaluationID" class="text-danger"></span>
                                                                     }
                                                                     else
                                                                     {
-                                                                        <input type="text" class="form-control" value="Select Batch First" aria-describedby="basic-addon1" readonly required>
+                                                                        <input type="text" class="form-control" value="Select Batch First" readonly required>
                                                                     }
+
                                                                 </div>
                                                                 <span asp-validation-for="EvaluationID" class="text-danger"></span>
                                                             </fieldset>
                                                         </div>
                                                     </div>
 
+                                                    @if (Model.EvaluationID == null || Model.CheckDates == null)
+                                                    {
+                                                        if (Model.EvaluationID != null && Model.CheckDates == null)
+                                                        {
+                                                            <div class="container">
+                                                                <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                                                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                                        <i class="fa fa-exclamation-triangle" style="font-size: 10rem; color:#dc2626;"></i>
+                                                                            <p class="text-secondary fw-bold text-center text-danger" style="font-size: 1.5rem;">First Assign Evaluation Date in EvalType!</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }else{
+
+                                                        <div class="container">
+                                                            <div class="row justify-content-center align-items-center" style="min-height: 40vh;">
+                                                                <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                                        <i class="fa fa-exclamation-triangle" style="font-size: 10rem; color:#dc2626;"></i>
+                                                                    <p class="text-secondary fw-bold text-center text-danger" style="font-size: 1.5rem;">Select Evaluation</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        }
+                                                    }
+                                                    else{
                                                     <div class="col-12 col-lg-12 col-md-12 col-sm-12 ">
                                                         @* Group *@
                                                         <div class="form-group">
@@ -324,7 +347,7 @@
                                                     {
                                                         <input type="hidden" name="assignRequest" id="AssignRequest" value="false" />
                                                     }
-
+                                                    }
                                                 </div>
                                             
                                                
@@ -332,11 +355,13 @@
                                                 
                                             </div>
                                         </div>
-                                
 
+                                        @if (Model.CheckDates != null)
+                                        {
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-outline-primary " id="EvaluatorFormSubmit">Save</button>
                                 </div>
+                                }
                                 </form>
 
                             </div>
@@ -514,11 +539,10 @@
         $(document).off('click', '#SaveRoom').on('click', '#SaveRoom', function (e) {
             showLoadingSpinner(); // Show the loading spinner
             var roomNo = $("#NewRoom").val(); // Use the new ID for the modal input field
-
             $.ajax({
                 url: "/studentgroups/FetchRoom",
                 type: "POST",
-                data: { room: roomNo },
+                data: { room: roomNo},
                 success: function (response) {
                     $('#modalRoom').modal('hide'); // Hide the modal
                     hideLoadingSpinner(); // Hide the loading spinner
@@ -583,6 +607,32 @@
             });
 
         });
+        //yahan changekrna hai
+        $(document).off('change', '#Member1ID').on('change', '#Member1ID', function (e) {
+            e.preventDefault();
+            showLoadingSpinner(); // Show the loading spinner
+            var groupId = $("#groupIDs").val();
+            var batches = $("#batches").val();
+            var evaluation = $("#Evaluation").val();
+            var Room = $("#Room").val();
+            var AppointedDate = $("#AppointedDate").val();
+            var AppointedTime = $("#AppointedTime").val();
+            var member1 = $(this).val();
+            $.ajax({
+                url: "/studentgroups/FetchBatches",
+                type: "GET",
+                data: { id: groupId, batch: batches, EvalType: evaluation, Time: AppointedTime, Date: AppointedDate, sup1: member1 , room : Room },
+                success: function (response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $("#NewContainer").html(response);
+
+                },
+                error: function () {
+
+                }
+            });
+
+        });
 
         $(document).off('change', '.Room').on('change', '.Room', function (e) {
             e.preventDefault();
@@ -591,10 +641,13 @@
             var groupId = $("#groupIDs").val();
             var batches = $("#batches").val();
             var evaluation = $("#Evaluation").val();
+            var AppointedDate = $("#AppointedDate").val();
+            var AppointedTime = $("#AppointedTime").val();
+
             $.ajax({
                 url: "/studentgroups/FetchBatches",
                 type: "GET",
-                data: { id: groupId, batch: batches, EvalType: evaluation, room: roomNo },
+                data: { id: groupId, batch: batches, EvalType: evaluation, room: roomNo, Time: AppointedTime, Date: AppointedDate },
                 success: function (response) {
                     hideLoadingSpinner(); // Hide the loading spinner
                     $("#NewContainer").html(response);

@@ -11,7 +11,8 @@ namespace FYP.Databases
         Student,
         Supervisor,
         Cordinator,
-        External
+        External,
+        Admin
     }
     public class Constants
     {

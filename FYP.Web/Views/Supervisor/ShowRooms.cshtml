@@ -1,0 +1,281 @@
+﻿@model FYP.Web.ViewModels.FetchRoomNoViewModel
+
+
+@{
+    int counter = 0;
+}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body ">
+            <section class="users-list-wrapper">
+                <div class="users-list-filter px-1">
+                    <!-- Section 1 -->
+                    <div class=" ">
+                        <div class="p-3 bg-white text-black rounded-lg " style="height:80vh ; min-height:80vh">
+
+                            <!-- Column 1: -->
+                            <div class="" style="min-height:100px;">
+                                <div class="w-full grid sm:grid-cols-1 lg:grid-cols-2 gap-4 ">
+                                    <div class=" text-2xl font-bold">
+                                        <h1>
+                                            Evaluation Details
+                                        </h1>
+                                    </div>
+
+                                </div>
+                                <form class="form" id="submitform">
+                                    <div class="modal-body">
+                                        <div class="form-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+
+                                                    @if (Model != null && Model.Batches != null && Model.Batches.Count > 0)
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Batch</label>
+
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon3">
+                                                                            <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>                                                            <select class="form-control " id="SelectRoomBatch" name="SelectRoomBatch" asp-for="Batch">
+
+                                                                        <option value="">Select Batch</option>
+                                                                        @foreach (var item in Model.Batches)
+                                                                        {
+                                                                            if (Model.Batch == item)
+                                                                            {
+                                                                                <option value="@item" selected>@item</option>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@item">@item</option>
+
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="form-group">
+                                                            <label>Batch</label>
+                                                            <fieldset>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon3">
+                                                                            <i class="fa fa-calendar" style="color: transparent; -webkit-text-stroke: 1px black;"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <select class="form-control SelectRoomBatch" id="SelectRoomBatch" name="SelectRoomBatch" asp-for="Batch">
+
+                                                                        <option value="">Select Batch</option>
+
+                                                                    </select>
+
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>
+                                                    }
+                                                   
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                   
+                                </form>
+                                <label class="p-1"> Evaluations:</label>
+
+                                @if (Model.fetchRooms == null || Model.fetchRooms.Count == 0)
+                                {
+
+                                    <div class="container">
+                                        <div class="row justify-content-center align-items-center" style="min-height: 68vh;">
+                                            <div class="col-12 col-md-6 col-lg-4 d-flex flex-column justify-content-center align-items-center">
+                                                <!-- Trash Icon -->
+                                                <i class="fa fa-trash-o text-secondary" style="font-size: 10rem; display: block;"></i>
+                                                <!-- Text Below the Icon -->
+                                                <p class="text-secondary fw-bold text-center colorChange" style="font-size: 1.5rem;">No Evaluations Found!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                }
+                                else
+                                {
+                                    <div class=" p-1 mt-2">
+                                        <div class="row" id="RoomContainer">
+
+                                            @foreach (var item in Model.fetchRooms)
+                                            {
+                                                <div class="col-12 col-md-6 col-sm-12 col-lg-4">
+                                                    <div class="card p-0">
+                                                        <div class="card-header no-border">
+                                                            <div class="widget-49-date-warning">
+                                                                <span class="badge bg-warning rounded-circle text-dark d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                    @(counter = counter + 1)
+                                                                </span>
+                                                            </div>
+
+                                                            <div>
+                                                                <span class="inline-flex mx-4 items-center gap-x-1.5 py-1.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                                                                    <b> @item.EvalName </b>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body pt-0 ">
+                                                            <div class="widget-49">
+                                                                <div class="table-responsive">
+                                                                    <table class="">
+
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Batch:</td>
+                                                                            <td>
+                                                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                                                    <b>@item.Batch </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Room:</td>
+                                                                            <td>
+                                                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                                                    <b>  @item.RoomName </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-black fw-bold">Time:</td>
+                                                                            <td>
+                                                                                <span class="text-green-600 mx-2 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                                                                                    <b>  @item.AppointedTime to @item.EndTime </b>
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<!-- Modal -->
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style>
+    .arrow-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+    }
+
+
+    .noborder {
+        border-color: white !important;
+    }
+
+
+
+    .colorchange {
+        transition: color 0.3s ease;
+        cursor: default;
+    }
+
+        .colorchange:hover {
+            color: green;
+            cursor: pointer;
+        }
+
+    .card-margin {
+        margin-bottom: 1.875rem !important;
+    }
+
+    .card {
+        border: 0 !important;
+        box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1) !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #ffffff !important;
+        background-clip: border-box !important;
+        border: 1px solid #3b0764 !important;
+        border-radius: 8px !important;
+    }
+
+        .card .card-header.no-border {
+            border: 0 !important;
+        }
+
+        .card .card-header {
+            background: none !important;
+            padding: 0 0.9375rem !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 50px !important;
+        }
+
+    .card-header:first-child {
+        border-radius: calc(8px - 1px) calc(8px - 1px) 0 0 !important;
+    }
+
+</style>
+<script>
+    $(document).ready(function () {
+
+        $('#SelectRoomBatch').on('change', function () {
+            showLoadingSpinner(); // Show the loading spinner
+            var Batch = $(this).val();
+            $.ajax({
+                url: '@Url.Action("ShowRooms", "supervisor")',
+                data: { batch: Batch },
+                success: function (result) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    $('#MainContainer').html(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+     
+    });
+
+</script>
+

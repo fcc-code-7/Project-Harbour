@@ -322,10 +322,16 @@ namespace FYP.Databases.Migrations
                     b.Property<string>("FinalDocs")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FinalSubmissionDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("MidPPT")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MidReport")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MidSubmissionDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Others")
@@ -338,6 +344,9 @@ namespace FYP.Databases.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PropReport")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProposalSubmissionDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Specialization")
